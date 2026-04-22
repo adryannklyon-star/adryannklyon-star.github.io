@@ -2,212 +2,170 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Klyon Social | Explore o Futuro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Klyon Social</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
   :root {
     --primary: #ff00cc;
     --secondary: #3333ff;
     --accent: #7a00ff;
-    --glass: rgba(255, 255, 255, 0.08);
-    --bg: #0f0c29;
+    --bg: #0b0b1a;
+    --glass: rgba(255, 255, 255, 0.05);
   }
 
   body {
     margin: 0;
+    padding-bottom: 80px; /* Espaço para a barra inferior */
+    padding-top: 70px;    /* Espaço para o header */
     font-family: 'Inter', sans-serif;
-    background: radial-gradient(circle at top, #1a1a2e, #16213e, #0f0c29);
-    color: #e0e0e0;
-    min-height: 100vh;
-    line-height: 1.6;
+    background: var(--bg);
+    color: white;
+    overflow-x: hidden;
   }
 
-  .container {
-    max-width: 550px;
-    margin: auto;
-    padding: 20px;
+  /* HEADER FIXO */
+  header {
+    position: fixed;
+    top: 0; width: 100%;
+    height: 60px;
+    background: rgba(11, 11, 26, 0.8);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    z-index: 100;
   }
 
-  h1 {
+  header h1 {
     font-family: 'Orbitron', sans-serif;
-    text-align: center;
-    font-size: 2.5rem;
-    letter-spacing: 2px;
-    margin-bottom: 30px;
+    font-size: 1.2rem;
+    margin: 0;
     background: linear-gradient(90deg, var(--primary), var(--secondary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 10px rgba(255, 0, 204, 0.3));
   }
 
-  /* Estilização de Botões e Inputs */
+  .container { max-width: 500px; margin: auto; padding: 15px; }
+
+  /* COMPONENTES DE UI */
+  .glass {
+    background: var(--glass);
+    padding: 15px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 15px;
+  }
+
   button {
-    width: 100%;
-    padding: 14px;
-    border-radius: 12px;
-    border: none;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    color: white;
-    font-weight: 700;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    margin-bottom: 10px;
-  }
-
-  button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 0, 204, 0.4);
-    filter: brightness(1.1);
-  }
-
-  button#logoutBtn {
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.2);
-    margin-top: 10px;
+    width: 100%; padding: 12px; border-radius: 12px; border: none;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    color: white; font-weight: bold; cursor: pointer; transition: 0.2s;
   }
 
   input, textarea {
-    width: 100%;
-    padding: 14px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.1);
-    margin-bottom: 12px;
-    background: rgba(0, 0, 0, 0.2);
-    color: white;
-    box-sizing: border-box;
-    font-size: 0.95rem;
-    outline: none;
-    transition: 0.3s;
+    width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.3); color: white; margin-bottom: 10px; box-sizing: border-box;
   }
 
-  input:focus, textarea:focus {
-    border-color: var(--primary);
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  /* Glassmorphism */
-  .glass {
-    background: var(--glass);
+  /* BARRA INFERIOR (ESTILO INSTAGRAM/THREADS) */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; width: 100%;
+    height: 65px;
+    background: rgba(11, 11, 26, 0.95);
     backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    padding: 20px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    z-index: 100;
   }
 
-  /* Post Styles */
-  .post {
-    margin-top: 20px;
-    padding: 20px;
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.03);
-    border-left: 4px solid var(--primary);
+  .nav-item {
+    font-size: 24px;
+    color: rgba(255,255,255,0.5);
+    cursor: pointer;
     transition: 0.3s;
   }
 
-  .post:hover {
-    background: rgba(255, 255, 255, 0.05);
+  .nav-item.active { color: var(--primary); }
+
+  /* FEED & POSTS */
+  .post {
+    background: rgba(255,255,255,0.03);
+    padding: 15px; border-radius: 15px; margin-bottom: 15px;
+    position: relative;
   }
 
-  .user {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
+  .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .post-header img { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--primary); }
+  
+  .btn-delete {
+    position: absolute; top: 15px; right: 15px;
+    background: none; border: none; color: #ff4444; font-size: 18px; width: auto;
   }
 
-  .user img {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    border: 2px solid var(--secondary);
-  }
+  .actions { display: flex; gap: 20px; margin-top: 15px; font-size: 0.9rem; }
+  .action-btn { cursor: pointer; display: flex; align-items: center; gap: 5px; }
 
-  .user b {
-    font-size: 1.1rem;
-    color: #fff;
-  }
-
-  .post p {
-    font-size: 1rem;
-    color: #ccc;
-    margin: 10px 0;
-  }
-
-  .actions {
-    margin-top: 15px;
-    display: flex;
-    gap: 20px;
-    font-size: 0.9rem;
-    color: var(--secondary);
-    font-weight: 600;
-  }
-
-  .actions span {
-    cursor: pointer;
-    transition: 0.2s;
-  }
-
-  .actions span:hover {
-    color: var(--primary);
-  }
-
-  /* Custom Scrollbar */
-  ::-webkit-scrollbar { width: 8px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+  /* SEÇÕES */
+  .section { display: none; }
+  .section.active { display: block; }
 
 </style>
 </head>
 <body>
 
+<header>
+  <h1>KLYON ⚡</h1>
+</header>
+
 <div class="container">
-  <h1>Klyon ⚡</h1>
-
-  <button id="loginBtn">Entrar com Google</button>
-  <button id="logoutBtn" style="display:none;">Sair da Conta</button>
-
-  <div id="profile" class="glass" style="display:none;">
-    <h3 style="margin-top:0">Seu Perfil</h3>
-    <input id="name" placeholder="Como quer ser chamado?">
-    <textarea id="bio" placeholder="Escreva uma bio rápida..."></textarea>
-    <button id="saveBtn">Atualizar Perfil</button>
+  
+  <div id="loginSection" class="glass" style="text-align: center; margin-top: 50px;">
+    <h2>Bem-vindo ao Futuro</h2>
+    <p>Conecte-se para explorar o que está acontecendo.</p>
+    <button id="loginBtn">Entrar com Google</button>
   </div>
 
-  <div id="postBox" class="glass" style="display:none;">
-    <textarea id="postInput" rows="3" placeholder="No que está pensando agora?"></textarea>
-    <button id="postBtn">Publicar no Feed</button>
+  <div id="feedSection" class="section">
+    <div class="glass">
+      <textarea id="postInput" placeholder="No que você está pensando?"></textarea>
+      <button id="postBtn">Publicar</button>
+    </div>
+    <div id="feed"></div>
   </div>
 
-  <div id="feed"></div>
+  <div id="profileSection" class="section">
+    <div class="glass">
+      <h3>Editar Perfil</h3>
+      <input id="nameInput" placeholder="Nome de exibição">
+      <textarea id="bioInput" placeholder="Sua biografia..."></textarea>
+      <button id="saveProfileBtn">Salvar Alterações</button>
+      <button id="logoutBtn" style="background: none; border: 1px solid #333; margin-top: 20px;">Sair da Conta</button>
+    </div>
+  </div>
+
 </div>
+
+<nav class="bottom-nav" id="bottomNav" style="display: none;">
+  <div class="nav-item active" onclick="showSection('feedSection', this)">🏠</div>
+  <div class="nav-item" onclick="showSection('profileSection', this)">👤</div>
+</nav>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-import {
-  getAuth, GoogleAuthProvider, signInWithPopup,
-  signOut, onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
-import {
-  getFirestore, doc, getDoc, setDoc,
-  collection, addDoc, query, orderBy, onSnapshot, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
-
-// Configuração atualizada com sua API Key
 const firebaseConfig = {
   apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334",
   authDomain: "klyon-a97ba.firebaseapp.com",
-  projectId: "klyon-a97ba",
-  storageBucket: "klyon-a97ba.appspot.com",
-  messagingSenderId: "36712341234", // Exemplo, ajuste se necessário
-  appId: "1:36712341234:web:xyz"    // Exemplo, ajuste se necessário
+  projectId: "klyon-a97ba"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -215,104 +173,107 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-const elements = {
-  loginBtn: document.getElementById("loginBtn"),
-  logoutBtn: document.getElementById("logoutBtn"),
-  profileDiv: document.getElementById("profile"),
-  nameInput: document.getElementById("name"),
-  bioInput: document.getElementById("bio"),
-  saveBtn: document.getElementById("saveBtn"),
-  postBox: document.getElementById("postBox"),
-  postBtn: document.getElementById("postBtn"),
-  postInput: document.getElementById("postInput"),
-  feed: document.getElementById("feed")
+// NAVEGAÇÃO DE TABS
+window.showSection = (id, el) => {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
 };
 
-// AUTH LOGIC
-elements.loginBtn.onclick = () => signInWithPopup(auth, provider);
-elements.logoutBtn.onclick = () => signOut(auth);
+// LOGIN / AUTH
+document.getElementById("loginBtn").onclick = () => signInWithPopup(auth, provider);
+document.getElementById("logoutBtn").onclick = () => signOut(auth);
 
 onAuthStateChanged(auth, async (user) => {
+  const loginSec = document.getElementById("loginSection");
+  const nav = document.getElementById("bottomNav");
+  
   if (user) {
-    toggleUI(true);
+    loginSec.style.display = "none";
+    nav.style.display = "flex";
+    showSection('feedSection', document.querySelector('.nav-item'));
+    
+    // Carregar dados perfil
     const snap = await getDoc(doc(db, "users", user.uid));
     if (snap.exists()) {
-      elements.nameInput.value = snap.data().name || "";
-      elements.bioInput.value = snap.data().bio || "";
-    } else {
-      elements.nameInput.value = user.displayName || "";
+      document.getElementById("nameInput").value = snap.data().name || "";
+      document.getElementById("bioInput").value = snap.data().bio || "";
     }
   } else {
-    toggleUI(false);
+    loginSec.style.display = "block";
+    nav.style.display = "none";
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   }
 });
 
-function toggleUI(isLoggedIn) {
-  elements.loginBtn.style.display = isLoggedIn ? "none" : "block";
-  elements.logoutBtn.style.display = isLoggedIn ? "block" : "none";
-  elements.profileDiv.style.display = isLoggedIn ? "block" : "none";
-  elements.postBox.style.display = isLoggedIn ? "block" : "none";
-}
-
-// SAVE PROFILE
-elements.saveBtn.onclick = async () => {
+// SALVAR PERFIL
+document.getElementById("saveProfileBtn").onclick = async () => {
   const user = auth.currentUser;
-  if (!user) return;
-  
-  try {
-    await setDoc(doc(db, "users", user.uid), {
-      name: elements.nameInput.value,
-      bio: elements.bioInput.value
-    }, { merge: true });
-    alert("Perfil atualizado com sucesso!");
-  } catch (e) {
-    console.error("Erro ao salvar:", e);
-  }
+  await setDoc(doc(db, "users", user.uid), {
+    name: document.getElementById("nameInput").value,
+    bio: document.getElementById("bioInput").value
+  }, { merge: true });
+  alert("Perfil atualizado!");
 };
 
-// CREATE POST
-elements.postBtn.onclick = async () => {
+// POSTAR
+document.getElementById("postBtn").onclick = async () => {
   const user = auth.currentUser;
-  const text = elements.postInput.value.trim();
-  if (!user || !text) return;
+  const text = document.getElementById("postInput").value;
+  if (!text.trim()) return;
 
   await addDoc(collection(db, "posts"), {
+    uid: user.uid,
     text: text,
-    userName: elements.nameInput.value || user.displayName,
+    userName: document.getElementById("nameInput").value || user.displayName,
     userPhoto: user.photoURL,
+    likes: 0,
     createdAt: serverTimestamp()
   });
-
-  elements.postInput.value = "";
+  document.getElementById("postInput").value = "";
 };
 
-// FEED REALTIME
+// FEED EM TEMPO REAL
 const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
 onSnapshot(q, (snapshot) => {
-  elements.feed.innerHTML = "";
-  snapshot.forEach((doc) => {
-    const post = doc.data();
-    const date = post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleDateString() : "Agora";
+  const feed = document.getElementById("feed");
+  feed.innerHTML = "";
+  
+  snapshot.forEach((postDoc) => {
+    const post = postDoc.data();
+    const isOwner = auth.currentUser && auth.currentUser.uid === post.uid;
     
-    elements.feed.innerHTML += `
-      <div class="post">
-        <div class="user">
-          <img src="${post.userPhoto || 'https://via.placeholder.com/40'}" alt="Avatar">
-          <div>
-            <b>${post.userName}</b><br>
-            <small style="opacity:0.5; font-size:10px">${date}</small>
-          </div>
-        </div>
-        <p>${post.text}</p>
-        <div class="actions">
-          <span>❤️ Curtir</span>
-          <span>💬 Comentar</span>
-        </div>
+    const postEl = document.createElement("div");
+    postEl.className = "post";
+    postEl.innerHTML = `
+      <div class="post-header">
+        <img src="${post.userPhoto}">
+        <b>${post.userName}</b>
+      </div>
+      ${isOwner ? `<button class="btn-delete" onclick="deletePost('${postDoc.id}')">🗑️</button>` : ''}
+      <p>${post.text}</p>
+      <div class="actions">
+        <div class="action-btn" onclick="likePost('${postDoc.id}')">❤️ <span>${post.likes || 0}</span></div>
+        <div class="action-btn">💬 Comentar</div>
       </div>
     `;
+    feed.appendChild(postEl);
   });
 });
-</script>
 
+// FUNÇÕES DE AÇÃO (LIKES E DELETE)
+window.likePost = async (id) => {
+  const postRef = doc(db, "posts", id);
+  await updateDoc(postRef, { likes: increment(1) });
+};
+
+window.deletePost = async (id) => {
+  if (confirm("Deseja excluir este post?")) {
+    await deleteDoc(doc(db, "posts", id));
+  }
+};
+
+</script>
 </body>
 </html>
