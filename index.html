@@ -1,114 +1,317 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Klyon Social</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Klyon Social | Explore o Futuro</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --primary: #ff00cc;
+    --secondary: #3333ff;
+    --accent: #7a00ff;
+    --glass: rgba(255, 255, 255, 0.08);
+    --bg: #0f0c29;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(circle at top, #1a1a2e, #16213e, #0f0c29);
+    color: #e0e0e0;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 550px;
+    margin: auto;
+    padding: 20px;
+  }
+
+  h1 {
+    font-family: 'Orbitron', sans-serif;
+    text-align: center;
+    font-size: 2.5rem;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 10px rgba(255, 0, 204, 0.3));
+  }
+
+  /* Estilização de Botões e Inputs */
+  button {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    margin-bottom: 10px;
+  }
+
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 0, 204, 0.4);
+    filter: brightness(1.1);
+  }
+
+  button#logoutBtn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    margin-top: 10px;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+    box-sizing: border-box;
+    font-size: 0.95rem;
+    outline: none;
+    transition: 0.3s;
+  }
+
+  input:focus, textarea:focus {
+    border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  /* Glassmorphism */
+  .glass {
+    background: var(--glass);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 25px;
+  }
+
+  /* Post Styles */
+  .post {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 4px solid var(--primary);
+    transition: 0.3s;
+  }
+
+  .post:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .user img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 2px solid var(--secondary);
+  }
+
+  .user b {
+    font-size: 1.1rem;
+    color: #fff;
+  }
+
+  .post p {
+    font-size: 1rem;
+    color: #ccc;
+    margin: 10px 0;
+  }
+
+  .actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 20px;
+    font-size: 0.9rem;
+    color: var(--secondary);
+    font-weight: 600;
+  }
+
+  .actions span {
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .actions span:hover {
+    color: var(--primary);
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+</style>
 </head>
 <body>
 
-<h1>Klyon 🚀</h1>
+<div class="container">
+  <h1>Klyon ⚡</h1>
 
-<button id="loginBtn">Entrar com Google</button>
-<button id="logoutBtn" style="display:none;">Sair</button>
+  <button id="loginBtn">Entrar com Google</button>
+  <button id="logoutBtn" style="display:none;">Sair da Conta</button>
 
-<div id="profile" style="display:none;">
-  <h2>Perfil</h2>
-  <input id="name" placeholder="Seu nome"><br><br>
-  <textarea id="bio" placeholder="Sua bio"></textarea><br><br>
-  <button id="saveBtn">Salvar</button>
+  <div id="profile" class="glass" style="display:none;">
+    <h3 style="margin-top:0">Seu Perfil</h3>
+    <input id="name" placeholder="Como quer ser chamado?">
+    <textarea id="bio" placeholder="Escreva uma bio rápida..."></textarea>
+    <button id="saveBtn">Atualizar Perfil</button>
+  </div>
+
+  <div id="postBox" class="glass" style="display:none;">
+    <textarea id="postInput" rows="3" placeholder="No que está pensando agora?"></textarea>
+    <button id="postBtn">Publicar no Feed</button>
+  </div>
+
+  <div id="feed"></div>
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } 
-  from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-  import { getFirestore, doc, getDoc, setDoc } 
-  from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import {
+  getAuth, GoogleAuthProvider, signInWithPopup,
+  signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334",
-    authDomain: "klyon-a97ba.firebaseapp.com",
-    projectId: "klyon-a97ba",
-  };
+import {
+  getFirestore, doc, getDoc, setDoc,
+  collection, addDoc, query, orderBy, onSnapshot, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const provider = new GoogleAuthProvider();
+// Configuração atualizada com sua API Key
+const firebaseConfig = {
+  apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334",
+  authDomain: "klyon-a97ba.firebaseapp.com",
+  projectId: "klyon-a97ba",
+  storageBucket: "klyon-a97ba.appspot.com",
+  messagingSenderId: "36712341234", // Exemplo, ajuste se necessário
+  appId: "1:36712341234:web:xyz"    // Exemplo, ajuste se necessário
+};
 
-  const loginBtn = document.getElementById("loginBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const profileDiv = document.getElementById("profile");
-  const nameInput = document.getElementById("name");
-  const bioInput = document.getElementById("bio");
-  const saveBtn = document.getElementById("saveBtn");
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
 
-  // LOGIN
-  loginBtn.onclick = async () => {
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error("Erro no login:", error);
-      alert("Erro ao entrar.");
-    }
-  };
+const elements = {
+  loginBtn: document.getElementById("loginBtn"),
+  logoutBtn: document.getElementById("logoutBtn"),
+  profileDiv: document.getElementById("profile"),
+  nameInput: document.getElementById("name"),
+  bioInput: document.getElementById("bio"),
+  saveBtn: document.getElementById("saveBtn"),
+  postBox: document.getElementById("postBox"),
+  postBtn: document.getElementById("postBtn"),
+  postInput: document.getElementById("postInput"),
+  feed: document.getElementById("feed")
+};
 
-  // LOGOUT
-  logoutBtn.onclick = async () => {
-    await signOut(auth);
-  };
+// AUTH LOGIC
+elements.loginBtn.onclick = () => signInWithPopup(auth, provider);
+elements.logoutBtn.onclick = () => signOut(auth);
 
-  // OBSERVA LOGIN
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      loginBtn.style.display = "none";
-      logoutBtn.style.display = "inline";
-      profileDiv.style.display = "block";
-
-      try {
-        const ref = doc(db, "users", user.uid);
-        const snap = await getDoc(ref);
-
-        if (snap.exists()) {
-          const data = snap.data();
-          nameInput.value = data.name || "";
-          bioInput.value = data.bio || "";
-        } else {
-          nameInput.value = user.displayName || "";
-        }
-      } catch (error) {
-        console.error("Erro ao carregar perfil:", error);
-      }
-
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    toggleUI(true);
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (snap.exists()) {
+      elements.nameInput.value = snap.data().name || "";
+      elements.bioInput.value = snap.data().bio || "";
     } else {
-      loginBtn.style.display = "inline";
-      logoutBtn.style.display = "none";
-      profileDiv.style.display = "none";
+      elements.nameInput.value = user.displayName || "";
     }
+  } else {
+    toggleUI(false);
+  }
+});
+
+function toggleUI(isLoggedIn) {
+  elements.loginBtn.style.display = isLoggedIn ? "none" : "block";
+  elements.logoutBtn.style.display = isLoggedIn ? "block" : "none";
+  elements.profileDiv.style.display = isLoggedIn ? "block" : "none";
+  elements.postBox.style.display = isLoggedIn ? "block" : "none";
+}
+
+// SAVE PROFILE
+elements.saveBtn.onclick = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+  
+  try {
+    await setDoc(doc(db, "users", user.uid), {
+      name: elements.nameInput.value,
+      bio: elements.bioInput.value
+    }, { merge: true });
+    alert("Perfil atualizado com sucesso!");
+  } catch (e) {
+    console.error("Erro ao salvar:", e);
+  }
+};
+
+// CREATE POST
+elements.postBtn.onclick = async () => {
+  const user = auth.currentUser;
+  const text = elements.postInput.value.trim();
+  if (!user || !text) return;
+
+  await addDoc(collection(db, "posts"), {
+    text: text,
+    userName: elements.nameInput.value || user.displayName,
+    userPhoto: user.photoURL,
+    createdAt: serverTimestamp()
   });
 
-  // SALVAR PERFIL
-  saveBtn.onclick = async () => {
-    const user = auth.currentUser;
+  elements.postInput.value = "";
+};
 
-    if (!user) {
-      alert("Você precisa estar logado.");
-      return;
-    }
-
-    try {
-      await setDoc(doc(db, "users", user.uid), {
-        name: nameInput.value.trim(),
-        bio: bioInput.value.trim(),
-        updatedAt: new Date()
-      }, { merge: true });
-
-      alert("Perfil salvo!");
-    } catch (error) {
-      console.error("Erro ao salvar:", error);
-      alert("Erro ao salvar.");
-    }
-  };
+// FEED REALTIME
+const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+onSnapshot(q, (snapshot) => {
+  elements.feed.innerHTML = "";
+  snapshot.forEach((doc) => {
+    const post = doc.data();
+    const date = post.createdAt ? new Date(post.createdAt.seconds * 1000).toLocaleDateString() : "Agora";
+    
+    elements.feed.innerHTML += `
+      <div class="post">
+        <div class="user">
+          <img src="${post.userPhoto || 'https://via.placeholder.com/40'}" alt="Avatar">
+          <div>
+            <b>${post.userName}</b><br>
+            <small style="opacity:0.5; font-size:10px">${date}</small>
+          </div>
+        </div>
+        <p>${post.text}</p>
+        <div class="actions">
+          <span>❤️ Curtir</span>
+          <span>💬 Comentar</span>
+        </div>
+      </div>
+    `;
+  });
+});
 </script>
 
 </body>
