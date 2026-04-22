@@ -1,10 +1,115 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-  <title>Meu site</title>
+  <meta charset="UTF-8">
+  <title>Klyon Social</title>
 </head>
 <body>
-  <h1>Meu primeiro site 🚀</h1>
-  <p>Criei usando GitHub Pages!</p>
+
+<h1>Klyon 🚀</h1>
+
+<button id="loginBtn">Entrar com Google</button>
+<button id="logoutBtn" style="display:none;">Sair</button>
+
+<div id="profile" style="display:none;">
+  <h2>Perfil</h2>
+  <input id="name" placeholder="Seu nome"><br><br>
+  <textarea id="bio" placeholder="Sua bio"></textarea><br><br>
+  <button id="saveBtn">Salvar</button>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } 
+  from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc } 
+  from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334",
+    authDomain: "klyon-a97ba.firebaseapp.com",
+    projectId: "klyon-a97ba",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+
+  const loginBtn = document.getElementById("loginBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const profileDiv = document.getElementById("profile");
+  const nameInput = document.getElementById("name");
+  const bioInput = document.getElementById("bio");
+  const saveBtn = document.getElementById("saveBtn");
+
+  // LOGIN
+  loginBtn.onclick = async () => {
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error("Erro no login:", error);
+      alert("Erro ao entrar.");
+    }
+  };
+
+  // LOGOUT
+  logoutBtn.onclick = async () => {
+    await signOut(auth);
+  };
+
+  // OBSERVA LOGIN
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      loginBtn.style.display = "none";
+      logoutBtn.style.display = "inline";
+      profileDiv.style.display = "block";
+
+      try {
+        const ref = doc(db, "users", user.uid);
+        const snap = await getDoc(ref);
+
+        if (snap.exists()) {
+          const data = snap.data();
+          nameInput.value = data.name || "";
+          bioInput.value = data.bio || "";
+        } else {
+          nameInput.value = user.displayName || "";
+        }
+      } catch (error) {
+        console.error("Erro ao carregar perfil:", error);
+      }
+
+    } else {
+      loginBtn.style.display = "inline";
+      logoutBtn.style.display = "none";
+      profileDiv.style.display = "none";
+    }
+  });
+
+  // SALVAR PERFIL
+  saveBtn.onclick = async () => {
+    const user = auth.currentUser;
+
+    if (!user) {
+      alert("Você precisa estar logado.");
+      return;
+    }
+
+    try {
+      await setDoc(doc(db, "users", user.uid), {
+        name: nameInput.value.trim(),
+        bio: bioInput.value.trim(),
+        updatedAt: new Date()
+      }, { merge: true });
+
+      alert("Perfil salvo!");
+    } catch (error) {
+      console.error("Erro ao salvar:", error);
+      alert("Erro ao salvar.");
+    }
+  };
+</script>
+
 </body>
 </html>
