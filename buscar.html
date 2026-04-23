@@ -5,43 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KLYON | Buscar</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
     <style>
-        /* Reutilize os estilos do index ou use um arquivo CSS */
-        body { background: #030307; color: white; padding: 20px; font-family: sans-serif; }
-        .search-box { width: 100%; padding: 15px; border-radius: 12px; background: #111; border: 1px solid #333; color: white; }
-        .user-card { display: flex; align-items: center; gap: 15px; padding: 15px; background: #111; border-radius: 15px; margin-top: 10px; cursor: pointer; }
+        :root { --primary: #00f2ff; --bg: #030307; --glass: rgba(255,255,255,0.05); }
+        body { margin: 0; background: var(--bg); color: #fff; font-family: sans-serif; padding: 20px; }
+        .search-box { width: 100%; padding: 15px; border-radius: 15px; background: var(--glass); border: 1px solid #333; color: #fff; margin-top: 20px; }
+        .user-card { display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--glass); border-radius: 20px; margin-top: 10px; cursor: pointer; }
+        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; height: 65px; background: rgba(15,23,42,0.9); border-radius: 25px; display: flex; align-items: center; justify-content: space-around; }
+        .nav-link img { width: 24px; filter: invert(1); opacity: 0.4; }
+        .nav-link.active img { opacity: 1; }
     </style>
 </head>
 <body>
 
-    <input type="text" id="search" class="search-box" placeholder="Buscar handle ou nome...">
+    <input type="text" id="searchIn" class="search-box" placeholder="Buscar @handle...">
     <div id="results"></div>
 
-    <nav class="bottom-nav"> </nav>
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1946/1946488.png"></a>
+        <a href="buscar.html" class="nav-link active"><img src="https://cdn-icons-png.flaticon.com/512/149/149852.png"></a>
+        <a href="perfil.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png"></a>
+    </nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
-    const firebaseConfig = { /* SEU CONFIG */ };
+    const firebaseConfig = { apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", authDomain: "klyon-a97ba.firebaseapp.com", projectId: "klyon-a97ba", storageBucket: "klyon-a97ba.appspot.com" };
     const db = getFirestore(initializeApp(firebaseConfig));
 
-    document.getElementById('search').oninput = async (e) => {
-        const val = e.target.value.toLowerCase();
-        if(val.length < 2) return;
-
-        const q = query(collection(db, "users"), where("handle", ">=", val), where("handle", "<=", val + "\uf8ff"));
-        const snap = await getDocs(q);
-        const res = document.getElementById('results');
-        res.innerHTML = "";
-        snap.forEach(d => {
+    document.getElementById('searchIn').oninput = async (e) => {
+        const v = e.target.value.toLowerCase();
+        if(v.length < 2) return;
+        const q = query(collection(db, "users"), where("handle", ">=", v), where("handle", "<=", v + "\uf8ff"), limit(10));
+        const s = await getDocs(q);
+        const r = document.getElementById('results'); r.innerHTML = "";
+        s.forEach(d => {
             const u = d.data();
-            res.innerHTML += `
-                <div class="user-card" onclick="location.href='perfil.html?uid=${d.id}'">
-                    <img src="${u.photo}" style="width:50px; height:50px; border-radius:15px;">
-                    <div><b>${u.name}</b><br><small>@${u.handle}</small></div>
-                </div>`;
+            r.innerHTML += `<div class="user-card" onclick="location.href='perfil.html?uid=${d.id}'"><img src="${u.photo}" style="width:40px; border-radius:10px;"><b>${u.name}</b></div>`;
         });
     };
 </script>

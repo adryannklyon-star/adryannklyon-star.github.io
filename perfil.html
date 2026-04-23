@@ -4,74 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KLYON | Perfil</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css"> <style>
+        :root { --primary: #00f2ff; --bg: #030307; --glass: rgba(255,255,255,0.05); }
+        body { margin: 0; background: var(--bg); color: #fff; font-family: sans-serif; text-align: center; padding-bottom: 100px;}
+        .p-avatar { width: 100px; height: 100px; border-radius: 30px; border: 2px solid var(--primary); margin-top: 40px; }
+        .post { background: var(--glass); margin: 15px; padding: 15px; border-radius: 20px; text-align: left; }
+        .btn-elite { background: var(--primary); border: none; padding: 12px 30px; border-radius: 12px; font-weight: 800; margin: 20px 0; }
+        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; height: 65px; background: rgba(15,23,42,0.9); border-radius: 25px; display: flex; align-items: center; justify-content: space-around; }
+        .nav-link img { width: 24px; filter: invert(1); opacity: 0.4; }
+        .nav-link.active img { opacity: 1; }
+    </style>
 </head>
 <body>
 
-    <div id="profileHeader" style="text-align: center; padding: 40px 20px;">
-        <img id="uPhoto" src="" style="width:100px; height:100px; border-radius:30px;">
-        <h2 id="uName"></h2>
-        <p id="uHandle" style="color:cyan;"></p>
-        <button id="followBtn" class="btn-elite" style="display:none;"></button>
-    </div>
+    <img id="uPhoto" class="p-avatar">
+    <h2 id="uName"></h2>
+    <p id="uHandle" style="color:var(--primary)"></p>
 
-    <div id="userPosts"></div>
+    <button id="followBtn" class="btn-elite" style="display:none;">CONECTAR</button>
 
-    <nav class="bottom-nav"> </nav>
+    <h3 style="text-align: left; margin: 30px 20px 10px;">Publicações</h3>
+    <div id="uPosts"></div>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1946/1946488.png"></a>
+        <a href="buscar.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/149/149852.png"></a>
+        <a href="perfil.html" class="nav-link active"><img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png"></a>
+    </nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, collection, query, where, onSnapshot, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
-    const firebaseConfig = { /* SEU CONFIG */ };
+    const firebaseConfig = { apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", authDomain: "klyon-a97ba.firebaseapp.com", projectId: "klyon-a97ba", storageBucket: "klyon-a97ba.appspot.com" };
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Pega o ID da URL (?uid=xxxxx)
     const urlParams = new URLSearchParams(window.location.search);
     let targetUid = urlParams.get('uid');
 
     onAuthStateChanged(auth, async (me) => {
-        if (!me) { location.href = 'index.html'; return; }
-        
-        // Se não tem UID na URL, mostra o MEU perfil
-        if (!targetUid) targetUid = me.uid;
+        if(!me) { location.href="index.html"; return; }
+        if(!targetUid) targetUid = me.uid;
 
         const snap = await getDoc(doc(db, "users", targetUid));
-        const data = snap.data();
+        const u = snap.data();
+        document.getElementById('uPhoto').src = u.photo;
+        document.getElementById('uName').innerText = u.name;
+        document.getElementById('uHandle').innerText = "@"+u.handle;
 
-        document.getElementById('uPhoto').src = data.photo;
-        document.getElementById('uName').innerText = data.name;
-        document.getElementById('uHandle').innerText = "@" + data.handle;
-
-        // Lógica de Seguir
+        // BOTÃO SEGUIR
         if(targetUid !== me.uid) {
             const btn = document.getElementById('followBtn');
-            btn.style.display = 'block';
+            btn.style.display = "inline-block";
             const meSnap = await getDoc(doc(db, "users", me.uid));
-            const imFollowing = meSnap.data().following?.includes(targetUid);
-            btn.innerText = imFollowing ? "CONECTADO" : "CONECTAR";
+            const following = meSnap.data().following || [];
+            btn.innerText = following.includes(targetUid) ? "CONECTADO" : "CONECTAR";
             
             btn.onclick = async () => {
                 const myRef = doc(db, "users", me.uid);
-                if(imFollowing) {
+                const targetRef = doc(db, "users", targetUid);
+                if(following.includes(targetUid)) {
                     await updateDoc(myRef, { following: arrayRemove(targetUid) });
+                    await updateDoc(targetRef, { followers: arrayRemove(me.uid) });
                 } else {
                     await updateDoc(myRef, { following: arrayUnion(targetUid) });
+                    await updateDoc(targetRef, { followers: arrayUnion(me.uid) });
                 }
                 location.reload();
             };
         }
 
-        // Carrega Posts daquele usuário
-        const q = query(collection(db, "posts"), where("uid", "==", targetUid));
-        onSnapshot(q, (snap) => {
-            const cont = document.getElementById('userPosts');
-            cont.innerHTML = "";
-            snap.forEach(d => {
-                cont.innerHTML += `<div class="post"><p>${d.data().content}</p></div>`;
+        // CARREGA POSTS DESTE USUÁRIO
+        onSnapshot(query(collection(db, "posts"), where("uid", "==", targetUid)), s => {
+            const c = document.getElementById('uPosts'); c.innerHTML = "";
+            s.forEach(d => {
+                c.innerHTML += `<div class="post"><p>${d.data().content}</p></div>`;
             });
         });
     });
