@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KLYON | Perfil</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="profileHeader" style="text-align: center; padding: 40px 20px;">
+        <img id="uPhoto" src="" style="width:100px; height:100px; border-radius:30px;">
+        <h2 id="uName"></h2>
+        <p id="uHandle" style="color:cyan;"></p>
+        <button id="followBtn" class="btn-elite" style="display:none;"></button>
+    </div>
+
+    <div id="userPosts"></div>
+
+    <nav class="bottom-nav"> </nav>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, query, where, onSnapshot, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+    const firebaseConfig = { /* SEU CONFIG */ };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Pega o ID da URL (?uid=xxxxx)
+    const urlParams = new URLSearchParams(window.location.search);
+    let targetUid = urlParams.get('uid');
+
+    onAuthStateChanged(auth, async (me) => {
+        if (!me) { location.href = 'index.html'; return; }
+        
+        // Se não tem UID na URL, mostra o MEU perfil
+        if (!targetUid) targetUid = me.uid;
+
+        const snap = await getDoc(doc(db, "users", targetUid));
+        const data = snap.data();
+
+        document.getElementById('uPhoto').src = data.photo;
+        document.getElementById('uName').innerText = data.name;
+        document.getElementById('uHandle').innerText = "@" + data.handle;
+
+        // Lógica de Seguir
+        if(targetUid !== me.uid) {
+            const btn = document.getElementById('followBtn');
+            btn.style.display = 'block';
+            const meSnap = await getDoc(doc(db, "users", me.uid));
+            const imFollowing = meSnap.data().following?.includes(targetUid);
+            btn.innerText = imFollowing ? "CONECTADO" : "CONECTAR";
+            
+            btn.onclick = async () => {
+                const myRef = doc(db, "users", me.uid);
+                if(imFollowing) {
+                    await updateDoc(myRef, { following: arrayRemove(targetUid) });
+                } else {
+                    await updateDoc(myRef, { following: arrayUnion(targetUid) });
+                }
+                location.reload();
+            };
+        }
+
+        // Carrega Posts daquele usuário
+        const q = query(collection(db, "posts"), where("uid", "==", targetUid));
+        onSnapshot(q, (snap) => {
+            const cont = document.getElementById('userPosts');
+            cont.innerHTML = "";
+            snap.forEach(d => {
+                cont.innerHTML += `<div class="post"><p>${d.data().content}</p></div>`;
+            });
+        });
+    });
+</script>
+</body>
+</html>
