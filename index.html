@@ -1,156 +1,212 @@
+Entendido! Você quer o **Klyon Elite** com a estética **Cyberpunk/Futurista** no máximo. Vou priorizar o efeito "Glassmorphism" (vidro fosco) em todos os elementos da UI e transformar a curtida em um ícone de **Fogo em Neon** vibrante.
+
+Aqui estão as atualizações focadas no visual extraordinário:
+
+1.  **Estética de Vidro Total (Glassmorphism):** O header, o menu inferior, o modal de postagem, os cards de usuário e os próprios posts agora têm um fundo semi-transparente com desfoque de fundo (backdrop-filter), bordas finas e brilhantes, simulando placas de vidro flutuantes.
+2.  **Ícone de Curtida "Fogo Neon":** Substituí o coração padrão (❤️) por um ícone de fogo (🔥). Quando o post é curtido, esse ícone ganha um efeito de brilho neon intenso (drop-shadow) nas cores secundárias (roxo/rosa), fazendo-o "queimar" na tela.
+3.  **Cores Neon:** A paleta de cores foi ajustada para realçar o contraste entre o fundo escuro e os elementos neon (ciano e roxo/rosa).
+
+Aqui está o código completo e refinado:
+
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Klyon Pro | Ultimate Social</title>
+    <title>Klyon Social Elite | Neon Glass</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #00f2ff;
-            --secondary: #7000ff;
-            --accent: #ff007a;
-            --bg: #050510;
-            --card-bg: rgba(20, 20, 35, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-main: #e0e0e0;
+            --primary: #00f2ff; /* Ciano Neon */
+            --secondary: #ff00e5; /* Rosa/Roxo Neon */
+            --bg: #03030b;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-blur: blur(15px);
+            --text-main: #ffffff;
+            --text-muted: #8b8b9a;
         }
 
-        * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-
-        body {
-            margin: 0;
-            padding: 70px 0 100px 0;
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        body { 
+            margin: 0; padding: 70px 0 90px 0; 
+            background: var(--bg); color: var(--text-main); 
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: radial-gradient(circle at top right, #1a0b2e, #050510);
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(0, 242, 255, 0.15), transparent 30%),
+                radial-gradient(circle at 90% 90%, rgba(255, 0, 229, 0.15), transparent 30%);
             background-attachment: fixed;
-            color: var(--text-main);
             overflow-x: hidden;
         }
 
+        /* EFEITO DE VIDRO PADRÃO */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+        }
+
+        /* HEADER */
         header {
-            position: fixed;
-            top: 0; width: 100%; height: 60px;
-            background: rgba(5, 5, 16, 0.8);
-            backdrop-filter: blur(20px);
+            position: fixed; top: 0; width: 100%; height: 60px;
             display: flex; align-items: center; justify-content: center;
-            border-bottom: 1px solid var(--glass-border);
             z-index: 1000;
-        }
-
-        header h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.2rem;
-            letter-spacing: 4px;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .container { max-width: 600px; margin: auto; padding: 0 15px; }
-
-        /* POST ESTILO TWITTER */
-        .post {
-            background: transparent;
             border-bottom: 1px solid var(--glass-border);
-            padding: 15px 0;
+        }
+        header h1 { 
+            font-family: 'Orbitron'; font-size: 1.2rem; letter-spacing: 4px; 
+            color: var(--primary); margin: 0; 
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        .container { max-width: 550px; margin: auto; padding: 0 15px; }
+
+        /* LOGIN SCREEN */
+        #loginSection { 
+            display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; min-height: 80vh; text-align: center; 
+        }
+        .login-card { 
+            padding: 50px; border-radius: 30px; 
+            width: 100%; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .google-btn { 
+            background: transparent; color: var(--text-main); 
+            border: 2px solid var(--glass-border); padding: 15px 25px; 
+            border-radius: 50px; font-weight: 700; cursor: pointer; display: flex; 
+            align-items: center; justify-content: center; gap: 12px; width: 100%; font-size: 1rem;
+        }
+        .google-btn:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+        }
+
+        /* POSTS */
+        .post { 
+            border-bottom: 1px solid var(--glass-border); 
+            padding: 20px 0; 
             animation: fadeIn 0.4s ease;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .post-layout { display: flex; gap: 12px; }
-        .post-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 1px solid var(--glass-border); }
-        .post-body { flex: 1; }
-        .post-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
-        .post-header b { color: #fff; font-size: 1rem; }
-        .post-content { font-size: 1rem; line-height: 1.5; color: #d1d1d1; margin-bottom: 12px; }
-
-        /* FLOATING ACTION BUTTON (FAB) */
-        #fab {
-            position: fixed;
-            bottom: 100px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex; align-items: center; justify-content: center;
-            font-size: 24px;
-            color: white;
-            box-shadow: 0 8px 25px rgba(0, 242, 255, 0.4);
-            cursor: pointer;
-            z-index: 999;
-            border: none;
-        }
-
-        /* MODAL DE POSTAGEM */
-        #postModal {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 5, 16, 0.95);
-            z-index: 2000;
-            display: none;
-            padding: 20px;
-        }
-
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        #postInput {
-            width: 100%;
-            height: 200px;
             background: transparent;
-            border: none;
-            color: white;
-            font-size: 1.2rem;
-            resize: none;
-            outline: none;
         }
-
-        /* ACTIONS */
-        .post-actions { display: flex; gap: 30px; margin-top: 10px; }
-        .action-btn { background: none; border: none; color: #71767b; display: flex; align-items: center; gap: 5px; cursor: pointer; }
-        .action-btn:hover { color: var(--primary); }
-
-        /* NAV */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            height: 65px;
-            background: rgba(5, 5, 16, 0.95);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            border-top: 1px solid var(--glass-border);
-            z-index: 1000;
+        .post:hover {
+            background: rgba(255, 255, 255, 0.01);
         }
-        .nav-item { font-size: 22px; color: #555; cursor: pointer; }
-        .nav-item.active { color: white; border-bottom: 2px solid var(--primary); }
-
-        .section { display: none; }
-        .section.active { display: block; }
+        .post-layout { display: flex; gap: 14px; }
+        .post-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid transparent; }
+        .post-avatar:hover { border-color: var(--secondary); }
         
-        .comment-section { background: rgba(255,255,255,0.03); border-radius: 15px; padding: 10px; margin-top: 10px; }
-        .comment-input-area { display: flex; gap: 10px; margin-top: 10px; }
-        .comment-input-area input { flex: 1; padding: 8px; border-radius: 20px; background: #000; border: 1px solid #333; color: white; }
+        .post-content { flex: 1; }
+        .post-user { font-weight: 700; color: #fff; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center;}
+        .post-user span.delete-btn { color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 0 5px;}
+        .post-user span.delete-btn:hover { color: #ff4444; }
+
+        .post-text { color: #e1e1e6; line-height: 1.6; margin-bottom: 15px; word-break: break-word; font-size: 0.95rem;}
+        
+        .post-actions { display: flex; gap: 30px; color: var(--text-muted); }
+        .action { cursor: pointer; display: flex; align-items: center; gap: 7px; font-size: 0.9rem; position: relative;}
+        .action:hover { color: var(--text-main); }
+        
+        /* FOGO NEON (CURTIDA) */
+        .action.like-active { 
+            color: var(--secondary); 
+            text-shadow: 0 0 10px var(--secondary), 0 0 20px var(--secondary);
+        }
+        .action.like-active i {
+            filter: drop-shadow(0 0 5px var(--secondary));
+        }
+
+        /* BUSCA E USUÁRIOS */
+        .user-card { 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 15px; border-radius: 18px; margin-bottom: 12px; 
+        }
+        .user-info { display: flex; align-items: center; gap: 14px; }
+        .user-info img { border: 2px solid var(--glass-border); }
+        
+        .friend-btn { 
+            padding: 8px 18px; border-radius: 20px; border: 1px solid var(--primary); 
+            background: transparent; color: var(--primary); font-weight: 600; cursor: pointer; font-size: 0.85rem;
+        }
+        .friend-btn:hover {
+            background: rgba(0, 242, 255, 0.1);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+        }
+        .friend-btn.following { background: var(--text-main); color: #000; border-color: var(--text-main); }
+
+        /* MENU INFERIOR */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; height: 75px;
+            display: flex; justify-content: space-around; align-items: center;
+            z-index: 1000;
+            border-top: 1px solid var(--glass-border);
+        }
+        .nav-item { 
+            display: flex; flex-direction: column; align-items: center; 
+            gap: 6px; color: var(--text-muted); font-size: 0.75rem; text-decoration: none; cursor: pointer;
+            padding: 10px;
+        }
+        .nav-item i { font-size: 1.5rem; }
+        .nav-item.active { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+
+        /* FAB POST */
+        #fab {
+            position: fixed; bottom: 95px; right: 25px;
+            width: 56px; height: 56px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none;
+            font-size: 28px; box-shadow: 0 5px 20px rgba(112, 0, 255, 0.4);
+            z-index: 999; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        #fab:hover { transform: scale(1.1) rotate(90deg); }
+
+        /* MODAL */
+        #postModal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2000; display: none; padding: 20px;
+        }
+        .modal-content {
+            width: 100%; max-width: 500px; margin: 50px auto;
+            padding: 30px; border-radius: 25px;
+        }
+
+        /* INPUTS */
+        .klyon-input {
+            width:100%; padding:15px; border-radius:15px; 
+            background: rgba(0,0,0,0.2); border:1px solid var(--glass-border); 
+            color:white; margin-bottom:20px; outline: none;
+        }
+        .klyon-input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);}
+
+        /* PERFIL */
+        .profile-card {
+            text-align: center; padding: 40px; border-radius: 25px;
+        }
+        .profile-pic {
+            width: 110px; height: 110px; border-radius: 50%; 
+            border: 3px solid var(--primary);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<header><h1>KLYON PRO</h1></header>
-
-<div id="postModal">
-    <div class="modal-header">
-        <button onclick="toggleModal()" style="background:none; border:none; color:white; font-size:1.5rem;">✕</button>
-        <button id="postBtn" style="border-radius: 20px; padding: 8px 20px;">Publicar</button>
-    </div>
-    <textarea id="postInput" placeholder="O que está acontecendo?"></textarea>
-</div>
+<header class="glass-panel"><h1>KLYON ELITE</h1></header>
 
 <div class="container">
-    <div id="loginSection" style="text-align:center; padding-top:100px;">
-        <h2 style="font-family:'Orbitron'">KLYON</h2>
-        <button id="loginBtn" style="width:100%; margin-top:20px;">Entrar com Google</button>
+    <div id="loginSection">
+        <div class="login-card glass-panel">
+            <h2 style="font-family:'Orbitron'; margin-bottom:10px; color: #fff;">KLYON</h2>
+            <p style="color: var(--text-muted); margin-bottom:40px;">Conecte-se ao extraordinário no multiverso.</p>
+            <button class="google-btn" id="loginBtn">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/layout/google.svg" width="18">
+                Acessar com Google
+            </button>
+        </div>
     </div>
 
     <div id="feedSection" class="section">
@@ -158,32 +214,47 @@
     </div>
 
     <div id="searchSection" class="section">
-        <input type="text" id="searchInput" placeholder="Buscar usuários..." style="margin-bottom:20px">
+        <input type="text" id="searchInput" placeholder="Pesquisar usuários no Klyon..." class="klyon-input">
         <div id="userList"></div>
     </div>
 
     <div id="profileSection" class="section">
-        <div style="text-align: center; background: var(--card-bg); padding: 20px; border-radius: 20px;">
-            <img id="displayPic" src="" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--primary);">
-            <h2 id="displayName">Usuário</h2>
-            <p id="displayBio" style="opacity:0.6">Minha bio no Klyon</p>
-            <button id="logoutBtn" style="background:none; color:red; border:1px solid red; margin-top:20px">Sair</button>
+        <div class="profile-card glass-panel">
+            <img id="displayPic" src="" class="profile-pic">
+            <h2 id="displayName" style="margin: 20px 0 5px; color: #fff;">Nome</h2>
+            <div style="display: flex; justify-content: center; gap: 30px; margin: 20px 0; border-y: 1px solid var(--glass-border); padding: 15px 0;">
+                <div><b id="friendCount" style="font-size: 1.2rem; color: var(--primary);">0</b> <br><span style="color: var(--text-muted); font-size: 0.8rem;">Amigos</span></div>
+            </div>
+            <p id="displayBio" style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">Membro Elite do Klyon Social</p>
+            <button id="logoutBtn" style="background:transparent; border:1px solid #ff4444; color:#ff4444; padding:10px 25px; border-radius:20px; margin-top:30px; cursor:pointer; font-weight: 600;">Sair da Conta</button>
         </div>
     </div>
 </div>
 
-<button id="fab" onclick="toggleModal()" style="display: none;">+</button>
+<div id="postModal" class="glass-panel" style="background: rgba(0,0,0,0.5);">
+    <div class="modal-content glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:25px;">
+            <button onclick="toggleModal()" style="background:none; border:none; color:var(--text-muted); font-size:1rem; cursor: pointer;">Cancelar</button>
+            <h3 style="margin: 0; font-family: 'Orbitron'; font-size: 1rem; color: #fff;">Nova Transmissão</h3>
+            <button id="postBtn" style="background: var(--primary); color:#000; border:none; padding:10px 25px; border-radius:25px; font-weight:800; cursor: pointer; box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);">Postar</button>
+        </div>
+        <textarea id="postInput" placeholder="O que você está pensando, Elite?" 
+              style="width:100%; height:180px; background:rgba(0,0,0,0.3); border:1px solid var(--glass-border); border-radius: 15px; color:white; font-size:1.1rem; outline:none; resize:none; padding: 15px;"></textarea>
+    </div>
+</div>
 
-<nav class="bottom-nav" id="bottomNav" style="display: none;">
-    <div class="nav-item active" onclick="showSection('feedSection', this)">🏠</div>
-    <div class="nav-item" onclick="showSection('searchSection', this)">🔍</div>
-    <div class="nav-item" onclick="showSection('profileSection', this)">👤</div>
+<button id="fab" onclick="toggleModal()" style="display:none;">+</button>
+
+<nav class="bottom-nav glass-panel" id="bottomNav" style="display:none;">
+    <div class="nav-item active" onclick="showSection('feedSection', this)"><i>🏠</i><span>Home</span></div>
+    <div class="nav-item" onclick="showSection('searchSection', this)"><i>🔍</i><span>Explorar</span></div>
+    <div class="nav-item" onclick="showSection('profileSection', this)"><i>👤</i><span>Perfil</span></div>
 </nav>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, updateDoc, increment, getDocs } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334",
@@ -196,10 +267,11 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// FUNÇÕES DE INTERFACE
+// ESTADOS E NAVEGAÇÃO
 window.toggleModal = () => {
     const m = document.getElementById('postModal');
     m.style.display = m.style.display === 'block' ? 'none' : 'block';
+    if(m.style.display === 'block') document.getElementById('postInput').focus();
 };
 
 window.showSection = (id, el) => {
@@ -207,77 +279,159 @@ window.showSection = (id, el) => {
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     el.classList.add('active');
+    if(id === 'searchSection') loadUsers();
 };
 
-// LOGIN / AUTH
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         document.getElementById("loginSection").style.display = "none";
         document.getElementById("bottomNav").style.display = "flex";
         document.getElementById("fab").style.display = "flex";
         showSection('feedSection', document.querySelector('.nav-item'));
-        loadMyProfile(user);
+        await saveUserToDB(user);
         loadFeed();
+        updateFriendCount();
     } else {
-        document.getElementById("loginSection").style.display = "block";
+        document.getElementById("loginSection").style.display = "flex";
         document.getElementById("bottomNav").style.display = "none";
         document.getElementById("fab").style.display = "none";
     }
 });
 
-async function loadMyProfile(user) {
-    const snap = await getDoc(doc(db, "users", user.uid));
-    const data = snap.exists() ? snap.data() : { name: user.displayName, photo: user.photoURL };
-    document.getElementById("displayName").innerText = data.name;
-    document.getElementById("displayPic").src = data.photo;
+// FUNÇÕES DE USUÁRIO
+async function saveUserToDB(user) {
+    const userRef = doc(db, "users", user.uid);
+    const snap = await getDoc(userRef);
+    const userData = {
+        name: user.displayName,
+        photo: user.photoURL,
+        uid: user.uid,
+        friends: snap.exists() ? snap.data().friends || 0 : 0
+    };
+    await setDoc(userRef, userData, { merge: true });
+    document.getElementById("displayName").innerText = userData.name;
+    document.getElementById("displayPic").src = userData.photo;
 }
 
-// POSTAR
+// BUSCA E AMIGAR
+async function loadUsers() {
+    const querySnapshot = await getDocs(collection(db, "users"));
+    const list = document.getElementById("userList");
+    const myUid = auth.currentUser.uid;
+    list.innerHTML = "";
+
+    querySnapshot.forEach(async (userDoc) => {
+        if (userDoc.id === myUid) return;
+        const u = userDoc.data();
+        
+        // Verificar se já somos "amigos" (seguindo)
+        const followRef = doc(db, "following", myUid + "_" + userDoc.id);
+        const followDoc = await getDoc(followRef);
+        const isFollowing = followDoc.exists();
+
+        const item = document.createElement('div');
+        item.className = 'user-card glass-panel';
+        item.innerHTML = `
+            <div class="user-info">
+                <img src="${u.photo}" style="width:45px; height:45px; border-radius:50%">
+                <div>
+                    <div><b style="color:#fff;">${u.name}</b></div>
+                    <div style="font-size:0.75rem; color: var(--text-muted);">${u.friends || 0} amigos elite</div>
+                </div>
+            </div>
+            <button class="friend-btn ${isFollowing ? 'following' : ''}" 
+                    onclick="toggleFriend('${userDoc.id}', this)">
+                ${isFollowing ? 'Elite' : 'Amigar'}
+            </button>
+        `;
+        list.appendChild(item);
+    });
+}
+
+window.toggleFriend = async (targetUid, btn) => {
+    const myUid = auth.currentUser.uid;
+    const followId = myUid + "_" + targetUid;
+    const followRef = doc(db, "following", followId);
+    const isFollowing = btn.classList.contains('following');
+
+    try {
+        if (isFollowing) {
+            await deleteDoc(followRef);
+            await updateDoc(doc(db, "users", targetUid), { friends: increment(-1) });
+            await updateDoc(doc(db, "users", myUid), { friends: increment(-1) }); // Ajuste para amizade mútua simplificada
+            btn.classList.remove('following');
+            btn.innerText = "Amigar";
+        } else {
+            await setDoc(followRef, { follower: myUid, following: targetUid, createdAt: serverTimestamp() });
+            await updateDoc(doc(db, "users", targetUid), { friends: increment(1) });
+            await updateDoc(doc(db, "users", myUid), { friends: increment(1) });
+            btn.classList.add('following');
+            btn.innerText = "Elite";
+        }
+        updateFriendCount();
+    } catch (e) { console.error("Erro ao amigar:", e); }
+};
+
+async function updateFriendCount() {
+    if(!auth.currentUser) return;
+    const userSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
+    if(userSnap.exists()) {
+        document.getElementById("friendCount").innerText = userSnap.data().friends || 0;
+    }
+}
+
+// POSTS E COMENTÁRIOS
 document.getElementById("postBtn").onclick = async () => {
     const text = document.getElementById("postInput").value;
     if (!text.trim()) return;
 
-    await addDoc(collection(db, "posts"), {
-        uid: auth.currentUser.uid,
-        text: text,
-        userName: auth.currentUser.displayName,
-        userPhoto: auth.currentUser.photoURL,
-        likes: 0,
-        createdAt: serverTimestamp()
-    });
-    
-    document.getElementById("postInput").value = "";
-    toggleModal();
+    try {
+        await addDoc(collection(db, "posts"), {
+            uid: auth.currentUser.uid,
+            text: text,
+            userName: auth.currentUser.displayName,
+            userPhoto: auth.currentUser.photoURL,
+            likes: 0,
+            likedBy: [], // Array para controlar quem curtiu
+            createdAt: serverTimestamp()
+        });
+        document.getElementById("postInput").value = "";
+        toggleModal();
+    } catch (e) { console.error("Erro ao postar:", e); }
 };
 
-// CARREGAR FEED (ESTILO TWITTER)
 function loadFeed() {
     onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc")), (snap) => {
         const feed = document.getElementById("feed");
         feed.innerHTML = "";
-        snap.forEach(docSnap => {
-            const p = docSnap.data();
-            const id = docSnap.id;
-            const postEl = document.createElement("div");
-            postEl.className = "post";
+        snap.forEach(d => {
+            const p = d.data();
+            const id = d.id;
+            const myUid = auth.currentUser.uid;
+            const hasLiked = p.likedBy && p.likedBy.includes(myUid);
+
+            const postEl = document.createElement('div');
+            postEl.className = 'post';
             postEl.innerHTML = `
                 <div class="post-layout">
                     <img src="${p.userPhoto}" class="post-avatar">
-                    <div class="post-body">
-                        <div class="post-header">
-                            <b>${p.userName}</b>
-                            ${auth.currentUser.uid === p.uid ? `<button onclick="deletePost('${id}')" style="background:none; border:none; color:#555">✕</button>` : ''}
+                    <div class="post-content">
+                        <div class="post-user">
+                            ${p.userName} 
+                            ${myUid === p.uid ? `<span class="delete-btn" onclick="deletePost('${id}')">✕</span>` : ''}
                         </div>
-                        <div class="post-content">${p.text}</div>
+                        <div class="post-text">${p.text}</div>
                         <div class="post-actions">
-                            <button class="action-btn" onclick="likePost('${id}')">❤️ ${p.likes || 0}</button>
-                            <button class="action-btn" onclick="toggleComments('${id}')">💬</button>
+                            <span class="action ${hasLiked ? 'like-active' : ''}" onclick="likePost('${id}', this)">
+                                <i>🔥</i> <span class="like-count">${p.likes || 0}</span>
+                            </span>
+                            <span class="action" onclick="toggleComments('${id}')">💬</span>
                         </div>
-                        <div id="comments-${id}" class="comment-section" style="display:none">
+                        <div id="box-${id}" style="display:none; margin-top:15px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 15px; border: 1px solid var(--glass-border);">
                             <div id="list-${id}"></div>
-                            <div class="comment-input-area">
-                                <input id="in-${id}" placeholder="Postar sua resposta">
-                                <button onclick="sendComment('${id}')" style="padding:5px 15px; border-radius:20px;">Responder</button>
+                            <div style="display:flex; gap:10px; margin-top:10px;">
+                                <input id="in-${id}" placeholder="Enviar resposta elite..." style="flex:1; background:rgba(0,0,0,0.3); border:1px solid var(--glass-border); color:white; padding:10px; border-radius:10px; outline:none;">
+                                <button onclick="sendComment('${id}')" style="background:var(--secondary); color: white; border:none; border-radius:10px; padding:0 15px; cursor:pointer;">➔</button>
                             </div>
                         </div>
                     </div>
@@ -289,23 +443,48 @@ function loadFeed() {
     });
 }
 
-// COMENTÁRIOS E CURTIDAS
-window.likePost = async (id) => await updateDoc(doc(db, "posts", id), { likes: increment(1) });
-window.deletePost = async (id) => confirm("Excluir?") && await deleteDoc(doc(db, "posts", id));
-window.toggleComments = (id) => {
-    const c = document.getElementById(`comments-${id}`);
-    c.style.display = c.style.display === 'none' ? 'block' : 'none';
+window.likePost = async (id, btn) => {
+    if(!auth.currentUser) return;
+    const myUid = auth.currentUser.uid;
+    const postRef = doc(db, "posts", id);
+    const postSnap = await getDoc(postRef);
+    
+    if(!postSnap.exists()) return;
+    const postData = postSnap.data();
+    const likedBy = postData.likedBy || [];
+
+    if(likedBy.includes(myUid)) {
+        // Descurtir
+        await updateDoc(postRef, {
+            likes: increment(-1),
+            likedBy: likedBy.filter(uid => uid !== myUid)
+        });
+        btn.classList.remove('like-active');
+    } else {
+        // Curtir
+        await updateDoc(postRef, {
+            likes: increment(1),
+            likedBy: [...likedBy, myUid]
+        });
+        btn.classList.add('like-active');
+        // Efeito visual rápido de clique
+        btn.style.transform = 'scale(1.2)';
+        setTimeout(() => btn.style.transform = 'scale(1)', 150);
+    }
 };
 
 window.sendComment = async (postId) => {
-    const val = document.getElementById(`in-${postId}`).value;
-    if(!val.trim()) return;
-    await addDoc(collection(db, "posts", postId, "comments"), {
-        text: val,
-        userName: auth.currentUser.displayName,
-        createdAt: serverTimestamp()
-    });
-    document.getElementById(`in-${postId}`).value = "";
+    const input = document.getElementById(`in-${postId}`);
+    if(!input.value.trim()) return;
+    try {
+        await addDoc(collection(db, "posts", postId, "comments"), {
+            text: input.value,
+            userName: auth.currentUser.displayName,
+            uid: auth.currentUser.uid,
+            createdAt: serverTimestamp()
+        });
+        input.value = "";
+    } catch (e) { console.error("Erro ao comentar:", e); }
 };
 
 function loadComments(postId) {
@@ -314,13 +493,24 @@ function loadComments(postId) {
         if(!list) return;
         list.innerHTML = "";
         snap.forEach(c => {
-            list.innerHTML += `<div style="font-size:0.9rem; margin-bottom:5px;"><b>${c.data().userName}:</b> ${c.data().text}</div>`;
+            const data = c.data();
+            list.innerHTML += `
+                <div style="font-size:0.85rem; margin-bottom:8px; color: #e1e1e6; line-height:1.4;">
+                    <b style="color:var(--primary);">${data.userName}:</b> ${data.text}
+                </div>`;
         });
     });
 }
+
+window.deletePost = async (id) => confirm("Apagar esta transmissão definitiva?") && await deleteDoc(doc(db, "posts", id));
+window.toggleComments = (id) => {
+    const b = document.getElementById(`box-${id}`);
+    b.style.display = b.style.display === 'none' ? 'block' : 'none';
+};
 
 document.getElementById("loginBtn").onclick = () => signInWithPopup(auth, provider);
 document.getElementById("logoutBtn").onclick = () => signOut(auth);
 </script>
 </body>
 </html>
+```
