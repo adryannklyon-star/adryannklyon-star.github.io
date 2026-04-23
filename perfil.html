@@ -3,76 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KLYON | Perfil</title>
+    <title>KLYON | Profile</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #00f2ff; --bg: #030307; --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1); }
+        :root { --primary: #00f2ff; --bg: #030307; --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1); --text-dim: #94a3b8; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(circle at 50% 0%, #0f172a 0%, #030307 100%); min-height: 100vh; }
-        .container { max-width: 550px; margin: auto; padding: 40px 15px 120px; text-align: center; }
-        .p-avatar { width: 110px; height: 110px; border-radius: 35px; border: 3px solid var(--primary); object-fit: cover; margin-bottom: 15px; }
-        .p-stats { display: flex; justify-content: center; gap: 40px; margin: 20px 0; }
-        .btn-follow { background: var(--primary); border: none; padding: 12px 25px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; margin-bottom: 30px; font-family: 'Orbitron'; }
-        .post { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; padding: 15px; margin-bottom: 12px; text-align: left; }
-        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; height: 65px; background: rgba(15, 23, 42, 0.9); border-radius: 25px; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-around; z-index: 1000; }
-        .nav-link { opacity: 0.4; }
-        .nav-link.active { opacity: 1; filter: drop-shadow(0 0 8px var(--primary)); }
-        .nav-link img { width: 24px; filter: invert(1); }
+        
+        /* Capa e Header */
+        .profile-header { position: relative; height: 160px; background: linear-gradient(45deg, #001f3f, #00f2ff33); border-bottom: 1px solid var(--glass-border); }
+        .back-btn { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.5); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; border: 1px solid var(--glass-border); }
+
+        .container { max-width: 550px; margin: auto; padding: 0 15px 120px; position: relative; }
+        
+        /* Avatar e Info */
+        .p-info-box { margin-top: -50px; text-align: left; padding-left: 10px; margin-bottom: 25px; }
+        .p-avatar { width: 100px; height: 100px; border-radius: 25px; border: 4px solid var(--bg); background: var(--bg); object-fit: cover; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .p-name-wrap { margin-top: 15px; }
+        .p-name-wrap h2 { margin: 0; font-family: 'Orbitron'; font-size: 1.3rem; letter-spacing: 1px; }
+        .p-name-wrap p { margin: 2px 0; color: var(--primary); font-weight: 600; font-size: 0.9rem; }
+
+        /* Estatísticas Estilo Dashboard */
+        .p-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; padding: 15px; margin: 20px 0; text-align: center; }
+        .stat-item b { display: block; font-size: 1.1rem; color: #fff; }
+        .stat-item small { color: var(--text-dim); text-transform: uppercase; font-size: 0.65rem; letter-spacing: 1px; }
+
+        .btn-follow { background: var(--primary); border: none; padding: 12px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; font-family: 'Orbitron'; color: #000; transition: 0.3s; margin-bottom: 20px; box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }
+        .btn-follow.active { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+
+        /* Abas de Conteúdo */
+        .p-tabs { display: flex; border-bottom: 1px solid var(--glass-border); margin-bottom: 20px; }
+        .tab { flex: 1; padding: 15px; text-align: center; font-size: 0.8rem; font-weight: 800; color: var(--text-dim); cursor: pointer; border-bottom: 2px solid transparent; }
+        .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+        /* Posts */
+        .post { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; padding: 18px; margin-bottom: 12px; animation: fadeIn 0.4s ease; line-height: 1.5; font-size: 0.95rem; }
+
+        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; height: 65px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(15px); border-radius: 25px; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-around; z-index: 1000; }
+        .nav-link img { width: 24px; filter: invert(1); opacity: 0.4; }
+        .nav-link.active img { opacity: 1; filter: drop-shadow(0 0 8px var(--primary)) invert(1); }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
+
+<div class="profile-header">
+    <div class="back-btn" onclick="history.back()">⬅</div>
+</div>
+
 <div class="container">
-    <div onclick="history.back()" style="text-align:left; cursor:pointer;">⬅️</div>
-    <img id="uPhoto" class="p-avatar" src="">
-    <h2 id="uName"></h2>
-    <p id="uHandle" style="color:var(--primary);"></p>
-    <div class="p-stats">
-        <div><b id="cPosts">0</b><br><small>Posts</small></div>
-        <div><b id="cFollowers">0</b><br><small>Conexões</small></div>
+    <div class="p-info-box">
+        <img id="uPhoto" class="p-avatar" src="https://via.placeholder.com/100">
+        <div class="p-name-wrap">
+            <h2 id="uName">---</h2>
+            <p id="uHandle">@---</p>
+        </div>
     </div>
+
+    <div class="p-stats">
+        <div class="stat-item"><b id="cPosts">0</b><small>Posts</small></div>
+        <div class="stat-item"><b id="cFollowers">0</b><small>Conexões</small></div>
+        <div class="stat-item"><b id="cFollowing">0</b><small>Seguindo</small></div>
+    </div>
+
     <button id="followBtn" class="btn-follow" style="display:none;">CONECTAR</button>
+
+    <div class="p-tabs">
+        <div class="tab active">POSTS</div>
+        <div class="tab">MÍDIA</div>
+        <div class="tab">CURTIDAS</div>
+    </div>
+
     <div id="uPosts"></div>
 </div>
+
 <nav class="bottom-nav">
     <a href="index.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1946/1946488.png"></a>
     <a href="buscar.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/149/149852.png"></a>
     <a href="perfil.html" class="nav-link active"><img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png"></a>
 </nav>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, collection, query, where, onSnapshot, updateDoc, arrayUnion, arrayRemove, orderBy, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
     const firebaseConfig = { apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", authDomain: "klyon-a97ba.firebaseapp.com", projectId: "klyon-a97ba", storageBucket: "klyon-a97ba.appspot.com" };
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    
     const urlParams = new URLSearchParams(window.location.search);
     let targetUid = urlParams.get('uid');
 
     onAuthStateChanged(auth, async (me) => {
         if(!me) return location.href="index.html";
         if(!targetUid) targetUid = me.uid;
-        const snap = await getDoc(doc(db, "users", targetUid));
-        const u = snap.data();
-        document.getElementById('uPhoto').src = u.photo;
-        document.getElementById('uName').innerText = u.name;
-        document.getElementById('uHandle').innerText = "@"+u.handle;
-        document.getElementById('cFollowers').innerText = u.followers?.length || 0;
 
-        if(targetUid !== me.uid) {
-            const btn = document.getElementById('followBtn');
-            btn.style.display = "block";
-            const isFollowing = u.followers?.includes(me.uid);
-            btn.innerText = isFollowing ? "CONECTADO" : "CONECTAR";
-            btn.onclick = async () => {
-                await updateDoc(doc(db, "users", targetUid), { followers: isFollowing ? arrayRemove(me.uid) : arrayUnion(me.uid) });
-                if(!isFollowing) await addDoc(collection(db, "notifications"), { to: targetUid, text: `@${me.email.split('@')[0]} começou a te seguir!`, read: false, createdAt: serverTimestamp() });
-                location.reload();
-            };
-        }
-        onSnapshot(query(collection(db, "posts"), where("uid", "==", targetUid), orderBy("createdAt", "desc")), s => {
-            document.getElementById('cPosts').innerText = s.size;
-            const c = document.getElementById('uPosts'); c.innerHTML = "";
-            s.forEach(d => { c.innerHTML += `<div class="post">${d.data().content}</div>`; });
+        // Carregar Dados do Usuário do Perfil
+        onSnapshot(doc(db, "users", targetUid), (snap) => {
+            const u = snap.data();
+            if(!u) return;
+            document.getElementById('uPhoto').src = u.photo || '';
+            document.getElementById('uName').innerText = u.name || 'Usuário';
+            document.getElementById('uHandle').innerText = "@" + (u.handle || 'elite');
+            document.getElementById('cFollowers').innerText = u.followers?.length || 0;
+            document.getElementById('cFollowing').innerText = u.following?.length || 0;
+
+            // Lógica do Botão de Seguir
+            if(targetUid !== me.uid) {
+                const btn = document.getElementById('followBtn');
+                btn.style.display = "block";
+                const isFollowing = u.followers?.includes(me.uid);
+                
+                btn.innerText = isFollowing ? "CONECTADO" : "CONECTAR";
+                btn.className = isFollowing ? "btn-follow active" : "btn-follow";
+                
+                btn.onclick = async () => {
+                    const tRef = doc(db, "users", targetUid);
+                    const mRef = doc(db, "users", me.uid);
+                    
+                    if(isFollowing) {
+                        await updateDoc(tRef, { followers: arrayRemove(me.uid) });
+                        await updateDoc(mRef, { following: arrayRemove(targetUid) });
+                    } else {
+                        await updateDoc(tRef, { followers: arrayUnion(me.uid) });
+                        await updateDoc(mRef, { following: arrayUnion(targetUid) });
+                        await addDoc(collection(db, "notifications"), {
+                            to: targetUid,
+                            text: `@${me.email.split('@')[0]} se conectou a você!`,
+                            read: false,
+                            createdAt: serverTimestamp()
+                        });
+                    }
+                };
+            }
+        });
+
+        // Carregar Posts do Perfil (Ordenação manual para evitar erro de índice)
+        onSnapshot(collection(db, "posts"), (s) => {
+            const container = document.getElementById('uPosts');
+            container.innerHTML = "";
+            let myPosts = [];
+            s.forEach(d => {
+                if(d.data().uid === targetUid) myPosts.push(d.data());
+            });
+            
+            myPosts.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+            document.getElementById('cPosts').innerText = myPosts.length;
+            
+            if(myPosts.length === 0) {
+                container.innerHTML = "<p style='text-align:center; color:var(--text-dim); margin-top:20px;'>Nenhuma transmissão encontrada.</p>";
+            }
+
+            myPosts.forEach(p => {
+                container.innerHTML += `<div class="post">${p.content}</div>`;
+            });
         });
     });
 </script>
