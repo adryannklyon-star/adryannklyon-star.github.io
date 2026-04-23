@@ -9,14 +9,10 @@
         :root { --primary: #00f2ff; --bg: #030307; --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1); }
         body { margin: 0; background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(circle at 50% 0%, #0f172a 0%, #030307 100%); min-height: 100vh; }
         .container { max-width: 550px; margin: auto; padding: 40px 15px 120px; text-align: center; }
-        
-        .p-avatar { width: 110px; height: 110px; border-radius: 35px; border: 3px solid var(--primary); object-fit: cover; margin-bottom: 15px; box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }
+        .p-avatar { width: 110px; height: 110px; border-radius: 35px; border: 3px solid var(--primary); object-fit: cover; margin-bottom: 15px; }
         .p-stats { display: flex; justify-content: center; gap: 40px; margin: 20px 0; }
-        .p-stats b { font-size: 1.2rem; color: var(--primary); }
-        
-        .post { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 24px; padding: 18px; margin-bottom: 16px; text-align: left; }
-        .btn-elite { background: var(--primary); border: none; padding: 12px 25px; border-radius: 12px; font-weight: 800; cursor: pointer; font-family: 'Orbitron'; width: 100%; margin-bottom: 30px; }
-        
+        .btn-follow { background: var(--primary); border: none; padding: 12px 25px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; margin-bottom: 30px; font-family: 'Orbitron'; }
+        .post { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; padding: 15px; margin-bottom: 12px; text-align: left; }
         .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; height: 65px; background: rgba(15, 23, 42, 0.9); border-radius: 25px; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-around; z-index: 1000; }
         .nav-link { opacity: 0.4; }
         .nav-link.active { opacity: 1; filter: drop-shadow(0 0 8px var(--primary)); }
@@ -24,89 +20,59 @@
     </style>
 </head>
 <body>
-
 <div class="container">
-    <img id="uPhoto" class="p-avatar" src="https://via.placeholder.com/110">
-    <h2 id="uName" style="margin:0;">Carregando...</h2>
-    <p id="uHandle" style="color:var(--primary); font-weight: 800; margin-bottom: 20px;"></p>
-
+    <div onclick="history.back()" style="text-align:left; cursor:pointer;">⬅️</div>
+    <img id="uPhoto" class="p-avatar" src="">
+    <h2 id="uName"></h2>
+    <p id="uHandle" style="color:var(--primary);"></p>
     <div class="p-stats">
-        <div><b id="count-posts">0</b><br><small>Posts</small></div>
-        <div><b id="count-followers">0</b><br><small>Conexões</small></div>
+        <div><b id="cPosts">0</b><br><small>Posts</small></div>
+        <div><b id="cFollowers">0</b><br><small>Conexões</small></div>
     </div>
-
-    <button id="followBtn" class="btn-elite" style="display:none;">CONECTAR</button>
-
+    <button id="followBtn" class="btn-follow" style="display:none;">CONECTAR</button>
     <div id="uPosts"></div>
 </div>
-
 <nav class="bottom-nav">
     <a href="index.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1946/1946488.png"></a>
     <a href="buscar.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/149/149852.png"></a>
     <a href="perfil.html" class="nav-link active"><img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png"></a>
 </nav>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, collection, query, where, onSnapshot, updateDoc, arrayUnion, arrayRemove, orderBy } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
-
+    import { getFirestore, doc, getDoc, collection, query, where, onSnapshot, updateDoc, arrayUnion, arrayRemove, orderBy, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
     const firebaseConfig = { apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", authDomain: "klyon-a97ba.firebaseapp.com", projectId: "klyon-a97ba", storageBucket: "klyon-a97ba.appspot.com" };
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-
     const urlParams = new URLSearchParams(window.location.search);
     let targetUid = urlParams.get('uid');
 
     onAuthStateChanged(auth, async (me) => {
-        if(!me) { location.href="index.html"; return; }
+        if(!me) return location.href="index.html";
         if(!targetUid) targetUid = me.uid;
-
         const snap = await getDoc(doc(db, "users", targetUid));
         const u = snap.data();
-        if(!u) return;
-
         document.getElementById('uPhoto').src = u.photo;
         document.getElementById('uName').innerText = u.name;
         document.getElementById('uHandle').innerText = "@"+u.handle;
-        document.getElementById('count-followers').innerText = u.followers?.length || 0;
-        document.getElementById('count-posts').innerText = u.postsCount || 0;
+        document.getElementById('cFollowers').innerText = u.followers?.length || 0;
 
         if(targetUid !== me.uid) {
             const btn = document.getElementById('followBtn');
             btn.style.display = "block";
             const isFollowing = u.followers?.includes(me.uid);
             btn.innerText = isFollowing ? "CONECTADO" : "CONECTAR";
-            btn.style.background = isFollowing ? "rgba(255,255,255,0.1)" : "var(--primary)";
-            btn.style.color = isFollowing ? "#fff" : "#000";
-
             btn.onclick = async () => {
-                const myRef = doc(db, "users", me.uid);
-                const targetRef = doc(db, "users", targetUid);
-                if(isFollowing) {
-                    await updateDoc(myRef, { following: arrayRemove(targetUid) });
-                    await updateDoc(targetRef, { followers: arrayRemove(me.uid) });
-                } else {
-                    await updateDoc(myRef, { following: arrayUnion(targetUid) });
-                    await updateDoc(targetRef, { followers: arrayUnion(me.uid) });
-                }
+                await updateDoc(doc(db, "users", targetUid), { followers: isFollowing ? arrayRemove(me.uid) : arrayUnion(me.uid) });
+                if(!isFollowing) await addDoc(collection(db, "notifications"), { to: targetUid, text: `@${me.email.split('@')[0]} começou a te seguir!`, read: false, createdAt: serverTimestamp() });
                 location.reload();
             };
         }
-
-        // Carrega Posts Individuais
-        const q = query(collection(db, "posts"), where("uid", "==", targetUid), orderBy("createdAt", "desc"));
-        onSnapshot(q, s => {
+        onSnapshot(query(collection(db, "posts"), where("uid", "==", targetUid), orderBy("createdAt", "desc")), s => {
+            document.getElementById('cPosts').innerText = s.size;
             const c = document.getElementById('uPosts'); c.innerHTML = "";
-            s.forEach(d => {
-                const p = d.data();
-                c.innerHTML += `
-                    <div class="post">
-                        <div class="post-content">${p.content}</div>
-                        ${p.image ? `<img src="${p.image}" style="width:100%; border-radius:15px; margin-top:10px;">` : ''}
-                    </div>`;
-            });
+            s.forEach(d => { c.innerHTML += `<div class="post">${d.data().content}</div>`; });
         });
     });
 </script>
