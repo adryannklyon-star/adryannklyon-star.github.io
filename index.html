@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Klyon Elite | GS Engine v3</title>
+    <title>Klyon Elite | GS Engine v3.1</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -22,39 +22,36 @@
             overflow-x: hidden;
         }
 
-        /* HEADER */
         header {
             position: fixed; top: 0; width: 100%; height: 60px;
             display: flex; align-items: center; justify-content: center;
             z-index: 1001; background: rgba(3, 3, 11, 0.85);
             backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border);
         }
-        header h1 { font-family: 'Orbitron'; font-size: 1rem; color: var(--primary); letter-spacing: 2px; margin: 0; text-shadow: 0 0 10px var(--primary); }
+        header h1 { font-family: 'Orbitron'; font-size: 1rem; color: var(--primary); letter-spacing: 2px; text-shadow: 0 0 10px var(--primary); }
 
-        /* SEÇÕES */
         .section { display: none; width: 100%; min-height: 100vh; padding: 75px 0 120px 0; }
         .section.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .container { max-width: 600px; margin: auto; padding: 0 15px; }
 
-        /* PERFIL STYLE */
+        /* PERFIL */
         .profile-banner { height: 160px; background: #1a1a2e; background-size: cover; background-position: center; border-radius: 0 0 20px 20px; cursor: pointer; }
         .p-avatar { width: 95px; height: 95px; border-radius: 50%; border: 4px solid var(--bg); object-fit: cover; background: #000; margin-top: -50px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .handle-display { color: var(--primary); font-weight: 600; font-size: 0.9rem; }
+        .p-bio { margin: 12px 0; font-size: 0.95rem; color: #e1e1e6; }
 
-        /* EDIÇÃO */
+        /* INPUTS */
         .edit-box { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 20px; border-radius: 20px; margin-top: 20px; }
         .k-input { width: 100%; background: rgba(255,255,255,0.07); border: 1px solid var(--glass-border); color: #fff; padding: 12px; border-radius: 12px; margin-bottom: 15px; font-family: inherit; }
-        .btn-action { border: 1px solid var(--primary); background: transparent; color: var(--primary); padding: 10px 22px; border-radius: 25px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-action { border: 1px solid var(--primary); background: transparent; color: var(--primary); padding: 10px 22px; border-radius: 25px; font-weight: 700; cursor: pointer; }
         .btn-filled { background: var(--primary); color: #000; border: none; }
 
         /* POSTS */
         .post { display: flex; gap: 12px; padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .post img.avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
         .post-right { flex: 1; }
-        .post-header b { color: #fff; margin-right: 5px; }
-        .post-text { color: #e1e1e6; margin-top: 5px; font-size: 0.95rem; }
         .post-img { width: 100%; border-radius: 18px; margin-top: 12px; border: 1px solid var(--glass-border); }
 
         /* MENU INFERIOR GLASSMORPHISM */
@@ -69,17 +66,15 @@
             display: flex; justify-content: space-around; align-items: center;
             z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .nav-link { flex: 1; text-align: center; cursor: pointer; transition: 0.3s; height: 100%; display: flex; align-items: center; justify-content: center; }
+        .nav-link { flex: 1; text-align: center; cursor: pointer; height: 100%; display: flex; align-items: center; justify-content: center; }
         .nav-link img { width: 30px; height: 30px; object-fit: contain; opacity: 0.5; transition: 0.3s; }
         .nav-link.active img { opacity: 1; transform: scale(1.15); filter: drop-shadow(0 0 8px var(--primary)); }
 
         #fab {
             position: fixed; bottom: 105px; right: 25px; width: 56px; height: 56px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), #00a2ff); border: none; color: #000; font-size: 30px;
-            box-shadow: 0 8px 20px rgba(0, 242, 255, 0.3); z-index: 999; cursor: pointer;
+            background: var(--primary); border: none; color: #000; font-size: 30px; z-index: 999; cursor: pointer;
         }
 
-        /* MODAIS */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; display: none; padding: 25px; }
         .hidden { display: none; }
     </style>
@@ -89,8 +84,7 @@
 <header><h1>KLYON ELITE</h1></header>
 
 <div id="loginSection" style="height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column;">
-    <h1 style="font-family: 'Orbitron'; color: var(--primary); font-size: 2rem;">KLYON</h1>
-    <p style="color: var(--text-muted); margin-bottom: 30px;">A nova era social</p>
+    <h1 style="font-family: 'Orbitron'; color: var(--primary);">KLYON</h1>
     <button onclick="login()" class="btn-action btn-filled" style="padding: 18px 50px;">Entrar com Google</button>
 </div>
 
@@ -100,7 +94,7 @@
 
 <div id="searchSection" class="section">
     <div class="container">
-        <input type="text" placeholder="Pesquisar no Multiverso..." class="k-input" style="border-radius: 30px; padding: 15px 25px;">
+        <input type="text" placeholder="Pesquisar..." class="k-input" style="border-radius: 30px;">
         <div id="userResults"></div>
     </div>
 </div>
@@ -113,22 +107,22 @@
     <div class="container">
         <div style="display: flex; justify-content: space-between; align-items: flex-end;">
             <img id="p-photo" src="" class="p-avatar" onclick="document.getElementById('avatarFile').click()">
-            <button class="btn-action" onclick="toggleEdit(true)">Editar</button>
+            <button class="btn-action" onclick="toggleEdit(true)">Editar Perfil</button>
         </div>
         
         <div id="view-mode" style="margin-top: 15px;">
-            <h2 id="p-name" style="margin: 0;">Nome</h2>
-            <span class="handle-display">@<span id="p-handle">usuário</span></span>
-            <p id="p-bio" class="p-bio">Status da bio...</p>
+            <h2 id="p-name" style="margin: 0;">Carregando...</h2>
+            <span class="handle-display">@<span id="p-handle">...</span></span>
+            <p id="p-bio" class="p-bio"></p>
         </div>
 
         <div id="edit-mode" class="edit-box" style="display: none;">
             <input type="text" id="in-name" class="k-input" placeholder="Nome">
-            <input type="text" id="in-handle" class="k-input" placeholder="seu_nome_unico">
-            <textarea id="in-bio" class="k-input" placeholder="Sua bio épica..."></textarea>
+            <input type="text" id="in-handle" class="k-input" placeholder="seu_handle">
+            <textarea id="in-bio" class="k-input" placeholder="Sua bio..."></textarea>
             <div style="display: flex; gap: 10px;">
                 <button class="btn-action btn-filled" style="flex: 1" onclick="saveEliteProfile()">Salvar</button>
-                <button class="btn-action" onclick="toggleEdit(false)">Cancelar</button>
+                <button class="btn-action" onclick="toggleEdit(false)">Sair</button>
             </div>
         </div>
         
@@ -138,34 +132,28 @@
 
 <div id="postModal" class="modal">
     <input type="file" id="postFile" class="hidden" accept="image/*" onchange="previewPost(this)">
-    <div style="display:flex; justify-content: space-between; align-items:center;">
-        <button onclick="closeModal()" style="background:none; border:none; color:#fff; font-size: 1rem;">Cancelar</button>
-        <div style="display:flex; gap:20px; align-items:center;">
-            <span onclick="document.getElementById('postFile').click()" style="cursor:pointer; font-size:1.6rem;">🖼️</span>
+    <div style="display:flex; justify-content: space-between;">
+        <button onclick="closeModal()" style="background:none; border:none; color:#fff;">Voltar</button>
+        <div>
+            <span onclick="document.getElementById('postFile').click()" style="cursor:pointer; font-size:1.5rem; margin-right:15px;">🖼️</span>
             <button id="pubBtn" class="btn-action btn-filled" onclick="publishElitePost()">Postar</button>
         </div>
     </div>
-    <textarea id="postText" class="k-input" style="height: 180px; margin-top: 25px; background:none; border:none; font-size: 1.3rem;" placeholder="O que há de novo?"></textarea>
-    <img id="post-preview" class="post-img" style="display:none; max-height: 280px; object-fit: cover;">
+    <textarea id="postText" class="k-input" style="height: 150px; border:none; font-size: 1.2rem; margin-top:20px;" placeholder="No que está pensando?"></textarea>
+    <img id="post-preview" class="post-img" style="display:none;">
 </div>
 
 <button id="fab" onclick="document.getElementById('postModal').style.display='block'" style="display:none;">+</button>
 
 <nav class="bottom-nav" id="navBar" style="display:none;">
-    <div class="nav-link active" onclick="navigate('feedSection', this)">
-        <img src="home.png" alt="Home">
-    </div>
-    <div class="nav-link" onclick="navigate('searchSection', this)">
-        <img src="buscar.png" alt="Busca">
-    </div>
-    <div class="nav-link" onclick="navigate('profileSection', this)">
-        <img src="perfil.png" alt="Perfil">
-    </div>
+    <div class="nav-link active" onclick="navigate('feedSection', this)"><img src="home.png"></div>
+    <div class="nav-link" onclick="navigate('searchSection', this)"><img src="buscar.png"></div>
+    <div class="nav-link" onclick="navigate('profileSection', this)"><img src="perfil.png"></div>
 </nav>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, updateDoc, increment, where, runTransaction } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-storage.js";
 
@@ -182,7 +170,7 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 const provider = new GoogleAuthProvider();
 
-let uData = null;
+let uData = null; // Variável Global que o erro reclamava
 let postFileObj = null;
 
 // --- NAVEGAÇÃO ---
@@ -191,7 +179,7 @@ window.navigate = (id, el) => {
     document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     el.classList.add('active');
-    if(id === 'profileSection') renderProfile(auth.currentUser.uid);
+    if(id === 'profileSection' && auth.currentUser) renderProfile(auth.currentUser.uid);
 };
 
 window.closeModal = () => {
@@ -201,8 +189,9 @@ window.closeModal = () => {
     postFileObj = null;
 };
 
-// --- AUTH ---
+// --- AUTH & SYNC ---
 window.login = () => signInWithPopup(auth, provider);
+
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         document.getElementById("loginSection").style.display = "none";
@@ -214,18 +203,20 @@ onAuthStateChanged(auth, async (user) => {
     } else {
         document.getElementById("loginSection").style.display = "flex";
         document.getElementById("navBar").style.display = "none";
-        document.getElementById("fab").style.display = "none";
     }
 });
 
 async function syncUser(user) {
-    const snap = await getDoc(doc(db, "users", user.uid));
+    const userRef = doc(db, "users", user.uid);
+    const snap = await getDoc(userRef);
     if(!snap.exists()) {
         const handle = "elite_" + user.uid.substring(0,4);
-        uData = { name: user.displayName, photo: user.photoURL, handle, bio: "Membro Klyon Elite", banner: "" };
-        await setDoc(doc(db, "users", user.uid), uData);
+        uData = { name: user.displayName, photo: user.photoURL, handle, bio: "Nova Elite", banner: "" };
+        await setDoc(userRef, uData);
         await setDoc(doc(db, "handles", handle), { uid: user.uid });
-    } else uData = snap.data();
+    } else {
+        uData = snap.data();
+    }
 }
 
 // --- PERFIL & STORAGE ---
@@ -241,44 +232,48 @@ window.uploadToStorage = async (input, type) => {
 };
 
 window.toggleEdit = (show) => {
+    if(!uData) return; // Segurança extra contra undefined
     document.getElementById('view-mode').style.display = show ? 'none' : 'block';
     document.getElementById('edit-mode').style.display = show ? 'block' : 'none';
     if(show) {
-        document.getElementById('in-name').value = uData.name;
-        document.getElementById('in-handle').value = uData.handle;
-        document.getElementById('in-bio').value = uData.bio;
+        document.getElementById('in-name').value = uData.name || "";
+        document.getElementById('in-handle').value = uData.handle || "";
+        document.getElementById('in-bio').value = uData.bio || "";
     }
 };
 
 window.saveEliteProfile = async () => {
+    if(!uData) return;
     const newName = document.getElementById('in-name').value;
     const newBio = document.getElementById('in-bio').value;
-    const newHandle = document.getElementById('in-handle').value.toLowerCase().replace(/[^a-z0-9_]/g, '');
+    const newHandle = document.getElementById('in-handle').value.toLowerCase().trim().replace(/[^a-z0-9_]/g, '');
     const oldHandle = uData.handle;
 
     try {
         await runTransaction(db, async (t) => {
             if(newHandle !== oldHandle) {
                 const hSnap = await t.get(doc(db, "handles", newHandle));
-                if(hSnap.exists()) throw "Este @ já está em uso!";
+                if(hSnap.exists()) throw "Esse @ já existe!";
                 t.set(doc(db, "handles", newHandle), { uid: auth.currentUser.uid });
-                t.delete(doc(db, "handles", oldHandle));
+                if(oldHandle) t.delete(doc(db, "handles", oldHandle));
             }
             t.update(doc(db, "users", auth.currentUser.uid), { name: newName, bio: newBio, handle: newHandle });
         });
         uData.name = newName; uData.bio = newBio; uData.handle = newHandle;
         toggleEdit(false); renderProfile(auth.currentUser.uid);
+        alert("Salvo!");
     } catch(e) { alert(e); }
 };
 
 async function renderProfile(uid) {
     const snap = await getDoc(doc(db, "users", uid));
     const d = snap.data();
+    if(!d) return;
     document.getElementById('p-name').innerText = d.name;
     document.getElementById('p-handle').innerText = d.handle;
-    document.getElementById('p-bio').innerText = d.bio;
+    document.getElementById('p-bio').innerText = d.bio || "";
     document.getElementById('p-photo').src = d.photo;
-    document.getElementById('p-banner').style.backgroundImage = d.banner ? `url(${d.banner})` : 'linear-gradient(45deg, #1a1a2e, #000)';
+    document.getElementById('p-banner').style.backgroundImage = d.banner ? `url(${d.banner})` : 'none';
     
     onSnapshot(query(collection(db, "posts"), where("uid", "==", uid), orderBy("createdAt", "desc")), s => {
         const div = document.getElementById('myPosts'); div.innerHTML = "";
@@ -291,8 +286,8 @@ window.previewPost = (input) => {
     postFileObj = input.files[0];
     const reader = new FileReader();
     reader.onload = e => { 
-        const img = document.getElementById('post-preview');
-        img.src = e.target.result; img.style.display = 'block';
+        document.getElementById('post-preview').src = e.target.result;
+        document.getElementById('post-preview').style.display = 'block';
     };
     reader.readAsDataURL(postFileObj);
 };
@@ -301,11 +296,11 @@ window.publishElitePost = async () => {
     const txt = document.getElementById('postText').value;
     const btn = document.getElementById('pubBtn');
     if(!txt && !postFileObj) return;
-    btn.disabled = true; btn.innerText = "...";
+    btn.disabled = true;
     
     let imgUrl = "";
     if(postFileObj) {
-        const sRef = ref(storage, `posts/${auth.currentUser.uid}_${Date.now()}`);
+        const sRef = ref(storage, `posts/${Date.now()}`);
         await uploadBytes(sRef, postFileObj);
         imgUrl = await getDownloadURL(sRef);
     }
@@ -319,7 +314,7 @@ window.publishElitePost = async () => {
         likes: 0, likedBy: [],
         createdAt: serverTimestamp()
     });
-    closeModal(); btn.disabled = false; btn.innerText = "Postar";
+    closeModal(); btn.disabled = false;
 };
 
 function loadFeed() {
@@ -335,23 +330,23 @@ function createUI(id, p) {
     div.innerHTML = `
         <img class="avatar" src="${p.userPhoto}">
         <div class="post-right">
-            <div class="post-header"><b>${p.userName}</b> <span style="color:var(--primary); font-size:0.8rem;">@${p.userHandle}</span></div>
+            <div class="post-header"><b>${p.userName}</b> <span style="color:var(--primary)">@${p.userHandle}</span></div>
             <div class="post-text">${p.text}</div>
             ${p.img ? `<img src="${p.img}" class="post-img">` : ''}
-            <div style="margin-top:12px; cursor:pointer; font-size:0.9rem;" onclick="likePost('${id}')">🔥 ${p.likes || 0}</div>
+            <div style="margin-top:10px; cursor:pointer;" onclick="likePost('${id}')">🔥 ${p.likes || 0}</div>
         </div>`;
     return div;
 }
 
 window.likePost = async (id) => {
-    const postRef = doc(db, "posts", id);
-    const snap = await getDoc(postRef);
+    const ref = doc(db, "posts", id);
+    const snap = await getDoc(ref);
     const likedBy = snap.data().likedBy || [];
     const myUid = auth.currentUser.uid;
     if(likedBy.includes(myUid)) {
-        await updateDoc(postRef, { likes: increment(-1), likedBy: likedBy.filter(u => u !== myUid) });
+        await updateDoc(ref, { likes: increment(-1), likedBy: likedBy.filter(u => u !== myUid) });
     } else {
-        await updateDoc(postRef, { likes: increment(1), likedBy: [...likedBy, myUid] });
+        await updateDoc(ref, { likes: increment(1), likedBy: [...likedBy, myUid] });
     }
 };
 </script>
