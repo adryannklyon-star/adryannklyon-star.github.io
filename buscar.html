@@ -2,29 +2,35 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>KLYON | Buscar</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #00f2ff; --bg: #030307; --glass: rgba(255,255,255,0.05); }
-        body { margin: 0; background: var(--bg); color: #fff; font-family: sans-serif; padding: 20px; }
-        .search-box { width: 100%; padding: 15px; border-radius: 15px; background: var(--glass); border: 1px solid #333; color: #fff; margin-top: 20px; }
-        .user-card { display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--glass); border-radius: 20px; margin-top: 10px; cursor: pointer; }
-        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; height: 65px; background: rgba(15,23,42,0.9); border-radius: 25px; display: flex; align-items: center; justify-content: space-around; }
-        .nav-link img { width: 24px; filter: invert(1); opacity: 0.4; }
-        .nav-link.active img { opacity: 1; }
+        /* CSS IDENTICO AO INDEX */
+        :root { --primary: #00f2ff; --bg: #030307; --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1); }
+        body { margin: 0; background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(circle at 50% 0%, #0f172a 0%, #030307 100%); min-height: 100vh; }
+        .container { max-width: 550px; margin: auto; padding: 30px 15px 120px; }
+        .search-box { width: 100%; padding: 18px; border-radius: 20px; background: var(--glass); border: 1px solid var(--glass-border); color: #fff; font-size: 1rem; outline: none; margin-bottom: 20px; }
+        .user-card { display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; margin-bottom: 10px; cursor: pointer; }
+        .user-card img { width: 50px; height: 50px; border-radius: 15px; border: 1px solid var(--primary); }
+        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; height: 65px; background: rgba(15, 23, 42, 0.9); border-radius: 25px; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-around; z-index: 1000; }
+        .nav-link { opacity: 0.4; }
+        .nav-link.active { opacity: 1; filter: drop-shadow(0 0 8px var(--primary)); }
+        .nav-link img { width: 24px; filter: invert(1); }
     </style>
 </head>
 <body>
 
-    <input type="text" id="searchIn" class="search-box" placeholder="Buscar @handle...">
+<div class="container">
+    <input type="text" id="searchIn" class="search-box" placeholder="Pesquisar elite por handle...">
     <div id="results"></div>
+</div>
 
-    <nav class="bottom-nav">
-        <a href="index.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1946/1946488.png"></a>
-        <a href="buscar.html" class="nav-link active"><img src="https://cdn-icons-png.flaticon.com/512/149/149852.png"></a>
-        <a href="perfil.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png"></a>
-    </nav>
+<nav class="bottom-nav">
+    <a href="index.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1946/1946488.png"></a>
+    <a href="buscar.html" class="nav-link active"><img src="https://cdn-icons-png.flaticon.com/512/149/149852.png"></a>
+    <a href="perfil.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png"></a>
+</nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
@@ -41,7 +47,11 @@
         const r = document.getElementById('results'); r.innerHTML = "";
         s.forEach(d => {
             const u = d.data();
-            r.innerHTML += `<div class="user-card" onclick="location.href='perfil.html?uid=${d.id}'"><img src="${u.photo}" style="width:40px; border-radius:10px;"><b>${u.name}</b></div>`;
+            r.innerHTML += `
+                <div class="user-card" onclick="location.href='perfil.html?uid=${d.id}'">
+                    <img src="${u.photo}">
+                    <div><b>${u.name}</b><br><small style="color:var(--primary)">@${u.handle}</small></div>
+                </div>`;
         });
     };
 </script>
