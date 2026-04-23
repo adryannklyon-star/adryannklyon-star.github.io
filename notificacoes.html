@@ -3,45 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KLYON | Notificações</title>
+    <title>KLYON | Alertas</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #00f2ff; --bg: #030307; --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1); }
         body { margin: 0; background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(circle at 50% 0%, #0f172a 0%, #030307 100%); min-height: 100vh; }
-        .container { max-width: 550px; margin: auto; padding: 80px 15px 120px; }
-        .notif { background: var(--glass); border: 1px solid var(--glass-border); border-left: 4px solid var(--primary); padding: 15px; border-radius: 15px; margin-bottom: 10px; font-size: 0.9rem; }
-        .notif.read { border-left-color: transparent; opacity: 0.6; }
-        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; height: 65px; background: rgba(15, 23, 42, 0.9); border-radius: 25px; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-around; z-index: 1000; }
-        .nav-link img { width: 24px; filter: invert(1); opacity: 0.4; }
+        .container { max-width: 550px; margin: auto; padding: 40px 15px 120px; }
+        .header-back { display: flex; align-items: center; gap: 10px; margin-bottom: 30px; cursor: pointer; color: var(--primary); font-family: 'Orbitron'; font-size: 0.8rem; }
+        .notif-card { background: var(--glass); border: 1px solid var(--glass-border); padding: 15px; border-radius: 18px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; border-left: 4px solid var(--primary); animation: slideIn 0.3s ease; }
+        .notif-card.read { border-left-color: transparent; opacity: 0.6; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
     </style>
 </head>
 <body>
 <div class="container">
-    <h2 style="font-family:'Orbitron'; font-size:1.1rem; color:var(--primary);">NOTIFICAÇÕES</h2>
-    <div id="list"></div>
+    <div class="header-back" onclick="location.href='index.html'">⬅ VOLTAR AO FEED</div>
+    <h2 style="font-family:'Orbitron'; font-size: 1.2rem; margin-bottom: 20px;">NOTIFICAÇÕES</h2>
+    <div id="notifList">Carregando alertas...</div>
 </div>
-<nav class="bottom-nav">
-    <a href="index.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1946/1946488.png"></a>
-    <a href="buscar.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/149/149852.png"></a>
-    <a href="perfil.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png"></a>
-</nav>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-    import { getFirestore, collection, query, where, orderBy, onSnapshot, doc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+    import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
     const firebaseConfig = { apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", authDomain: "klyon-a97ba.firebaseapp.com", projectId: "klyon-a97ba", storageBucket: "klyon-a97ba.appspot.com" };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    const db = getFirestore(initializeApp(firebaseConfig));
+    const auth = getAuth();
 
     onAuthStateChanged(auth, user => {
-        if(!user) return;
-        const q = query(collection(db, "notifications"), where("to", "==", user.uid), orderBy("createdAt", "desc"));
-        onSnapshot(q, s => {
-            const l = document.getElementById('list'); l.innerHTML = "";
-            s.forEach(async d => {
-                l.innerHTML += `<div class="notif ${d.data().read ? 'read' : ''}">${d.data().text}</div>`;
-                if(!d.data().read) await updateDoc(doc(db, "notifications", d.id), { read: true });
+        if (!user) return;
+        // Busca notificações sem orderBy para evitar erro de índice
+        onSnapshot(query(collection(db, "notifications"), where("to", "==", user.uid)), s => {
+            const list = document.getElementById('notifList');
+            list.innerHTML = s.empty ? "Nenhuma novidade por aqui." : "";
+            
+            let all = [];
+            s.forEach(d => all.push({id: d.id, ...d.data()}));
+            all.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+            all.forEach(async n => {
+                list.innerHTML += `<div class="notif-card ${n.read ? 'read' : ''}"><div>${n.text}</div></div>`;
+                if(!n.read) await updateDoc(doc(db, "notifications", n.id), { read: true });
             });
         });
     });

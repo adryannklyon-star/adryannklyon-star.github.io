@@ -159,7 +159,33 @@
             });
         }
     };
+// Adicione esta função no seu index.html
+window.addComment = async (postId, authorId) => {
+    const comment = prompt("Escreva seu comentário:");
+    if (!comment) return;
 
+    const postRef = doc(db, "posts", postId);
+    await updateDoc(postRef, {
+        comments: arrayUnion({
+            user: auth.currentUser.displayName,
+            text: comment,
+            at: new Date().toISOString()
+        })
+    });
+
+    if (auth.currentUser.uid !== authorId) {
+        await addDoc(collection(db, "notifications"), {
+            to: authorId,
+            text: `@${auth.currentUser.email.split('@')[0]} comentou no seu post!`,
+            read: false,
+            createdAt: serverTimestamp()
+        });
+    }
+    alert("Comentário enviado!");
+};
+
+// No loadFeed(), mude o botão de comentário para:
+// <button class="btn-action" onclick="addComment('${p.id}', '${p.uid}')">💬 ${p.comments?.length || 0}</button>
     window.repost = async (id) => {
         alert("Copiado para sua timeline!");
         // Lógica de repost simplificada...
