@@ -38,31 +38,28 @@
         .tab.active { color: var(--primary); }
         .tab.active::after { content: ''; position: absolute; bottom: 0; width: 30%; height: 3px; background: var(--primary); border-radius: 10px; box-shadow: 0 0 10px var(--primary); }
 
+        /* NOTIFICAÇÕES */
+        #notifPanel { display:none; position:fixed; top:70px; right:20px; width:280px; background:rgba(10,10,20,0.95); border:1px solid var(--glass-border); border-radius:20px; z-index:2000; padding:15px; backdrop-filter:blur(20px); max-height: 400px; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .notif-item { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; color: #e2e8f0; }
+
         /* SECTIONS */
         .section { display: none; padding: 20px 0 110px 0; animation: fadeIn 0.3s ease; }
         .section.active { display: block; }
         #feedSection { padding-top: 110px; } 
-
         .container { max-width: 550px; margin: auto; padding: 0 15px; }
 
         /* POSTS */
         .post { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 28px; padding: 20px; margin-bottom: 16px; }
         .post-head { display: flex; gap: 12px; margin-bottom: 12px; align-items: center; }
         .post-head img { width: 46px; height: 46px; border-radius: 16px; object-fit: cover; cursor: pointer; border: 1px solid var(--glass-border); }
-        .post-content { font-size: 1rem; line-height: 1.5; color: #e2e8f0; white-space: pre-wrap; word-break: break-word; }
-        .post-img { width: 100%; max-height: 400px; object-fit: cover; border-radius: 20px; margin-top: 12px; border: 1px solid var(--glass-border); }
+        .post-content { font-size: 1rem; line-height: 1.5; color: #e2e8f0; white-space: pre-wrap; }
+        .post-img { width: 100%; max-height: 450px; object-fit: cover; border-radius: 20px; margin-top: 12px; border: 1px solid var(--glass-border); }
 
         .post-footer { display: flex; justify-content: space-between; margin-top: 18px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); }
         .btn-social { background: none; border: none; color: var(--text-dim); display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .btn-social:active { transform: scale(0.9); }
-        .btn-social.liked { color: #ff2d55; text-shadow: 0 0 10px rgba(255, 45, 85, 0.5); }
-
-        /* COMMENTS GAVETA */
-        .drawer { display: none; margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 20px; border: 1px solid var(--glass-border); }
-        .comment-item { font-size: 0.85rem; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .btn-social.liked { color: #ff2d55; }
 
         /* PROFILE */
-        .p-banner { height: 150px; background: linear-gradient(45deg, #0f172a, #000); border-radius: 0 0 30px 30px; }
         .p-avatar { width: 100px; height: 100px; border-radius: 30px; border: 4px solid var(--bg); margin: -50px auto 10px; display: block; object-fit: cover; }
         
         /* NAV & UI */
@@ -71,10 +68,11 @@
         .nav-link img { width: 26px; filter: invert(1); }
         .nav-link.active { opacity: 1; filter: drop-shadow(0 0 8px var(--primary)); }
         
-        .btn-elite { background: var(--primary); color: #000; border: none; padding: 12px 24px; border-radius: 14px; font-weight: 800; cursor: pointer; }
+        .btn-elite { background: var(--primary); color: #000; border: none; padding: 12px 24px; border-radius: 14px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-elite:disabled { opacity: 0.5; cursor: not-allowed; }
         #fab { position: fixed; bottom: 100px; right: 20px; width: 60px; height: 60px; background: var(--primary); border-radius: 50%; border: none; font-size: 30px; font-weight: bold; z-index: 999; cursor: pointer; box-shadow: 0 0 15px var(--primary); }
+        
         .hidden { display: none !important; }
-
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
@@ -82,8 +80,11 @@
 
 <header id="mainHeader">
     <div class="header-top">
-        <h1 style="font-family: 'Orbitron'; font-size: 1rem; color: var(--primary); margin:0;">KLYON</h1>
-        <div style="cursor:pointer;" onclick="location.reload()">🔄</div>
+        <h1 style="font-family: 'Orbitron'; font-size: 1rem; color: var(--primary); margin:0; letter-spacing: 2px;">KLYON</h1>
+        <div style="cursor:pointer; position: relative;" onclick="toggleNotifs()">
+            <span style="font-size: 1.5rem;">🔔</span>
+            <div id="bellBadge" style="position:absolute; top:0; right:0; width:10px; height:10px; background:#ff2d55; border-radius:50%; display:none; border: 2px solid var(--bg);"></div>
+        </div>
     </div>
     <div class="header-tabs">
         <div class="tab active" onclick="switchFeed('all', this)">EXPLORAR</div>
@@ -91,9 +92,14 @@
     </div>
 </header>
 
+<div id="notifPanel">
+    <div style="font-weight: 800; font-size: 0.7rem; color: var(--primary); margin-bottom: 10px; border-bottom: 1px solid var(--glass-border); padding-bottom: 5px;">ATIVIDADE RECENTE</div>
+    <div id="notifContent"></div>
+</div>
+
 <div id="loginSection" style="height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px;">
-    <div style="font-family:'Orbitron'; font-size:5rem; color:var(--primary);">K</div>
-    <button onclick="login()" class="btn-elite">ACESSAR KLYON</button>
+    <div style="font-family:'Orbitron'; font-size:5rem; color:var(--primary); text-shadow: 0 0 20px var(--primary);">K</div>
+    <button onclick="login()" class="btn-elite" style="padding: 15px 40px;">INGRESSAR NA ELITE</button>
 </div>
 
 <div id="feedSection" class="section">
@@ -102,24 +108,30 @@
 
 <div id="searchSection" class="section">
     <div class="container">
-        <input type="text" id="userSearchInput" placeholder="Buscar @handle..." style="width:100%; padding:15px; border-radius:15px; background:var(--glass); border:1px solid var(--glass-border); color:#fff; margin-bottom:10px;">
-        <button class="btn-elite" style="width:100%" onclick="searchUsers()">PESQUISAR</button>
-        <div id="userResults" style="margin-top:20px;"></div>
+        <h2 style="font-family: 'Orbitron'; font-size: 1rem; color: var(--primary); margin-bottom: 20px;">PESQUISAR MEMBROS</h2>
+        <div style="display:flex; gap:10px; margin-bottom:20px;">
+            <input type="text" id="userSearchInput" placeholder="User handle..." style="flex:1; padding:15px; border-radius:15px; background:var(--glass); border:1px solid var(--glass-border); color:#fff;">
+            <button class="btn-elite" onclick="searchUsers()">GO</button>
+        </div>
+        <div id="userResults"></div>
     </div>
 </div>
 
 <div id="profileSection" class="section">
-    <div class="p-banner"></div>
+    <div style="height: 140px; background: linear-gradient(45deg, #0f172a, #000); border-radius: 0 0 40px 40px;"></div>
     <div class="container" style="text-align:center;">
         <img id="p-photo" src="" class="p-avatar">
-        <h2 id="p-name"></h2>
-        <span style="color:var(--primary)">@<span id="p-handle"></span></span>
-        <div id="p-stats" style="display:flex; justify-content:center; gap:30px; margin:20px 0;">
-            <div><b id="count-posts">0</b><br><small>Posts</small></div>
-            <div><b id="count-friends">0</b><br><small>Amigos</small></div>
+        <h2 id="p-name" style="margin: 10px 0 5px;"></h2>
+        <span style="color:var(--primary); font-weight: 800; font-size: 0.9rem;">@<span id="p-handle"></span></span>
+        
+        <div style="display:flex; justify-content:center; gap:40px; margin:25px 0;">
+            <div><b id="count-posts" style="font-size: 1.2rem; color: var(--primary);">0</b><br><small style="color: var(--text-dim);">Posts</small></div>
+            <div><b id="count-friends" style="font-size: 1.2rem; color: var(--primary);">0</b><br><small style="color: var(--text-dim);">Conexões</small></div>
         </div>
-        <button id="btn-add-friend" class="btn-elite hidden" onclick="handleFriendship()">Adicionar Amigo</button>
-        <div id="myPosts" style="text-align:left; margin-top:30px;"></div>
+
+        <button id="btn-add-friend" class="btn-elite hidden" style="width: 100%; margin-bottom: 30px;" onclick="handleFriendship()">ADICIONAR À ELITE</button>
+        
+        <div id="myPosts" style="text-align:left; border-top: 1px solid var(--glass-border); padding-top: 20px;"></div>
     </div>
 </div>
 
@@ -128,12 +140,16 @@
 <div id="postModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg); z-index:4000; padding:20px;">
     <div class="container">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <span onclick="closePostModal()" style="cursor:pointer; color:var(--text-dim);">Cancelar</span>
-            <button id="pubBtn" class="btn-elite" onclick="publishPost()">Publicar</button>
+            <span onclick="closePostModal()" style="cursor:pointer; color:var(--text-dim); font-weight: 600;">CANCELAR</span>
+            <button id="pubBtn" class="btn-elite" onclick="publishPost()">PUBLICAR</button>
         </div>
-        <textarea id="postText" style="width:100%; height:150px; background:none; border:none; color:#fff; font-size:1.2rem; resize:none;" placeholder="No que está pensando?"></textarea>
-        <img id="post-preview" style="display:none; margin-bottom:15px;">
-        <div id="uploadBtnArea" onclick="document.getElementById('postFile').click()" style="padding:20px; border:2px dashed var(--glass-border); border-radius:20px; text-align:center; cursor:pointer;">📸 Foto</div>
+        <textarea id="postText" style="width:100%; height:180px; background:none; border:none; color:#fff; font-size:1.2rem; font-family: inherit; resize:none;" placeholder="O que você tem para a elite hoje?"></textarea>
+        
+        <img id="post-preview" style="display:none; width:100%; border-radius:20px; margin-bottom:15px; border: 1px solid var(--glass-border);">
+        
+        <div id="uploadArea" onclick="document.getElementById('postFile').click()" style="padding:30px; border:2px dashed var(--glass-border); border-radius:25px; text-align:center; cursor:pointer; color: var(--text-dim);">
+            <span style="font-size: 1.5rem;">📸</span><br><b>ADICIONAR FOTO</b>
+        </div>
         <input type="file" id="postFile" class="hidden" accept="image/*" onchange="previewPost(this)">
     </div>
 </div>
@@ -147,7 +163,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, updateDoc, increment, where, arrayUnion, arrayRemove, getDocs } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, updateDoc, increment, where, arrayUnion, arrayRemove, getDocs, limit } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-storage.js";
 
 const firebaseConfig = {
@@ -165,25 +181,33 @@ const provider = new GoogleAuthProvider();
 
 let uData = null;
 let postFileObj = null;
+let currentProfileId = null;
 
-// --- AUTH ---
+// --- AUTH & SYNC ---
 window.login = () => signInWithPopup(auth, provider);
 
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        const r = doc(db, "users", user.uid);
-        const s = await getDoc(r);
-        if(!s.exists()) {
-            uData = { uid: user.uid, name: user.displayName, photo: user.photoURL, handle: user.email.split('@')[0], friendsList: [], postsCount: 0, friendsCount: 0 };
-            await setDoc(r, uData);
-        } else { uData = s.data(); }
-        
+        await syncUser(user);
         document.getElementById("loginSection").style.display = "none";
         document.getElementById("navBar").style.display = "flex";
         document.getElementById("fab").classList.remove("hidden");
         navigate('feedSection', document.querySelector('.nav-link'));
+        listenNotifs();
     }
 });
+
+async function syncUser(user) {
+    const r = doc(db, "users", user.uid);
+    const s = await getDoc(r);
+    if(!s.exists()) {
+        uData = { uid: user.uid, name: user.displayName, photo: user.photoURL, handle: user.email.split('@')[0], friendsList: [], postsCount: 0, friendsCount: 0 };
+        await setDoc(r, uData);
+    } else { 
+        uData = s.data(); 
+        if(!uData.friendsList) uData.friendsList = [];
+    }
+}
 
 // --- NAVEGAÇÃO ---
 window.navigate = (id, el) => {
@@ -201,7 +225,7 @@ window.switchFeed = (type, el) => {
     loadFeed(type);
 };
 
-// --- FEED & POSTS UI ---
+// --- FEED ---
 function createPostUI(id, p) {
     const isLiked = p.likedBy?.includes(auth.currentUser.uid);
     const div = document.createElement('div');
@@ -209,138 +233,104 @@ function createPostUI(id, p) {
     div.innerHTML = `
         <div class="post-head">
             <img src="${p.userPhoto}" onclick="renderProfile('${p.uid}')">
-            <div><b>${p.userName}</b><br><small>@${p.userHandle}</small></div>
+            <div><b>${p.userName}</b><br><small style="color:var(--primary)">@${p.userHandle}</small></div>
         </div>
         <div class="post-content">${p.text}</div>
         ${p.img ? `<img src="${p.img}" class="post-img">` : ''}
         <div class="post-footer">
-            <button class="btn-social ${isLiked ? 'liked' : ''}" onclick="likePost('${id}')">🔥 <span>${p.likes || 0}</span></button>
-            <button class="btn-social" onclick="toggleComments('${id}')">💬 <span>${p.commCount || 0}</span></button>
-            <button class="btn-social" onclick="repost('${id}')">🔁</button>
-        </div>
-        <div id="drawer-${id}" class="drawer">
-            <div id="list-${id}" style="max-height:150px; overflow-y:auto; margin-bottom:10px;"></div>
-            <div style="display:flex; gap:8px;">
-                <input type="text" id="in-${id}" placeholder="Escreva..." style="flex:1; padding:8px; border-radius:10px; border:none; background:var(--glass); color:#fff;">
-                <button class="btn-elite" style="padding:5px 15px;" onclick="sendComment('${id}')">↑</button>
-            </div>
+            <button class="btn-social ${isLiked ? 'liked' : ''}" onclick="likePost('${id}', '${p.uid}')">🔥 <b>${p.likes || 0}</b></button>
+            <button class="btn-social" onclick="repostPost('${id}')">🔁 Repostar</button>
         </div>`;
     return div;
 }
 
 async function loadFeed(type) {
-    let q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-    if(type === 'friends') q = query(collection(db, "posts"), where("uid", "in", uData.friendsList.length ? uData.friendsList : ['none']), orderBy("createdAt", "desc"));
+    let q = query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(50));
+    
+    if(type === 'friends') {
+        // Correção para listas de amigos vazias
+        const list = uData.friendsList && uData.friendsList.length > 0 ? uData.friendsList : ['null_user'];
+        q = query(collection(db, "posts"), where("uid", "in", list), orderBy("createdAt", "desc"), limit(50));
+    }
     
     onSnapshot(q, s => {
         const feed = document.getElementById('mainFeed');
         feed.innerHTML = "";
+        if(s.empty) feed.innerHTML = "<p style='text-align:center; color:var(--text-dim)'>Nada por aqui ainda...</p>";
         s.forEach(d => feed.appendChild(createPostUI(d.id, d.data())));
     });
 }
 
-// --- FUNÇÕES SOCIAIS (CURTIR, COMENTAR, REPOSTAR) ---
-window.likePost = async (id) => {
-    const r = doc(db, "posts", id);
+// --- AÇÕES SOCIAIS ---
+window.likePost = async (postId, targetUid) => {
+    const r = doc(db, "posts", postId);
     const s = await getDoc(r);
-    const likes = s.data().likedBy || [];
-    if(likes.includes(auth.currentUser.uid)) {
+    const likedBy = s.data().likedBy || [];
+    
+    if(likedBy.includes(auth.currentUser.uid)) {
         await updateDoc(r, { likes: increment(-1), likedBy: arrayRemove(auth.currentUser.uid) });
     } else {
         await updateDoc(r, { likes: increment(1), likedBy: arrayUnion(auth.currentUser.uid) });
+        if(targetUid !== auth.currentUser.uid) {
+            sendNotif(targetUid, `@${uData.handle} curtiu seu post!`);
+        }
     }
 };
 
-window.toggleComments = async (id) => {
-    const d = document.getElementById(`drawer-${id}`);
-    d.style.display = d.style.display === 'block' ? 'none' : 'block';
-    if(d.style.display === 'block') {
-        onSnapshot(query(collection(db, "posts", id, "comments"), orderBy("createdAt", "asc")), s => {
-            const list = document.getElementById(`list-${id}`);
-            list.innerHTML = "";
-            s.forEach(c => {
-                list.innerHTML += `<div class="comment-item"><b>@${c.data().handle}:</b> ${c.data().text}</div>`;
-            });
-        });
-    }
-};
-
-window.sendComment = async (id) => {
-    const inp = document.getElementById(`in-${id}`);
-    if(!inp.value) return;
-    await addDoc(collection(db, "posts", id, "comments"), { 
-        handle: uData.handle, text: inp.value, createdAt: serverTimestamp() 
-    });
-    await updateDoc(doc(db, "posts", id), { commCount: increment(1) });
-    inp.value = "";
-};
-
-window.repost = async (id) => {
+window.repostPost = async (id) => {
     const s = await getDoc(doc(db, "posts", id));
     const p = s.data();
     await addDoc(collection(db, "posts"), {
         uid: auth.currentUser.uid, userName: uData.name, userPhoto: uData.photo, userHandle: uData.handle,
-        text: `🔁 Repostado de @${p.userHandle}:\n"${p.text}"`,
+        text: `🔁 REPOST de @${p.userHandle}:\n\n${p.text}`,
         img: p.img || "", likes: 0, likedBy: [], createdAt: serverTimestamp()
     });
-    alert("Reposte realizado com sucesso!");
+    alert("Copiado para o seu perfil!");
 };
 
-// --- POSTAGEM ---
-window.previewPost = (i) => {
-    postFileObj = i.files[0];
-    const r = new FileReader();
-    r.onload = e => { document.getElementById('post-preview').src = e.target.result; document.getElementById('post-preview').style.display = 'block'; };
-    r.readAsDataURL(postFileObj);
-};
-
-window.closePostModal = () => {
-    document.getElementById('postModal').style.display = 'none';
-    document.getElementById('post-preview').style.display = 'none';
-    postFileObj = null;
-};
-
-window.publishPost = async () => {
-    const txt = document.getElementById('postText').value;
-    const btn = document.getElementById('pubBtn');
-    if(!txt && !postFileObj) return;
-    btn.disabled = true;
-
-    let url = "";
-    if(postFileObj) {
-        const sRef = ref(storage, `posts/${Date.now()}`);
-        const snap = await uploadBytes(sRef, postFileObj);
-        url = await getDownloadURL(snap.ref);
-    }
-
-    await addDoc(collection(db, "posts"), {
-        uid: auth.currentUser.uid, userName: uData.name, userPhoto: uData.photo, userHandle: uData.handle,
-        text: txt, img: url, likes: 0, likedBy: [], commCount: 0, createdAt: serverTimestamp()
+window.handleFriendship = async () => {
+    if(!currentProfileId || currentProfileId === auth.currentUser.uid) return;
+    
+    await updateDoc(doc(db, "users", auth.currentUser.uid), { 
+        friendsList: arrayUnion(currentProfileId), 
+        friendsCount: increment(1) 
+    });
+    await updateDoc(doc(db, "users", currentProfileId), { 
+        friendsCount: increment(1) 
     });
     
-    await updateDoc(doc(db, "users", auth.currentUser.uid), { postsCount: increment(1) });
-    closePostModal();
-    btn.disabled = false;
+    sendNotif(currentProfileId, `@${uData.handle} se conectou com você!`);
+    uData.friendsList.push(currentProfileId);
+    renderProfile(currentProfileId);
 };
+
+async function sendNotif(to, text) {
+    await addDoc(collection(db, "notifications"), { to, text, createdAt: serverTimestamp(), read: false });
+}
 
 // --- BUSCA & PERFIL ---
 window.searchUsers = async () => {
     const t = document.getElementById('userSearchInput').value.toLowerCase();
     const res = document.getElementById('userResults');
-    const q = query(collection(db, "users"), where("handle", ">=", t), where("handle", "<=", t + '\uf8ff'));
+    if(!t) return;
+    
+    const q = query(collection(db, "users"), where("handle", ">=", t), where("handle", "<=", t + '\uf8ff'), limit(10));
     const s = await getDocs(q);
     res.innerHTML = "";
     s.forEach(d => {
         const div = document.createElement('div');
-        div.className = 'post'; div.style.display = 'flex'; div.style.gap = '15px'; div.style.alignItems = 'center';
-        div.innerHTML = `<img src="${d.data().photo}" style="width:50px; height:50px; border-radius:15px;"> <b>@${d.data().handle}</b>`;
+        div.className = 'post'; div.style.display = 'flex'; div.style.gap = '15px'; div.style.alignItems = 'center'; div.style.cursor = 'pointer';
+        div.innerHTML = `<img src="${d.data().photo}" style="width:50px; height:50px; border-radius:15px; object-fit:cover;"> <div><b>${d.data().name}</b><br><small>@${d.data().handle}</small></div>`;
         div.onclick = () => renderProfile(d.id);
         res.appendChild(div);
     });
 };
 
 window.renderProfile = async (uid) => {
+    currentProfileId = uid;
     const s = await getDoc(doc(db, "users", uid));
+    if(!s.exists()) return;
+    
     const d = s.data();
     document.getElementById('p-name').innerText = d.name;
     document.getElementById('p-handle').innerText = d.handle;
@@ -349,19 +339,92 @@ window.renderProfile = async (uid) => {
     document.getElementById('count-friends').innerText = d.friendsCount || 0;
     
     const isMe = uid === auth.currentUser.uid;
-    document.getElementById('btn-add-friend').classList.toggle('hidden', isMe || uData.friendsList.includes(uid));
+    const isFriend = uData.friendsList && uData.friendsList.includes(uid);
+    document.getElementById('btn-add-friend').classList.toggle('hidden', isMe || isFriend);
 
-    onSnapshot(query(collection(db, "posts"), where("uid", "==", uid), orderBy("createdAt", "desc")), snap => {
+    const q = query(collection(db, "posts"), where("uid", "==", uid), orderBy("createdAt", "desc"), limit(20));
+    onSnapshot(q, snap => {
         const div = document.getElementById('myPosts'); div.innerHTML = "";
         snap.forEach(doc => div.appendChild(createPostUI(doc.id, doc.data())));
     });
+    
     navigate('profileSection');
 };
 
-window.handleFriendship = async () => {
-    // profileUid global não definido no sync, extraindo do handle de renderProfile
-    const targetUid = document.getElementById('p-handle').innerText; // Simplificado para o exemplo
-    // Para produção, você deve usar uma variável global profileUid setada no renderProfile
+// --- NOTIFICAÇÕES ---
+window.toggleNotifs = () => {
+    const p = document.getElementById('notifPanel');
+    const isOpening = p.style.display !== 'block';
+    p.style.display = isOpening ? 'block' : 'none';
+    if(isOpening) document.getElementById('bellBadge').style.display = 'none';
+};
+
+function listenNotifs() {
+    const q = query(collection(db, "notifications"), where("to", "==", auth.currentUser.uid), orderBy("createdAt", "desc"), limit(15));
+    onSnapshot(q, s => {
+        const cont = document.getElementById('notifContent');
+        cont.innerHTML = "";
+        let hasUnread = false;
+        s.forEach(d => {
+            if(!d.data().read) hasUnread = true;
+            cont.innerHTML += `<div class="notif-item">${d.data().text}</div>`;
+        });
+        document.getElementById('bellBadge').style.display = hasUnread ? 'block' : 'none';
+    });
+}
+
+// --- POSTAGEM ---
+window.previewPost = (i) => {
+    if(i.files && i.files[0]) {
+        postFileObj = i.files[0];
+        const r = new FileReader();
+        r.onload = e => { 
+            const prev = document.getElementById('post-preview');
+            prev.src = e.target.result; 
+            prev.style.display = 'block';
+            document.getElementById('uploadArea').style.display = 'none';
+        };
+        r.readAsDataURL(postFileObj);
+    }
+};
+
+window.publishPost = async () => {
+    const txt = document.getElementById('postText').value;
+    const btn = document.getElementById('pubBtn');
+    if(!txt && !postFileObj) return;
+    
+    btn.disabled = true;
+    btn.innerText = "WAIT...";
+
+    try {
+        let url = "";
+        if(postFileObj) {
+            const sRef = ref(storage, `posts/${Date.now()}_${auth.currentUser.uid}`);
+            const snap = await uploadBytes(sRef, postFileObj);
+            url = await getDownloadURL(snap.ref);
+        }
+
+        await addDoc(collection(db, "posts"), {
+            uid: auth.currentUser.uid, userName: uData.name, userPhoto: uData.photo, userHandle: uData.handle,
+            text: txt, img: url, likes: 0, likedBy: [], createdAt: serverTimestamp()
+        });
+        
+        await updateDoc(doc(db, "users", auth.currentUser.uid), { postsCount: increment(1) });
+        closePostModal();
+    } catch(e) {
+        alert("Erro ao publicar!");
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "PUBLICAR";
+    }
+};
+
+window.closePostModal = () => {
+    document.getElementById('postModal').style.display = 'none';
+    document.getElementById('postText').value = "";
+    document.getElementById('post-preview').style.display = 'none';
+    document.getElementById('uploadArea').style.display = 'block';
+    postFileObj = null;
 };
 </script>
 </body>
