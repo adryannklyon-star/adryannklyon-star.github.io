@@ -9,28 +9,20 @@
         :root { --primary: #00f2ff; --bg: #030307; --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1); --danger: #ff2d55; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(circle at 50% 0%, #0f172a 0%, #030307 100%); min-height: 100vh; padding-bottom: 100px; }
-        
         header { height: 60px; display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; background: rgba(3,3,7,0.8); backdrop-filter: blur(10px); z-index: 100; }
         .back-btn { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; margin-right: 15px; }
-        
         .container { max-width: 500px; margin: auto; padding: 20px; }
         h2 { font-family: 'Orbitron'; font-size: 1.2rem; color: var(--primary); margin-bottom: 25px; }
-
         .section { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 24px; padding: 20px; margin-bottom: 20px; }
         .section-title { font-size: 0.7rem; font-family: 'Orbitron'; color: var(--primary); margin-bottom: 15px; opacity: 0.7; letter-spacing: 1px; }
-
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; font-size: 0.8rem; margin-bottom: 8px; color: #94a3b8; }
         .input-group input, .input-group textarea { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px; color: #fff; font-family: inherit; }
-        
         .btn { width: 100%; padding: 15px; border-radius: 15px; border: none; font-family: 'Orbitron'; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 10px; }
         .btn-save { background: var(--primary); color: #000; }
         .btn-logout { background: var(--glass); color: #fff; border: 1px solid var(--glass-border); }
         .btn-delete { background: transparent; color: var(--danger); border: 1px solid var(--danger); font-size: 0.7rem; margin-top: 30px; }
-
         .version-tag { text-align: center; font-size: 0.7rem; color: #475569; margin-top: 20px; font-family: 'Orbitron'; }
-
-        /* Bottom Nav Original */
         .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 450px; height: 70px; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px); border-radius: 28px; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-around; z-index: 1000; }
         .nav-link img { width: 26px; filter: invert(1); opacity: 0.4; }
         .nav-link.active img { opacity: 1; filter: drop-shadow(0 0 8px var(--primary)); }
@@ -47,25 +39,21 @@
     <h2>Configurações</h2>
 
     <div class="section">
-    <div class="section-title">EDITAR PERFIL</div>
-    
-
-
-    <div class="input-group">
-        <label>Nome</label>
-        <input type="text" id="confName">
+        <div class="section-title">EDITAR PERFIL</div>
+        <div class="input-group">
+            <label>Nome</label>
+            <input type="text" id="confName">
+        </div>
+        <div class="input-group">
+            <label>@ Handle (Exclusivo)</label>
+            <input type="text" id="confHandle">
+        </div>
+        <div class="input-group">
+            <label>Bio</label>
+            <textarea id="confBio" rows="3"></textarea>
+        </div>
+        <button class="btn btn-save" id="btnSave" onclick="updateAccount()">SALVAR ALTERAÇÕES</button>
     </div>
-    <div class="input-group">
-        <label>@ Handle (Exclusivo)</label>
-        <input type="text" id="confHandle">
-    </div>
-    <div class="input-group">
-        <label>Bio</label>
-        <textarea id="confBio" rows="3" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px; color: #fff; font-family: inherit; resize: none;"></textarea>
-    </div>
-    
-    <button class="btn btn-save" id="btnSave" onclick="updateAccount()">SALVAR ALTERAÇÕES</button>
-</div>
 
     <div class="section">
         <div class="section-title">CONTA</div>
@@ -86,8 +74,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-storage.js";
+    import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
     const firebaseConfig = { 
         apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", 
@@ -99,87 +86,78 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const storage = getStorage(app);
 
     let userData = null;
 
     onAuthStateChanged(auth, async user => {
         if (!user) return window.location.href = "login.html";
         const snap = await getDoc(doc(db, "users", user.uid));
-        userData = snap.data();
-        
-        // Preencher inputs
-        document.getElementById('confName').value = userData.name || "";
-        document.getElementById('confHandle').value = userData.handle || "";
-        document.getElementById('confBio').value = userData.bio || "";
+        if (snap.exists()) {
+            userData = snap.data();
+            document.getElementById('confName').value = userData.name || "";
+            document.getElementById('confHandle').value = userData.handle || "";
+            document.getElementById('confBio').value = userData.bio || "";
+        }
     });
 
-    // ATUALIZAR CONTA
     window.updateAccount = async () => {
         const btn = document.getElementById('btnSave');
+        const newName = document.getElementById('confName').value;
         const newHandle = document.getElementById('confHandle').value.toLowerCase().replace(/\s/g, '');
+        const newBio = document.getElementById('confBio').value;
         
-        
-        btn.disabled = true; btn.innerText = "ATUALIZANDO...";
+        btn.disabled = true; 
+        btn.innerText = "ATUALIZANDO...";
 
-        
-
-        // Se mudou o handle, checar se já existe
-        if(newHandle !== userData.handle) {
-            const q = query(collection(db, "users"), where("handle", "==", newHandle));
-            const check = await getDocs(q);
-            if(!check.empty) {
-                alert("Este @handle já está em uso por outro membro da Elite.");
-                btn.disabled = false; btn.innerText = "SALVAR ALTERAÇÕES";
-                return;
+        try {
+            // Se mudou o handle, verifica se já existe outro igual
+            if(newHandle !== userData.handle) {
+                const q = query(collection(db, "users"), where("handle", "==", newHandle));
+                const check = await getDocs(q);
+                if(!check.empty) {
+                    alert("Este @handle já está em uso.");
+                    btn.disabled = false; 
+                    btn.innerText = "SALVAR ALTERAÇÕES";
+                    return;
+                }
             }
+
+            await updateDoc(doc(db, "users", auth.currentUser.uid), {
+                name: newName,
+                handle: newHandle,
+                bio: newBio
+            });
+
+            alert("Perfil atualizado!");
+            window.location.href = "perfil.html";
+
+        } catch (e) {
+            console.error(e);
+            alert("Erro ao salvar. Tente novamente.");
+            btn.disabled = false;
+            btn.innerText = "SALVAR ALTERAÇÕES";
         }
-
-      
-        }
-
-        await updateDoc(doc(db, "users", auth.currentUser.uid), {
-            name: document.getElementById('confName').value,
-            handle: newHandle,
-            bio: document.getElementById('confBio').value,
-           
-        });
-
-        alert("Perfil atualizado com sucesso!");
-        window.location.href = "perfil.html";
     };
 
-    // SAIR
     window.logout = () => signOut(auth).then(() => window.location.href = "login.html");
 
-    // DELETAR CONTA (Ação Crítica)
     window.deleteAccount = async () => {
-        const confirmar = confirm("ATENÇÃO: Isso apagará todos os seus posts, amigos e dados permanentemente. Você tem certeza?");
+        const confirmar = confirm("Isso apagará tudo permanentemente. Tem certeza?");
         if(!confirmar) return;
 
         const uid = auth.currentUser.uid;
         const batch = writeBatch(db);
 
         try {
-            // 1. Buscar todos os posts do usuário e marcar para deletar
             const qPosts = query(collection(db, "posts"), where("uid", "==", uid));
             const postsSnap = await getDocs(qPosts);
             postsSnap.forEach(d => batch.delete(d.ref));
-
-            // 2. Deletar documento do usuário
             batch.delete(doc(db, "users", uid));
-
-            // 3. Executar limpeza no banco
             await batch.commit();
-
-            // 4. Deletar o usuário do sistema de autenticação
             await deleteUser(auth.currentUser);
-            
-            alert("Conta eliminada com sucesso.");
             window.location.href = "login.html";
         } catch (e) {
-            console.error(e);
-            alert("Para deletar a conta por segurança, você precisa ter feito login recentemente. Saia e entre de novo para confirmar.");
+            alert("Faça login novamente para deletar a conta com segurança.");
         }
     };
 </script>
