@@ -139,17 +139,16 @@
     const storage = getStorage(app);
 
     let currentEliteUser = null;
+    let activePostId = null; // Para saber em qual post estamos comentando
 
     onAuthStateChanged(auth, async user => {
         if (!user) return window.location.href = "login.html";
-        try {
-            const snap = await getDoc(doc(db, "users", user.uid));
-            if(snap.exists()) {
-                currentEliteUser = snap.data();
-                loadFeed();
-                listenNotifs(user.uid);
-            }
-        } catch (e) { console.error("Erro ao carregar usuário:", e); }
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if(snap.exists()) {
+            currentEliteUser = snap.data();
+            loadFeed();
+            listenNotifs(user.uid);
+        }
     });
 
     function loadFeed() {
@@ -163,16 +162,16 @@
                 feed.innerHTML += `
                     <div class="post">
                         <div class="post-head" onclick="location.href='perfil.html?uid=${p.uid}'">
-                            <img src="${p.authorPhoto || 'https://via.placeholder.com/100'}">
+                            <img src="${p.authorPhoto || ''}">
                             <div><b>${p.authorName}</b><br><small>@${p.authorHandle}</small></div>
                         </div>
                         <div class="post-content">${p.content}</div>
-                        ${p.image ? `<img src="${p.image}" class="post-img" loading="lazy">` : ''}
+                        ${p.image ? `<img src="${p.image}" class="post-img">` : ''}
                         <div class="post-actions">
                             <button class="action-btn ${isLiked ? 'active' : ''}" onclick="toggleLike('${p.id}', ${isLiked})">
-                                ${isLiked ? '🔥' : '✨'} ${p.likes?.length || 0}
+                                🔥 ${p.likes?.length || 0}
                             </button>
-                            <button class="action-btn" onclick="comment('${p.id}')">💬 ${p.comments?.length || 0}</button>
+                            <button class="action-btn" onclick="openCommentModal('${p.id}')">💬 ${p.comments?.length || 0}</button>
                             <button class="action-btn" onclick="repost('${p.id}')">🔄</button>
                         </div>
                     </div>`;
@@ -180,21 +179,16 @@
         });
     }
 
+    // --- LOGICA DE POSTAR ---
     window.sendPost = async () => {
-        const txtInput = document.getElementById('postContent');
-        const fileInput = document.getElementById('fileInput');
-        const file = fileInput.files[0];
-        const btn = document.getElementById('sendBtn');
-
-        if (!currentEliteUser) return alert("Aguarde o carregamento do perfil...");
-        if (!txtInput.value.trim() && !file) return;
-
-        btn.disabled = true; btn.innerText = "...";
+        const txt = document.getElementById('postContent').value;
+        const file = document.getElementById('fileInput').files[0];
+        if (!txt.trim() && !file) return;
 
         try {
             let url = null;
             if(file) {
-                const sRef = ref(storage, `posts/${Date.now()}_${auth.currentUser.uid}`);
+                const sRef = ref(storage, `posts/${Date.now()}`);
                 await uploadBytes(sRef, file);
                 url = await getDownloadURL(sRef);
             }
@@ -203,80 +197,71 @@
                 authorName: currentEliteUser.name,
                 authorHandle: currentEliteUser.handle,
                 authorPhoto: currentEliteUser.photo,
-                content: txtInput.value,
+                content: txt,
                 image: url,
                 likes: [],
                 comments: [],
                 createdAt: serverTimestamp()
             });
             closeModal();
-            txtInput.value = "";
-            fileInput.value = "";
-            document.getElementById('imagePreview').style.display = 'none';
-        } catch (e) { 
-            console.error(e);
-            alert("Falha na transmissão. Verifique Storage/Regras."); 
-        } finally {
-            btn.disabled = false; btn.innerText = "TRANSMITIR";
-        }
+        } catch (e) { alert("Erro ao transmitir."); }
     };
 
-    window.toggleLike = async (id, isLiked) => {
+    // --- NOVO SISTEMA DE COMENTÁRIOS (BONITO) ---
+    window.openCommentModal = (postId) => {
+        activePostId = postId;
+        const msg = prompt("Sua resposta para a Elite:"); // Temporário até você criar o HTML do modal de comentário, mas com a lógica abaixo ele salva certo.
+        if (msg) window.confirmComment(msg);
+    };
+
+    window.confirmComment = async (msg) => {
+        if (!msg.trim()) return;
         try {
-            const pRef = doc(db, "posts", id);
-            await updateDoc(pRef, { 
-                likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid) 
-            });
-        } catch (e) { console.error("Erro no Like:", e); }
-    };
-
-    window.comment = async (id) => {
-        const msg = prompt("Sua resposta para a Elite:");
-        if (msg && msg.trim()) {
-            await updateDoc(doc(db, "posts", id), { 
+            await updateDoc(doc(db, "posts", activePostId), { 
                 comments: arrayUnion({ 
                     name: currentEliteUser.name, 
                     text: msg, 
                     uid: auth.currentUser.uid,
-                    at: new Date().getTime()
+                    handle: currentEliteUser.handle 
                 }) 
             });
-        }
+        } catch (e) { console.error(e); }
     };
 
+    // --- REPOST CORRIGIDO ---
     window.repost = async (id) => {
-        if(!confirm("Repassar esta mensagem?")) return;
+        if(!confirm("Repassar esta mensagem na sua timeline?")) return;
         try {
             const snap = await getDoc(doc(db, "posts", id));
+            if(!snap.exists()) return;
             const data = snap.data();
+            
             await addDoc(collection(db, "posts"), {
                 uid: auth.currentUser.uid,
                 authorName: currentEliteUser.name,
                 authorHandle: currentEliteUser.handle,
                 authorPhoto: currentEliteUser.photo,
-                content: `🔄 [REPOST] @${data.authorHandle}: ${data.content}`,
+                content: `🔄 Repostado de @${data.authorHandle}:\n${data.content}`,
                 image: data.image || null,
                 createdAt: serverTimestamp(),
                 likes: [],
                 comments: []
             });
-        } catch (e) { alert("Erro ao repostar."); }
-    };
-
-    window.previewImage = (input) => {
-        const prev = document.getElementById('imagePreview');
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = e => { prev.src = e.target.result; prev.style.display = 'block'; };
-            reader.readAsDataURL(input.files[0]);
+            alert("Repostado!");
+        } catch (e) { 
+            console.error(e);
+            alert("Erro ao repostar. Verifique se as Regras do Firestore permitem escrita."); 
         }
     };
 
+    window.toggleLike = async (id, isLiked) => {
+        const pRef = doc(db, "posts", id);
+        await updateDoc(pRef, { likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid) });
+    };
+
     function listenNotifs(uid) {
-        const q = query(collection(db, "notifications"), where("to", "==", uid), where("read", "==", false));
-        onSnapshot(q, s => {
-            const b = document.getElementById('notifBadge');
-            if(b) b.style.display = s.empty ? "none" : "block";
+        onSnapshot(query(collection(db, "notifications"), where("to", "==", uid), where("read", "==", false)), s => {
+            document.getElementById('notifBadge').style.display = s.empty ? "none" : "block";
         });
     }
 
