@@ -197,55 +197,79 @@
     }
 
     // Função de postagem com Upload Real de Foto
+    // POSTAR COM FOTO (Versão Blindada)
     window.sendPost = async () => {
         const text = document.getElementById('postContent').value;
-        const file = document.getElementById('fileInput').files[0];
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+        const btn = document.getElementById('sendBtn');
+
         if (!text.trim() && !file) return;
 
-        const btn = document.getElementById('sendBtn');
-        btn.disabled = true; btn.innerText = "ENVIANDO...";
+        btn.disabled = true; 
+        btn.innerText = "ENVIANDO...";
 
-        let imgUrl = null;
-        if(file) {
-            const storageRef = ref(storage, `posts/${Date.now()}_${auth.currentUser.uid}`);
-            await uploadBytes(storageRef, file);
-            imgUrl = await getDownloadURL(storageRef);
+        try {
+            let imgUrl = null;
+            
+            // Upload da Imagem se existir
+            if(file) {
+                const storageRef = ref(storage, `posts/${Date.now()}_${auth.currentUser.uid}`);
+                const snapshot = await uploadBytes(storageRef, file);
+                imgUrl = await getDownloadURL(snapshot.ref);
+            }
+
+            // Criação do documento no Firestore
+            await addDoc(collection(db, "posts"), {
+                uid: auth.currentUser.uid,
+                authorName: currentEliteUser.name,
+                authorPhoto: currentEliteUser.photo,
+                authorHandle: currentEliteUser.handle,
+                content: text,
+                image: imgUrl,
+                createdAt: serverTimestamp(),
+                likes: [],
+                comments: []
+            });
+
+            // Limpeza e fechamento
+            closeModal();
+            document.getElementById('postContent').value = "";
+            fileInput.value = "";
+        } catch (error) {
+            console.error("ERRO AO POSTAR:", error);
+            alert("Erro ao postar. Verifique se o Storage está ativado no Firebase.");
+        } finally {
+            btn.disabled = false; 
+            btn.innerText = "POSTAR";
         }
-
-        await addDoc(collection(db, "posts"), {
-            uid: auth.currentUser.uid,
-            authorName: currentEliteUser.name,
-            authorPhoto: currentEliteUser.photo,
-            authorHandle: currentEliteUser.handle,
-            content: text,
-            image: imgUrl,
-            createdAt: serverTimestamp(),
-            likes: [],
-            comments: []
-        });
-
-        closeModal();
-        btn.disabled = false; btn.innerText = "POSTAR";
-        document.getElementById('postContent').value = "";
-        document.getElementById('fileInput').value = "";
     };
 
     window.toggleLike = async (postId, isLiked) => {
-        await updateDoc(doc(db, "posts", postId), {
-            likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid)
-        });
+        try {
+            await updateDoc(doc(db, "posts", postId), {
+                likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid)
+            });
+        } catch (e) { console.error("Erro no Like:", e); }
     };
 
     function listenNotifs(uid) {
         const q = query(collection(db, "notifications"), where("to", "==", uid), where("read", "==", false));
         onSnapshot(q, s => {
-            // O Badge aparece no sino que está no menu inferior
-            document.getElementById('notifBadge').style.display = s.empty ? "none" : "block";
+            const badge = document.getElementById('notifBadge');
+            if(badge) badge.style.display = s.empty ? "none" : "block";
         });
     }
 
-    window.openModal = () => document.getElementById('postModal').style.display = 'flex';
-    window.closeModal = () => document.getElementById('postModal').style.display = 'none';
+    window.openModal = () => {
+        document.getElementById('postModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Trava o scroll da página atrás
+    };
+
+    window.closeModal = () => {
+        document.getElementById('postModal').style.display = 'none';
+        document.body.style.overflow = 'auto'; // Destrava o scroll
+    };
 
 </script>
 </body>
