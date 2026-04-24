@@ -6,14 +6,7 @@
     <title>KLYON | Anonymous Network</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --primary: #00f2ff; 
-            --bg: #030307; 
-            --glass: rgba(255, 255, 255, 0.05); 
-            --glass-border: rgba(255, 255, 255, 0.1); 
-            --text-dim: #94a3b8; 
-        }
-
+        :root { --primary: #00f2ff; --bg: #030307; --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1); --text-dim: #94a3b8; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(circle at 50% 0%, #0f172a 0%, #030307 100%); min-height: 100vh; padding-bottom: 100px; }
         
@@ -22,200 +15,171 @@
         
         .container { max-width: 500px; margin: auto; padding-top: 75px; }
 
-        /* Estilo do Avatar Neon (Substitui a Foto) */
-        .neon-avatar {
-            width: 44px; height: 44px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid var(--primary);
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Orbitron';
-            color: var(--primary);
-            font-size: 1.2rem;
-            text-shadow: 0 0 10px var(--primary);
-            box-shadow: inset 0 0 10px var(--primary), 0 0 5px var(--primary);
-            flex-shrink: 0;
-        }
+        .neon-avatar { width: 44px; height: 44px; background: rgba(0, 0, 0, 0.5); border: 2px solid var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; color: var(--primary); font-size: 1.2rem; text-shadow: 0 0 10px var(--primary); box-shadow: inset 0 0 10px var(--primary); flex-shrink: 0; }
 
-        .post { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 24px; padding: 18px; margin: 0 15px 15px 15px; animation: fadeIn 0.4s ease; }
-        .post-head { display: flex; gap: 14px; align-items: center; margin-bottom: 12px; }
-        .post-content { font-size: 1.05rem; line-height: 1.6; color: #e2e8f0; white-space: pre-wrap; word-break: break-word; }
+        .post { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 24px; padding: 18px; margin: 0 15px 15px 15px; }
+        .mention { color: var(--primary); text-decoration: none; font-weight: 600; cursor: pointer; }
+        .mention:hover { text-decoration: underline; }
 
-        .post-actions { display: flex; gap: 20px; border-top: 1px solid var(--glass-border); padding-top: 12px; margin-top: 12px; }
-        .action-btn { background: none; border: none; color: var(--text-dim); font-size: 0.8rem; display: flex; align-items: center; gap: 6px; cursor: pointer; font-family: 'Orbitron'; }
-        .action-btn.active { color: var(--primary); text-shadow: 0 0 8px var(--primary); }
+        .comment-section { margin-top: 15px; padding-top: 10px; border-top: 1px dashed var(--glass-border); }
+        .comment { font-size: 0.85rem; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 12px; margin-top: 8px; }
+        .comment b { color: var(--primary); font-family: 'Orbitron'; font-size: 0.7rem; }
 
-        /* Modais */
+        .post-actions { display: flex; gap: 15px; margin-top: 12px; }
+        .action-btn { background: none; border: none; color: var(--text-dim); font-size: 0.75rem; display: flex; align-items: center; gap: 5px; cursor: pointer; font-family: 'Orbitron'; transition: 0.2s; }
+        .action-btn.active { color: var(--primary); }
+
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 4000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .modal-card { background: #0f172a; width: 90%; max-width: 450px; padding: 25px; border-radius: 24px; border: 1px solid var(--primary); box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); }
-        textarea { width: 100%; height: 150px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 15px; color: #fff; font-size: 1.1rem; padding: 15px; resize: none; margin: 15px 0; font-family: 'Plus Jakarta Sans'; }
+        .modal-card { background: #0f172a; width: 90%; max-width: 450px; padding: 25px; border-radius: 24px; border: 1px solid var(--primary); }
+        textarea { width: 100%; height: 120px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 15px; color: #fff; padding: 15px; resize: none; margin-top: 10px; }
 
-        .btn-main { width: 100%; background: var(--primary); border: none; padding: 15px; border-radius: 15px; font-weight: 800; font-family: 'Orbitron'; cursor: pointer; color: #000; transition: 0.3s; }
-        .btn-main:active { transform: scale(0.98); }
-        
+        .btn-main { width: 100%; background: var(--primary); border: none; padding: 15px; border-radius: 15px; font-weight: 800; font-family: 'Orbitron'; cursor: pointer; color: #000; }
         #fab { position: fixed; bottom: 105px; right: 25px; width: 60px; height: 60px; background: var(--primary); border-radius: 20px; border: none; font-size: 32px; cursor: pointer; z-index: 999; box-shadow: 0 0 15px var(--primary); }
-
+        
         .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 94%; max-width: 480px; height: 70px; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px); border-radius: 28px; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-around; z-index: 1000; }
         .nav-link img { width: 24px; filter: invert(1); opacity: 0.4; }
-        .nav-link.active img { opacity: 1; filter: drop-shadow(0 0 8px var(--primary)) invert(1); }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <header><div class="logo">KLYON</div></header>
 
-<div id="postModal" class="modal">
-    <div class="modal-card">
-        <h2 style="font-family:'Orbitron'; font-size: 0.9rem; color: var(--primary); margin: 0; letter-spacing: 2px;">NOVA TRANSMISSÃO</h2>
-        <textarea id="postContent" placeholder="O que a elite precisa saber?"></textarea>
-        <button id="sendBtn" onclick="sendPost()" class="btn-main">TRANSMITIR</button>
-        <button onclick="closeModal('postModal')" style="width:100%; background:transparent; color:#ff2d55; border:none; margin-top:15px; cursor:pointer; font-family:'Orbitron'; font-size: 0.7rem;">ABORTAR</button>
-    </div>
-</div>
-
 <div id="commentModal" class="modal">
     <div class="modal-card">
-        <h2 style="font-family:'Orbitron'; font-size: 0.9rem; color: var(--primary); margin: 0;">DECODIFICAR RESPOSTA</h2>
-        <textarea id="commentContent" placeholder="Digite sua resposta anonima..."></textarea>
-        <button id="commentBtn" onclick="confirmComment()" class="btn-main">RESPONDER</button>
-        <button onclick="closeModal('commentModal')" style="width:100%; background:transparent; color:#ff2d55; border:none; margin-top:15px; cursor:pointer;">ABORTAR</button>
+        <h2 id="commentTitle" style="font-family:'Orbitron'; font-size: 0.8rem; color: var(--primary);">RESPONDER TRANSMISSÃO</h2>
+        <textarea id="commentContent" placeholder="Sua resposta..."></textarea>
+        <button id="confirmCommentBtn" class="btn-main">ENVIAR RESPOSTA</button>
+        <button onclick="closeModal('commentModal')" style="width:100%; background:transparent; color:#ff2d55; border:none; margin-top:10px; cursor:pointer;">CANCELAR</button>
     </div>
 </div>
 
 <main class="container" id="feed"></main>
-<button id="fab" onclick="openModal('postModal')">+</button>
+<button id="fab" onclick="openPostModal()">+</button>
 
 <nav class="bottom-nav">
-    <a href="index.html" class="nav-link active"><img src="https://cdn-icons-png.flaticon.com/512/1946/1946488.png"></a>
+    <a href="index.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1946/1946488.png"></a>
     <a href="buscar.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/149/149852.png"></a>
-    <a href="notificacoes.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/3602/3602145.png"></a>
     <a href="perfil.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png"></a>
 </nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, arrayUnion, arrayRemove, addDoc, serverTimestamp, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, arrayUnion, arrayRemove, addDoc, serverTimestamp, query, orderBy, where } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
     const firebaseConfig = { 
         apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", 
         authDomain: "klyon-a97ba.firebaseapp.com", 
-        projectId: "klyon-a97ba", 
-        storageBucket: "klyon-a97ba.appspot.com" 
+        projectId: "klyon-a97ba"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let currentEliteUser = null;
-    let activePostId = null;
+    let me = null;
 
     onAuthStateChanged(auth, async user => {
         if (!user) return window.location.href = "login.html";
         const snap = await getDoc(doc(db, "users", user.uid));
-        if(snap.exists()) {
-            currentEliteUser = snap.data();
-            loadFeed();
-        }
+        me = snap.data();
+        loadFeed();
     });
 
+    // Função para transformar @usuario em link
+    function parseMentions(text) {
+        return text.replace(/@(\w+)/g, '<a href="perfil.html?u=$1" class="mention">@$1</a>');
+    }
+
     function loadFeed() {
-        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(50));
+        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
         onSnapshot(q, snapshot => {
             const feed = document.getElementById('feed');
             feed.innerHTML = "";
             snapshot.forEach(docSnap => {
-                const p = {id: docSnap.id, ...docSnap.data()};
-                const isLiked = p.likes?.includes(auth.currentUser.uid);
-                // Pega a primeira letra do nome para o Avatar Neon
-                const initial = (p.authorName || "U").charAt(0).toUpperCase();
+                renderPost(docSnap.id, docSnap.data());
+            });
+        });
+    }
 
-                feed.innerHTML += `
-                    <div class="post">
-                        <div class="post-head">
-                            <div class="neon-avatar">${initial}</div>
-                            <div>
-                                <b>${p.authorName}</b><br>
-                                <small style="color:var(--primary); font-family:'Orbitron'; font-size:0.6rem;">@${p.authorHandle}</small>
-                            </div>
-                        </div>
-                        <div class="post-content">${p.content}</div>
-                        <div class="post-actions">
-                            <button class="action-btn ${isLiked ? 'active' : ''}" onclick="toggleLike('${p.id}', ${isLiked})">🔥 ${p.likes?.length || 0}</button>
-                            <button class="action-btn" onclick="openCommentModal('${p.id}')">💬 ${p.comments?.length || 0}</button>
-                            <button class="action-btn" onclick="repost('${p.id}')">🔄</button>
+    async function renderPost(id, p) {
+        const isLiked = p.likes?.includes(auth.currentUser.uid);
+        const postDiv = document.createElement('div');
+        postDiv.className = 'post';
+        postDiv.innerHTML = `
+            <div class="post-head">
+                <div class="neon-avatar">${p.authorName.charAt(0)}</div>
+                <div>
+                    <b>${p.authorName}</b><br>
+                    <small style="color:var(--primary); font-size:0.6rem;">@${p.authorHandle}</small>
+                </div>
+            </div>
+            <div class="post-content">${parseMentions(p.content)}</div>
+            <div class="post-actions">
+                <button class="action-btn ${isLiked ? 'active' : ''}" onclick="window.likePost('${id}', ${isLiked})">🔥 ${p.likes?.length || 0}</button>
+                <button class="action-btn" onclick="window.prepComment('${id}')">💬 Comentar</button>
+            </div>
+            <div class="comment-section" id="comments-${id}"></div>
+        `;
+        document.getElementById('feed').appendChild(postDiv);
+        loadComments(id);
+    }
+
+    function loadComments(postId) {
+        const q = query(collection(db, `posts/${postId}/comments`), orderBy("createdAt", "asc"));
+        onSnapshot(q, snap => {
+            const cBox = document.getElementById(`comments-${postId}`);
+            cBox.innerHTML = "";
+            snap.forEach(cDoc => {
+                const c = cDoc.data();
+                const isCLiked = c.likes?.includes(auth.currentUser.uid);
+                cBox.innerHTML += `
+                    <div class="comment">
+                        <b>@${c.handle}</b>: ${parseMentions(c.text)}
+                        <div style="margin-top:5px; display:flex; gap:10px;">
+                            <span style="cursor:pointer; font-size:0.7rem; color:${isCLiked?'var(--primary)':'#667'}" 
+                                  onclick="window.likeComment('${postId}', '${cDoc.id}', ${isCLiked})">🔥 ${c.likes?.length || 0}</span>
+                            <span style="cursor:pointer; font-size:0.7rem; color:#667" onclick="window.prepComment('${postId}', '@${c.handle} ')">Responder</span>
                         </div>
                     </div>`;
             });
         });
     }
 
-    window.sendPost = async () => {
-        const txt = document.getElementById('postContent').value;
-        if (!txt.trim()) return;
-        try {
-            await addDoc(collection(db, "posts"), {
+    // Window Functions para os botões funcionarem
+    window.likePost = (id, isLiked) => {
+        updateDoc(doc(db, "posts", id), {
+            likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid)
+        });
+    };
+
+    window.likeComment = (postId, commentId, isLiked) => {
+        updateDoc(doc(db, `posts/${postId}/comments`, commentId), {
+            likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid)
+        });
+    };
+
+    window.prepComment = (postId, mention = "") => {
+        const modal = document.getElementById('commentModal');
+        const input = document.getElementById('commentContent');
+        input.value = mention;
+        modal.style.display = 'flex';
+        document.getElementById('confirmCommentBtn').onclick = async () => {
+            if(!input.value.trim()) return;
+            await addDoc(collection(db, `posts/${postId}/comments`), {
                 uid: auth.currentUser.uid,
-                authorName: currentEliteUser.name,
-                authorHandle: currentEliteUser.handle,
-                content: txt,
+                handle: me.handle,
+                text: input.value,
                 likes: [],
-                comments: [],
                 createdAt: serverTimestamp()
             });
-            closeModal('postModal');
-            document.getElementById('postContent').value = "";
-        } catch (e) { console.error(e); }
+            modal.style.display = 'none';
+            input.value = "";
+        };
     };
 
-    window.openCommentModal = (id) => {
-        activePostId = id;
-        document.getElementById('commentModal').style.display = 'flex';
-    };
-
-    window.confirmComment = async () => {
-        const msg = document.getElementById('commentContent').value;
-        if (!msg.trim()) return;
-        try {
-            await updateDoc(doc(db, "posts", activePostId), {
-                comments: arrayUnion({
-                    uid: auth.currentUser.uid,
-                    name: currentEliteUser.name,
-                    text: msg
-                })
-            });
-            closeModal('commentModal');
-            document.getElementById('commentContent').value = "";
-        } catch (e) { console.error(e); }
-    };
-
-    window.repost = async (id) => {
-        try {
-            const snap = await getDoc(doc(db, "posts", id));
-            const data = snap.data();
-            await addDoc(collection(db, "posts"), {
-                uid: auth.currentUser.uid,
-                authorName: currentEliteUser.name,
-                authorHandle: currentEliteUser.handle,
-                content: `🔄 [REPOST] @${data.authorHandle}: ${data.content}`,
-                likes: [],
-                comments: [],
-                createdAt: serverTimestamp()
-            });
-            alert("Transmitido na sua timeline.");
-        } catch (e) { alert("Falha no repost."); }
-    };
-
-    window.toggleLike = async (id, isLiked) => {
-        const pRef = doc(db, "posts", id);
-        await updateDoc(pRef, { likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid) });
-    };
-
-    window.openModal = (id) => document.getElementById(id).style.display = 'flex';
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+
 </script>
 </body>
 </html>
