@@ -1,114 +1,46 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KLYON | Perfil</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
-    <style>
-        :root { --primary: #00f2ff; --bg: #030307; --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1); }
-        body { margin: 0; background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(circle at 50% 0%, #0f172a 0%, #030307 100%); min-height: 100vh; padding-bottom: 100px; }
-        .header-capa { height: 160px; background-size: cover; background-position: center; background-color: #1a1a2e; position: relative; }
-        .container { max-width: 550px; margin: auto; padding: 0 15px; position: relative; }
-        .avatar { width: 100px; height: 100px; border-radius: 25px; border: 4px solid var(--bg); margin-top: -50px; object-fit: cover; }
-        .post { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 24px; padding: 18px; margin-top: 15px; }
-        .btn-edit { background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 8px 15px; border-radius: 20px; float: right; margin-top: 10px; font-family: 'Orbitron'; font-size: 0.7rem; cursor: pointer; }
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 3000; display: none; align-items: center; justify-content: center; }
-        .modal-card { background: #0f172a; width: 90%; max-width: 400px; padding: 25px; border-radius: 24px; border: 1px solid var(--primary); }
-        .field { margin-bottom: 15px; }
-        .field label { display: block; font-size: 0.7rem; color: var(--primary); margin-bottom: 5px; }
-        .field input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 10px; border-radius: 10px; color: #fff; }
-        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; height: 65px; background: rgba(15, 23, 42, 0.95); border-radius: 25px; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-around; z-index: 1000; }
-        .nav-link img { width: 24px; filter: invert(1); opacity: 0.4; }
-    </style>
-</head>
-<body>
-
-<div id="editModal" class="modal">
-    <div class="modal-card">
-        <div class="field"><label>NOME</label><input type="text" id="editName"></div>
-        <div class="field"><label>FOTO PERFIL (URL)</label><input type="text" id="editPhoto"></div>
-        <div class="field"><label>FOTO CAPA (URL)</label><input type="text" id="editCover"></div>
-        <button onclick="saveProfile()" style="width:100%; background:var(--primary); padding:12px; border-radius:12px; border:none; font-weight:800;">SALVAR</button>
-        <button onclick="document.getElementById('editModal').style.display='none'" style="width:100%; background:transparent; color:red; border:none; margin-top:10px;">Cancelar</button>
-    </div>
-</div>
-
-<div class="header-capa" id="uCover"></div>
-<div class="container">
-    <button class="btn-edit" id="btnEdit" onclick="document.getElementById('editModal').style.display='flex'" style="display:none;">EDITAR</button>
-    <img id="uPhoto" class="avatar" src="">
-    <h2 id="uName" style="margin: 10px 0 0 0; font-family:'Orbitron';"></h2>
-    <p id="uHandle" style="color:var(--primary); margin: 0 0 20px 0;"></p>
-    
-    <div id="uPosts"></div>
-</div>
-
-<nav class="bottom-nav">
-    <a href="index.html" class="nav-link active">
-        <img src="https://cdn-icons-png.flaticon.com/512/1946/1946488.png">
-    </a>
-    <a href="buscar.html" class="nav-link">
-        <img src="https://cdn-icons-png.flaticon.com/512/149/149852.png">
-    </a>
-    <a href="notificacoes.html" class="nav-link">
-        <img src="https://cdn-icons-png.flaticon.com/512/3602/3602145.png">
-        <div id="notifBadge" class="notif-badge"></div>
-    </a>
-    <a href="perfil.html" class="nav-link">
-        <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png">
-    </a>
-</nav>
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-    import { getFirestore, doc, onSnapshot, collection, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+    // ... imports e configs ...
 
-    const firebaseConfig = { apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", authDomain: "klyon-a97ba.firebaseapp.com", projectId: "klyon-a97ba", storageBucket: "klyon-a97ba.appspot.com" };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    window.handleFriendship = async () => {
+        const myUid = auth.currentUser.uid;
+        // Lógica de "Amigar" (Adiciona nos dois perfis)
+        const isFriend = currentProfileData.friends?.includes(myUid);
+        
+        const myRef = doc(db, "users", myUid);
+        const targetRef = doc(db, "users", targetUid);
 
-    const urlParams = new URLSearchParams(window.location.search);
-    let targetUid = urlParams.get('uid');
-
-    onAuthStateChanged(auth, user => {
-        if(!user) return window.location.href="login.html";
-        if(!targetUid) targetUid = user.uid;
-
-        if(targetUid === user.uid) document.getElementById('btnEdit').style.display = "block";
-
-        onSnapshot(doc(db, "users", targetUid), snap => {
-            const u = snap.data();
-            document.getElementById('uName').innerText = u.name;
-            document.getElementById('uHandle').innerText = "@" + u.handle;
-            document.getElementById('uPhoto').src = u.photo;
-            document.getElementById('uCover').style.backgroundImage = `url('${u.cover || ''}')`;
+        if (isFriend) {
+            await updateDoc(myRef, { friends: arrayRemove(targetUid) });
+            await updateDoc(targetRef, { friends: arrayRemove(myUid) });
+        } else {
+            await updateDoc(myRef, { friends: arrayUnion(targetUid) });
+            await updateDoc(targetRef, { friends: arrayUnion(myUid) });
             
-            document.getElementById('editName').value = u.name;
-            document.getElementById('editPhoto').value = u.photo;
-            document.getElementById('editCover').value = u.cover || '';
-        });
-
-        onSnapshot(collection(db, "posts"), s => {
-            const container = document.getElementById('uPosts'); container.innerHTML = "";
-            let posts = [];
-            s.forEach(d => { if(d.data().uid === targetUid) posts.push(d.data()); });
-            posts.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-            posts.forEach(p => {
-                container.innerHTML += `<div class="post"><b>${p.authorName}</b><p>${p.content}</p>${p.image ? `<img src="${p.image}" style="width:100%; border-radius:10px;">` : ''}</div>`;
+            // Notificar o usuário
+            await addDoc(collection(db, "notifications"), {
+                to: targetUid,
+                text: `@${currentEliteUser.handle} conectou-se com você!`,
+                createdAt: serverTimestamp(),
+                read: false
             });
-        });
-    });
+        }
+    };
 
+    // Função de Salvar Perfil com Upload de Foto Real
     window.saveProfile = async () => {
+        const file = document.getElementById('editPhotoFile').files[0];
+        let photoUrl = currentEliteUser.photo;
+
+        if (file) {
+            const fileRef = ref(storage, `avatars/${auth.currentUser.uid}`);
+            await uploadBytes(fileRef, file);
+            photoUrl = await getDownloadURL(fileRef);
+        }
+
         await updateDoc(doc(db, "users", auth.currentUser.uid), {
             name: document.getElementById('editName').value,
-            photo: document.getElementById('editPhoto').value,
-            cover: document.getElementById('editCover').value
+            photo: photoUrl
         });
-        document.getElementById('editModal').style.display = 'none';
+        location.reload();
     };
 </script>
-</body>
-</html>
