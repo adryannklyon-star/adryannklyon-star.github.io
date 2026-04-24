@@ -118,7 +118,7 @@
     window.updateAccount = async () => {
         const btn = document.getElementById('btnSave');
         const newHandle = document.getElementById('confHandle').value.toLowerCase().replace(/\s/g, '');
-        const file = document.getElementById('confFilePhoto').files[0];
+        
         
         btn.disabled = true; btn.innerText = "ATUALIZANDO...";
 
@@ -135,17 +135,14 @@
             }
         }
 
-        if(file) {
-            const sRef = ref(storage, `avatars/${auth.currentUser.uid}`);
-            await uploadBytes(sRef, file);
-            photoUrl = await getDownloadURL(sRef);
+      
         }
 
         await updateDoc(doc(db, "users", auth.currentUser.uid), {
             name: document.getElementById('confName').value,
             handle: newHandle,
             bio: document.getElementById('confBio').value,
-            photo: photoUrl
+           
         });
 
         alert("Perfil atualizado com sucesso!");
