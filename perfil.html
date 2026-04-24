@@ -45,10 +45,20 @@
 </div>
 
 <nav class="bottom-nav">
-    <a href="index.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1946/1946488.png"></a>
-    <a href="perfil.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" style="opacity:1; filter:invert(1) drop-shadow(0 0 8px var(--primary));"></a>
+    <a href="index.html" class="nav-link active">
+        <img src="https://cdn-icons-png.flaticon.com/512/1946/1946488.png">
+    </a>
+    <a href="buscar.html" class="nav-link">
+        <img src="https://cdn-icons-png.flaticon.com/512/149/149852.png">
+    </a>
+    <a href="notificacoes.html" class="nav-link">
+        <img src="https://cdn-icons-png.flaticon.com/512/3602/3602145.png">
+        <div id="notifBadge" class="notif-badge"></div>
+    </a>
+    <a href="perfil.html" class="nav-link">
+        <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png">
+    </a>
 </nav>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
