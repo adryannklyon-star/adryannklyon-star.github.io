@@ -3,15 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KLYON | Alertas</title>
+    <title>KLYON |Notificações</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #00f2ff; --bg: #030307; --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1); }
         body { margin: 0; background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(circle at 50% 0%, #0f172a 0%, #030307 100%); min-height: 100vh; }
         .container { max-width: 550px; margin: auto; padding: 40px 15px 120px; }
         .header-back { display: flex; align-items: center; gap: 10px; margin-bottom: 30px; cursor: pointer; color: var(--primary); font-family: 'Orbitron'; font-size: 0.8rem; }
-        .notif-card { background: var(--glass); border: 1px solid var(--glass-border); padding: 15px; border-radius: 18px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; border-left: 4px solid var(--primary); animation: slideIn 0.3s ease; }
-        .notif-card.read { border-left-color: transparent; opacity: 0.6; }
+        
+        .notif-card { background: var(--glass); border: 1px solid var(--glass-border); padding: 18px; border-radius: 20px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; border-left: 4px solid var(--primary); animation: slideIn 0.3s ease; position: relative; }
+        .notif-card.read { border-left-color: transparent; opacity: 0.8; }
+        
+        .notif-content { display: flex; align-items: center; gap: 12px; font-size: 0.9rem; }
+        .notif-user { color: var(--primary); font-weight: 800; cursor: pointer; text-decoration: none; }
+        
+        .notif-actions { display: flex; gap: 10px; margin-top: 5px; }
+        .btn-notif { background: var(--primary); color: #000; border: none; padding: 6px 12px; border-radius: 10px; font-family: 'Orbitron'; font-size: 0.65rem; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-notif.secondary { background: var(--glass); color: #fff; border: 1px solid var(--glass-border); }
+        .btn-notif:disabled { opacity: 0.5; cursor: default; }
+
         @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
     </style>
 </head>
@@ -19,35 +29,90 @@
 <div class="container">
     <div class="header-back" onclick="location.href='index.html'">⬅ VOLTAR AO FEED</div>
     <h2 style="font-family:'Orbitron'; font-size: 1.2rem; margin-bottom: 20px;">NOTIFICAÇÕES</h2>
-    <div id="notifList">Carregando alertas...</div>
+    <div id="notifList">Sincronizando satélites...</div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-    import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+    import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc, getDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
-    const firebaseConfig = { apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", authDomain: "klyon-a97ba.firebaseapp.com", projectId: "klyon-a97ba", storageBucket: "klyon-a97ba.appspot.com" };
+    const firebaseConfig = { apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", authDomain: "klyon-a97ba.firebaseapp.com", projectId: "klyon-a97ba" };
     const db = getFirestore(initializeApp(firebaseConfig));
     const auth = getAuth();
 
-    onAuthStateChanged(auth, user => {
+    let myData = null;
+
+    onAuthStateChanged(auth, async user => {
         if (!user) return;
-        // Busca notificações sem orderBy para evitar erro de índice
-        onSnapshot(query(collection(db, "notifications"), where("to", "==", user.uid)), s => {
+
+        // Pegar dados do meu usuário para checar quem eu já sigo
+        const mySnap = await getDoc(doc(db, "users", user.uid));
+        myData = mySnap.data();
+
+        const q = query(collection(db, "notifications"), where("to", "==", user.uid));
+        
+        onSnapshot(q, s => {
             const list = document.getElementById('notifList');
-            list.innerHTML = s.empty ? "Nenhuma novidade por aqui." : "";
+            if(s.empty) { list.innerHTML = "Nenhuma novidade por aqui."; return; }
             
             let all = [];
             s.forEach(d => all.push({id: d.id, ...d.data()}));
             all.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
 
-            all.forEach(async n => {
-                list.innerHTML += `<div class="notif-card ${n.read ? 'read' : ''}"><div>${n.text}</div></div>`;
-                if(!n.read) await updateDoc(doc(db, "notifications", n.id), { read: true });
+            list.innerHTML = "";
+            all.forEach(n => {
+                const isFollowNotif = n.type === "follow";
+                const isLikeNotif = n.type === "like";
+                
+                // Checar se eu já sigo essa pessoa para o botão mudar
+                const alreadyFollowing = myData.following?.includes(n.fromId);
+
+                const card = document.createElement('div');
+                card.className = `notif-card ${n.read ? 'read' : ''}`;
+                
+                let actionButton = "";
+                if (isFollowNotif) {
+                    actionButton = `<button class="btn-notif" onclick="connectBack('${n.fromId}', this)" ${alreadyFollowing ? 'disabled' : ''}>
+                        ${alreadyFollowing ? 'CONECTADO' : 'CONECTAR TAMBÉM'}
+                    </button>`;
+                } else if (isLikeNotif && n.postId) {
+                    actionButton = `<button class="btn-notif secondary" onclick="location.href='post.html?id=${n.postId}'">VER POST</button>`;
+                }
+
+                card.innerHTML = `
+                    <div class="notif-content">
+                        <div>
+                            <span class="notif-user" onclick="location.href='perfil.html?u=${n.fromHandle}'">@${n.fromHandle}</span> 
+                            ${n.text}
+                        </div>
+                    </div>
+                    <div class="notif-actions">
+                        ${actionButton}
+                    </div>
+                `;
+
+                list.appendChild(card);
+                if(!n.read) updateDoc(doc(db, "notifications", n.id), { read: true });
             });
         });
     });
+
+    // Função para seguir de volta direto da notificação
+    window.connectBack = async (targetUid, btn) => {
+        btn.innerText = "...";
+        const myUid = auth.currentUser.uid;
+        
+        try {
+            await updateDoc(doc(db, "users", myUid), { following: arrayUnion(targetUid) });
+            await updateDoc(doc(db, "users", targetUid), { followers: arrayUnion(myUid) });
+            btn.innerText = "CONECTADO";
+            btn.disabled = true;
+        } catch (e) {
+            alert("Erro ao conectar.");
+            btn.innerText = "CONECTAR TAMBÉM";
+        }
+    };
 </script>
 </body>
 </html>
