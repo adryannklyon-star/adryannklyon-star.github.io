@@ -79,23 +79,37 @@
 
     let me = null;
 
+    // TRAVA DE SEGURANÇA GLOBAL
     onAuthStateChanged(auth, async user => {
-        if (!user) return window.location.href = "login.html";
+        // Se não houver usuário, redireciona para login e para a execução
+        if (!user) {
+            window.location.href = "login.html";
+            return; 
+        }
+
         try {
             const snap = await getDoc(doc(db, "users", user.uid));
             if(snap.exists()) { 
                 me = snap.data(); 
             } else {
-                // Se não tiver perfil, cria um objeto temporário para não travar
                 me = { name: "Usuário Novo", handle: "user_" + user.uid.slice(0,5) };
-                console.warn("Perfil não encontrado. Usando dados temporários.");
+                console.warn("Perfil não encontrado no Firestore.");
             }
             loadFeed();
         } catch (e) {
             console.error("Erro ao carregar usuário:", e);
-            loadFeed(); // Tenta carregar o feed mesmo assim
+            loadFeed(); 
         }
     });
+
+    // Função auxiliar para verificar login antes de ações críticas
+    function checkAuth() {
+        if (!auth.currentUser) {
+            window.location.href = "login.html";
+            return false;
+        }
+        return true;
+    }
 
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
 
@@ -116,6 +130,9 @@
     };
 
     function loadFeed() {
+        // Proteção extra: Só carrega o feed se houver UID
+        if(!auth.currentUser) return;
+
         onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc")), snap => {
             const feed = document.getElementById('feed');
             if(!feed) return;
@@ -124,7 +141,6 @@
                 const p = docSnap.data();
                 const pid = docSnap.id;
                 
-                // TRAVA DE SEGURANÇA: Garante que likes seja um array
                 const likes = Array.isArray(p.likes) ? p.likes : [];
                 const isLiked = auth.currentUser ? likes.includes(auth.currentUser.uid) : false;
                 const authorName = p.authorName || "Anônimo";
@@ -152,11 +168,6 @@
                 feed.appendChild(postDiv);
                 loadComments(pid);
             });
-        }, error => {
-            console.error("Erro no Snapshot do Feed:", error);
-            if(error.message.includes("index")) {
-                alert("O sistema está otimizando o banco de dados. Aguarde 2 minutos e atualize a página.");
-            }
         });
     }
 
@@ -181,6 +192,7 @@
     }
 
     window.openPostModal = () => {
+        if(!checkAuth()) return; // Bloqueia se não logado
         const modal = document.getElementById('actionModal');
         modal.style.display = 'flex';
         document.getElementById('modalTitle').innerText = "NOVA TRANSMISSÃO";
@@ -201,6 +213,7 @@
     };
 
     window.prepComment = (postId) => {
+        if(!checkAuth()) return; // Bloqueia se não logado
         const modal = document.getElementById('actionModal');
         modal.style.display = 'flex';
         document.getElementById('modalTitle').innerText = "DECODIFICAR RESPOSTA";
@@ -220,6 +233,7 @@
     };
 
     window.repost = async (id, type, postId = null) => {
+        if(!checkAuth()) return; // Bloqueia se não logado
         try {
             let content = "", handle = "";
             if(type === 'post') {
@@ -241,8 +255,15 @@
         } catch(e) { console.error("Erro ao republicar:", e); }
     };
 
-    window.toggleLike = (id, isLiked) => updateDoc(doc(db, "posts", id), { likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid) });
-    window.toggleCommentLike = (pId, cId, isLiked) => updateDoc(doc(db, `posts/${pId}/comments`, cId), { likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid) });
+    window.toggleLike = (id, isLiked) => {
+        if(!checkAuth()) return;
+        updateDoc(doc(db, "posts", id), { likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid) });
+    };
+
+    window.toggleCommentLike = (pId, cId, isLiked) => {
+        if(!checkAuth()) return;
+        updateDoc(doc(db, `posts/${pId}/comments`, cId), { likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid) });
+    };
 
 </script>
 </body>
