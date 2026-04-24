@@ -165,66 +165,64 @@
     onAuthStateChanged(auth, async user => {
         if (!user) return window.location.href = "login.html";
         const snap = await getDoc(doc(db, "users", user.uid));
-        currentEliteUser = snap.data();
-        loadFeed();
-        listenNotifs(user.uid);
+        if (snap.exists()) {
+            currentEliteUser = snap.data();
+            loadFeed();
+            listenNotifs(user.uid);
+        }
     });
 
     function loadFeed() {
-        // limit(50) garante que o site seja leve para 55 mil usuários
         const q = query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(50));
         onSnapshot(q, snapshot => {
-            const feed = document.getElementById('feed'); feed.innerHTML = "";
+            const feed = document.getElementById('feed'); 
+            feed.innerHTML = "";
             snapshot.forEach(docSnap => {
                 const p = {id: docSnap.id, ...docSnap.data()};
                 const isLiked = p.likes?.includes(auth.currentUser.uid);
                 feed.innerHTML += `
                     <div class="post">
                         <div class="post-head" onclick="location.href='perfil.html?uid=${p.uid}'">
-                            <img src="${p.authorPhoto || ''}">
-                            <div><b>${p.authorName}</b><br><small style="color:var(--primary)">@${p.authorHandle}</small></div>
+                            <img src="${p.authorPhoto || 'https://via.placeholder.com/150'}">
+                            <div><b>${p.authorName || 'Membro Elite'}</b><br><small style="color:var(--primary)">@${p.authorHandle || 'user'}</small></div>
                         </div>
                         <div class="post-content">${p.content}</div>
                         ${p.image ? `<img src="${p.image}" class="post-img">` : ''}
                         <div class="post-actions">
                             <button class="action-btn ${isLiked ? 'active' : ''}" onclick="toggleLike('${p.id}', ${isLiked})">🔥 ${p.likes?.length || 0}</button>
-                            <button class="action-btn" onclick="openComments('${p.id}')">💬 ${p.comments?.length || 0}</button>
-                            <button class="action-btn" onclick="repost('${p.id}')">🔄</button>
+                            <button class="action-btn">💬 ${p.comments?.length || 0}</button>
                         </div>
                     </div>`;
             });
         });
     }
 
-    // Função de postagem com Upload Real de Foto
-    // POSTAR COM FOTO (Versão Blindada)
+    // FUNÇÃO DE POSTAGEM ÚNICA E CORRIGIDA
     window.sendPost = async () => {
-        const text = document.getElementById('postContent').value;
+        const textInput = document.getElementById('postContent');
         const fileInput = document.getElementById('fileInput');
+        const text = textInput.value;
         const file = fileInput.files[0];
         const btn = document.getElementById('sendBtn');
 
         if (!text.trim() && !file) return;
 
-        btn.disabled = true; 
+        btn.disabled = true;
         btn.innerText = "ENVIANDO...";
 
         try {
             let imgUrl = null;
-            
-            // Upload da Imagem se existir
-            if(file) {
+            if (file) {
                 const storageRef = ref(storage, `posts/${Date.now()}_${auth.currentUser.uid}`);
                 const snapshot = await uploadBytes(storageRef, file);
                 imgUrl = await getDownloadURL(snapshot.ref);
             }
 
-            // Criação do documento no Firestore
             await addDoc(collection(db, "posts"), {
                 uid: auth.currentUser.uid,
-                authorName: currentEliteUser.name,
-                authorPhoto: currentEliteUser.photo,
-                authorHandle: currentEliteUser.handle,
+                authorName: currentEliteUser?.name || "Membro Elite",
+                authorPhoto: currentEliteUser?.photo || "",
+                authorHandle: currentEliteUser?.handle || "user",
                 content: text,
                 image: imgUrl,
                 createdAt: serverTimestamp(),
@@ -232,71 +230,36 @@
                 comments: []
             });
 
-            // Limpeza e fechamento
             closeModal();
-            document.getElementById('postContent').value = "";
+            textInput.value = "";
             fileInput.value = "";
+            alert("Postado com sucesso!");
         } catch (error) {
-            console.error("ERRO AO POSTAR:", error);
-            alert("Erro ao postar. Verifique se o Storage está ativado no Firebase.");
+            console.error(error);
+            alert("Erro ao postar. Verifique as Regras do Firebase.");
         } finally {
-            btn.disabled = false; 
+            btn.disabled = false;
             btn.innerText = "POSTAR";
         }
     };
 
-  window.sendPost = async () => {
-    const textInput = document.getElementById('postContent');
-    const fileInput = document.getElementById('fileInput');
-    const text = textInput.value;
-    const file = fileInput.files ? fileInput.files[0] : null;
-    const btn = document.getElementById('sendBtn');
-
-    if (!text.trim() && !file) return;
-
-    btn.disabled = true;
-    btn.innerText = "ENVIANDO...";
-
-    try {
-        let imgUrl = null;
-
-        // Tenta o Storage apenas se houver arquivo e o storage estiver ok
-        if (file && typeof storage !== 'undefined') {
-            try {
-                const storageRef = ref(storage, `posts/${Date.now()}_${auth.currentUser.uid}`);
-                const snapshot = await uploadBytes(storageRef, file);
-                imgUrl = await getDownloadURL(snapshot.ref);
-            } catch (e) {
-                console.warn("Storage falhou, mas vou tentar postar o texto:", e);
-            }
-        }
-
-        // SALVANDO NO FIRESTORE
-        await addDoc(collection(db, "posts"), {
-            uid: auth.currentUser.uid,
-            authorName: currentEliteUser?.name || "Membro Elite",
-            authorPhoto: currentEliteUser?.photo || "",
-            authorHandle: currentEliteUser?.handle || "user",
-            content: text,
-            image: imgUrl,
-            createdAt: serverTimestamp(),
-            likes: [],
-            comments: []
+    window.toggleLike = async (postId, isLiked) => {
+        const postRef = doc(db, "posts", postId);
+        await updateDoc(postRef, {
+            likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid)
         });
+    };
 
-        closeModal();
-        textInput.value = "";
-        if(fileInput) fileInput.value = "";
-        alert("Postado com sucesso!");
-
-    } catch (error) {
-        console.error("ERRO CRÍTICO AO POSTAR:", error);
-        alert("Erro no Banco de Dados. Verifique as 'Regras' no console do Firebase.");
-    } finally {
-        btn.disabled = false;
-        btn.innerText = "POSTAR";
+    function listenNotifs(uid) {
+        const q = query(collection(db, "notifications"), where("to", "==", uid), where("read", "==", false));
+        onSnapshot(q, s => {
+            const badge = document.getElementById('notifBadge');
+            if(badge) badge.style.display = s.empty ? "none" : "block";
+        });
     }
-};
+
+    window.openModal = () => document.getElementById('postModal').style.display = 'flex';
+    window.closeModal = () => document.getElementById('postModal').style.display = 'none';
 </script>
 </body>
 </html>
