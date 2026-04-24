@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KLYON |Notificações</title>
+    <title>KLYON | Notificações</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #00f2ff; --bg: #030307; --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1); }
@@ -12,13 +12,13 @@
         .header-back { display: flex; align-items: center; gap: 10px; margin-bottom: 30px; cursor: pointer; color: var(--primary); font-family: 'Orbitron'; font-size: 0.8rem; }
         
         .notif-card { background: var(--glass); border: 1px solid var(--glass-border); padding: 18px; border-radius: 20px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; border-left: 4px solid var(--primary); animation: slideIn 0.3s ease; position: relative; }
-        .notif-card.read { border-left-color: transparent; opacity: 0.8; }
+        .notif-card.read { border-left-color: transparent; opacity: 0.6; }
         
         .notif-content { display: flex; align-items: center; gap: 12px; font-size: 0.9rem; }
         .notif-user { color: var(--primary); font-weight: 800; cursor: pointer; text-decoration: none; }
         
         .notif-actions { display: flex; gap: 10px; margin-top: 5px; }
-        .btn-notif { background: var(--primary); color: #000; border: none; padding: 6px 12px; border-radius: 10px; font-family: 'Orbitron'; font-size: 0.65rem; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-notif { background: var(--primary); color: #000; border: none; padding: 8px 15px; border-radius: 12px; font-family: 'Orbitron'; font-size: 0.65rem; font-weight: 800; cursor: pointer; transition: 0.3s; }
         .btn-notif.secondary { background: var(--glass); color: #fff; border: 1px solid var(--glass-border); }
         .btn-notif:disabled { opacity: 0.5; cursor: default; }
 
@@ -44,28 +44,37 @@
     let myData = null;
 
     onAuthStateChanged(auth, async user => {
-        if (!user) return;
+        if (!user) {
+            window.location.href = "login.html";
+            return;
+        }
 
-        // Pegar dados do meu usuário para checar quem eu já sigo
+        // Carrega dados do usuário logado para verificar amizades/conexões existentes
         const mySnap = await getDoc(doc(db, "users", user.uid));
         myData = mySnap.data();
 
+        // Escuta notificações enviadas para VOCÊ
         const q = query(collection(db, "notifications"), where("to", "==", user.uid));
         
         onSnapshot(q, s => {
             const list = document.getElementById('notifList');
-            if(s.empty) { list.innerHTML = "Nenhuma novidade por aqui."; return; }
+            if(s.empty) { 
+                list.innerHTML = "<div style='opacity:0.5; text-align:center; margin-top:50px;'>Nenhuma atividade detectada no seu radar.</div>"; 
+                return; 
+            }
             
             let all = [];
             s.forEach(d => all.push({id: d.id, ...d.data()}));
+            
+            // Ordena manualmente por data decrescente (mais recentes primeiro)
             all.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
 
             list.innerHTML = "";
-            all.forEach(n => {
+            all.forEach(async n => {
                 const isFollowNotif = n.type === "follow";
                 const isLikeNotif = n.type === "like";
                 
-                // Checar se eu já sigo essa pessoa para o botão mudar
+                // Verifica se já existe a conexão para o botão mudar de estado
                 const alreadyFollowing = myData.following?.includes(n.fromId);
 
                 const card = document.createElement('div');
@@ -73,11 +82,13 @@
                 
                 let actionButton = "";
                 if (isFollowNotif) {
-                    actionButton = `<button class="btn-notif" onclick="connectBack('${n.fromId}', this)" ${alreadyFollowing ? 'disabled' : ''}>
-                        ${alreadyFollowing ? 'CONECTADO' : 'CONECTAR TAMBÉM'}
-                    </button>`;
+                    actionButton = `
+                        <button class="btn-notif" onclick="connectBack('${n.fromId}', this)" ${alreadyFollowing ? 'disabled' : ''}>
+                            ${alreadyFollowing ? 'CONECTADO' : 'CONECTAR TAMBÉM'}
+                        </button>`;
                 } else if (isLikeNotif && n.postId) {
-                    actionButton = `<button class="btn-notif secondary" onclick="location.href='post.html?id=${n.postId}'">VER POST</button>`;
+                    // Botão para ver o post que recebeu o like
+                    actionButton = `<button class="btn-notif secondary" onclick="location.href='index.html#${n.postId}'">VER POST</button>`;
                 }
 
                 card.innerHTML = `
@@ -93,24 +104,35 @@
                 `;
 
                 list.appendChild(card);
-                if(!n.read) updateDoc(doc(db, "notifications", n.id), { read: true });
+                
+                // Marca como lida assim que aparece na tela
+                if(!n.read) {
+                    await updateDoc(doc(db, "notifications", n.id), { read: true });
+                }
             });
         });
     });
 
-    // Função para seguir de volta direto da notificação
+    // Função global para conexão rápida
     window.connectBack = async (targetUid, btn) => {
-        btn.innerText = "...";
-        const myUid = auth.currentUser.uid;
+        const originalText = btn.innerText;
+        btn.innerText = "PROCESSANDO...";
+        btn.disabled = true;
         
         try {
+            const myUid = auth.currentUser.uid;
+            // Atualiza os dois documentos para criar a conexão mútua
             await updateDoc(doc(db, "users", myUid), { following: arrayUnion(targetUid) });
             await updateDoc(doc(db, "users", targetUid), { followers: arrayUnion(myUid) });
+            
             btn.innerText = "CONECTADO";
-            btn.disabled = true;
+            // Dispara notificação de volta (opcional, mas recomendado)
+            // sendNotification(targetUid, "conectou-se de volta com você", "follow");
         } catch (e) {
-            alert("Erro ao conectar.");
-            btn.innerText = "CONECTAR TAMBÉM";
+            console.error(e);
+            alert("Falha na sincronização.");
+            btn.innerText = originalText;
+            btn.disabled = false;
         }
     };
 </script>
