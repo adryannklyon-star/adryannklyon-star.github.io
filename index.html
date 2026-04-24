@@ -77,47 +77,35 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let me = null;
+   let me = null;
 
-    // Monitor de Autenticação
     onAuthStateChanged(auth, async user => {
         if (!user) return window.location.href = "login.html";
+        
+        // BUSCA O PERFIL
         const snap = await getDoc(doc(db, "users", user.uid));
         if(snap.exists()) { 
             me = snap.data(); 
             loadFeed(); 
         } else {
-            console.error("Perfil de usuário não encontrado no Firestore.");
+            // SE CAIR AQUI, É PORQUE NÃO EXISTE O SEU UID NA COLEÇÃO "users"
+            alert("ERRO CRÍTICO: Perfil não encontrado no banco de dados (coleção users). Você precisa criar seu perfil primeiro!");
+            console.error("UID do usuário logado:", user.uid);
         }
     });
 
-    // Funções Globais (Acessíveis via onclick)
-    window.closeModal = (id) => document.getElementById(id).style.display = 'none';
-
-    window.goTo = (id) => {
-        const el = document.getElementById(id);
-        if(el) { 
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
-            el.style.boxShadow = "0 0 20px var(--primary)"; 
-            setTimeout(() => el.style.boxShadow = "", 2000); 
-        }
-    };
-
-    function parseText(text) {
-        if(!text) return "";
-        text = text.replace(/@(\w+)/g, '<a href="perfil.html?u=$1" class="mention">@$1</a>');
-        text = text.replace(/#ref_(\w+)/g, '<span class="repost-link" onclick="window.goTo(\'$1\')">↗ VER ORIGINAL</span>');
-        return text;
-    }
-
-    // Carregar Feed em Tempo Real
+    // Função de carregar feed corrigida para não quebrar com likes inexistentes
     function loadFeed() {
         onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc")), snap => {
             const feed = document.getElementById('feed');
             feed.innerHTML = "";
             snap.forEach(docSnap => {
                 const p = { id: docSnap.id, ...docSnap.data() };
-                const isLiked = p.likes?.includes(auth.currentUser.uid);
+                
+                // CORREÇÃO DO ERRO DA IMAGEM: Garante que likes seja sempre uma lista
+                const likesArray = Array.isArray(p.likes) ? p.likes : [];
+                const isLiked = likesArray.includes(auth.currentUser.uid);
+                
                 const initial = (p.authorName || "U").charAt(0).toUpperCase();
 
                 const postDiv = document.createElement('div');
@@ -127,13 +115,13 @@
                     <div class="post-head">
                         <div class="neon-avatar">${initial}</div>
                         <div>
-                            <b onclick="window.location.href='perfil.html?u=${p.authorHandle}'" style="cursor:pointer">${p.authorName}</b><br>
-                            <small style="color:var(--primary); font-size:0.6rem;">@${p.authorHandle}</small>
+                            <b onclick="window.location.href='perfil.html?u=${p.authorHandle}'" style="cursor:pointer">${p.authorName || 'Anônimo'}</b><br>
+                            <small style="color:var(--primary); font-size:0.6rem;">@${p.authorHandle || 'desconhecido'}</small>
                         </div>
                     </div>
-                    <div class="post-content">${parseText(p.content)}</div>
+                    <div class="post-content">${window.parseText(p.content || "")}</div>
                     <div class="post-actions">
-                        <button class="action-btn ${isLiked?'active':''}" onclick="window.toggleLike('${p.id}', ${isLiked})">🔥 ${p.likes?.length || 0}</button>
+                        <button class="action-btn ${isLiked?'active':''}" onclick="window.toggleLike('${p.id}', ${isLiked})">🔥 ${likesArray.length}</button>
                         <button class="action-btn" onclick="window.prepComment('${p.id}')">💬</button>
                         <button class="action-btn" onclick="window.repost('${p.id}', 'post')">🔄 Republicar</button>
                     </div>
@@ -144,7 +132,6 @@
             });
         });
     }
-
     // Carregar Comentários
     function loadComments(postId) {
         onSnapshot(query(collection(db, `posts/${postId}/comments`), orderBy("createdAt", "asc")), snap => {
