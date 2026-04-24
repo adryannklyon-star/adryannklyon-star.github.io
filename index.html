@@ -3,61 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KLYON | Network</title>
+    <title>KLYON | Anonymous Network</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #00f2ff; --bg: #030307; --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1); --text-dim: #94a3b8; }
-        * { box-sizing: border-box; }
-        body { margin: 0; background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(circle at 50% 0%, #0f172a 0%, #030307 100%); min-height: 100vh; padding-bottom: 100px; scroll-behavior: smooth; }
+        :root { 
+            --primary: #00f2ff; 
+            --bg: #030307; 
+            --glass: rgba(255, 255, 255, 0.05); 
+            --glass-border: rgba(255, 255, 255, 0.1); 
+            --text-dim: #94a3b8; 
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            margin: 0; background: var(--bg); color: #fff; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: radial-gradient(circle at 50% 0%, #0f172a 0%, #030307 100%); 
+            min-height: 100vh; padding-bottom: 120px; scroll-behavior: smooth; 
+        }
         
         header { position: fixed; top: 0; width: 100%; height: 60px; background: rgba(3,3,7,0.8); backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .logo { font-family: 'Orbitron'; color: var(--primary); letter-spacing: 5px; text-shadow: 0 0 10px var(--primary); }
+        .logo { font-family: 'Orbitron'; color: var(--primary); letter-spacing: 5px; font-size: 1.1rem; text-shadow: 0 0 10px var(--primary); }
         
         .container { max-width: 500px; margin: auto; padding-top: 75px; }
-        .post { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 24px; padding: 18px; margin: 0 15px 15px 15px; position: relative; transition: 0.3s; }
-        .post:target { border-color: var(--primary); box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); }
 
-        .repost-link { color: var(--primary); text-decoration: none; font-size: 0.7rem; font-family: 'Orbitron'; display: block; margin-bottom: 5px; cursor: pointer; }
-        .mention { color: var(--primary); text-decoration: none; font-weight: 600; }
+        /* Estilo do Avatar Neon */
+        .neon-avatar { 
+            width: 44px; height: 44px; background: rgba(0, 0, 0, 0.5); border: 2px solid var(--primary); 
+            border-radius: 12px; display: flex; align-items: center; justify-content: center; 
+            font-family: 'Orbitron'; color: var(--primary); font-size: 1.2rem; 
+            text-shadow: 0 0 10px var(--primary); box-shadow: inset 0 0 10px var(--primary); flex-shrink: 0; 
+        }
 
-        .post-actions, .comment-actions { display: flex; gap: 15px; margin-top: 10px; }
-        .action-btn { background: none; border: none; color: var(--text-dim); font-size: 0.7rem; cursor: pointer; font-family: 'Orbitron'; display: flex; align-items: center; gap: 4px; }
+        .post { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 24px; padding: 18px; margin: 0 15px 15px 15px; transition: 0.3s; position: relative; }
+        .post-head { display: flex; gap: 14px; align-items: center; margin-bottom: 12px; }
+        .post-content { font-size: 1.05rem; line-height: 1.6; color: #e2e8f0; white-space: pre-wrap; word-break: break-word; }
         
-        .comment-box { margin-top: 15px; padding-left: 10px; border-left: 1px solid var(--glass-border); }
-        .comment { background: rgba(255,255,255,0.02); padding: 10px; border-radius: 12px; margin-bottom: 8px; transition: 0.3s; }
-        .comment:target { border: 1px solid var(--primary); background: rgba(0, 242, 255, 0.05); }
+        .mention { color: var(--primary); text-decoration: none; font-weight: 600; }
+        .repost-link { color: var(--primary); font-size: 0.65rem; font-family: 'Orbitron'; display: block; margin-top: 10px; cursor: pointer; text-decoration: underline; }
+
+        .post-actions, .comment-actions { display: flex; gap: 20px; border-top: 1px solid var(--glass-border); padding-top: 12px; margin-top: 12px; }
+        .action-btn { background: none; border: none; color: var(--text-dim); font-size: 0.75rem; display: flex; align-items: center; gap: 6px; cursor: pointer; font-family: 'Orbitron'; transition: 0.2s; }
+        .action-btn.active { color: var(--primary); text-shadow: 0 0 8px var(--primary); }
+
+        .comment-box { margin-top: 15px; padding-left: 15px; border-left: 2px solid var(--glass-border); }
+        .comment { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 12px; margin-bottom: 8px; font-size: 0.85rem; transition: 0.4s; }
+        .comment b { color: var(--primary); font-size: 0.75rem; font-family: 'Orbitron'; }
+        .comment-actions { border: none; padding-top: 5px; margin-top: 5px; gap: 12px; }
 
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 4000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .modal-card { background: #0f172a; width: 90%; max-width: 450px; padding: 25px; border-radius: 24px; border: 1px solid var(--primary); }
-        textarea { width: 100%; height: 120px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 15px; color: #fff; padding: 15px; resize: none; margin: 10px 0; }
-        
-        .btn-main { width: 100%; background: var(--primary); border: none; padding: 15px; border-radius: 15px; font-weight: 800; font-family: 'Orbitron'; cursor: pointer; }
-        #fab { position: fixed; bottom: 105px; right: 25px; width: 60px; height: 60px; background: var(--primary); border-radius: 20px; border: none; font-size: 32px; box-shadow: 0 0 15px var(--primary); z-index: 999; }
+        textarea { width: 100%; height: 150px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 15px; color: #fff; padding: 15px; resize: none; margin: 15px 0; font-family: inherit; }
+
+        .btn-main { width: 100%; background: var(--primary); border: none; padding: 15px; border-radius: 15px; font-weight: 800; font-family: 'Orbitron'; cursor: pointer; color: #000; }
+        #fab { position: fixed; bottom: 105px; right: 25px; width: 60px; height: 60px; background: var(--primary); border-radius: 20px; border: none; font-size: 32px; cursor: pointer; z-index: 999; box-shadow: 0 0 15px var(--primary); }
+
+        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 94%; max-width: 480px; height: 70px; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px); border-radius: 28px; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-around; z-index: 1000; }
+        .nav-link img { width: 24px; filter: invert(1); opacity: 0.4; }
+        .nav-link.active img { opacity: 1; filter: drop-shadow(0 0 8px var(--primary)) invert(1); }
     </style>
 </head>
 <body>
 
 <header><div class="logo">KLYON</div></header>
 
-<main class="container" id="feed"></main>
-
 <div id="actionModal" class="modal">
     <div class="modal-card">
-        <h2 id="modalTitle" style="font-family:'Orbitron'; font-size: 0.8rem; color: var(--primary);">TRANSMISSÃO</h2>
-        <textarea id="modalInput"></textarea>
+        <h2 id="modalTitle" style="font-family:'Orbitron'; font-size: 0.9rem; color: var(--primary);">TRANSMISSÃO</h2>
+        <textarea id="modalInput" placeholder="Sua mensagem..."></textarea>
         <button id="modalSubmit" class="btn-main">ENVIAR</button>
-        <button onclick="closeModal('actionModal')" style="width:100%; background:transparent; color:#ff2d55; border:none; margin-top:10px; cursor:pointer;">CANCELAR</button>
+        <button onclick="closeModal('actionModal')" style="width:100%; background:transparent; color:#ff2d55; border:none; margin-top:15px; cursor:pointer; font-family:'Orbitron'; font-size: 0.7rem;">ABORTAR</button>
     </div>
 </div>
 
-<button id="fab" onclick="openPostModal()">+</button>
+<main class="container" id="feed"></main>
+<button id="fab" onclick="window.openPostModal()">+</button>
+
+<nav class="bottom-nav">
+    <a href="index.html" class="nav-link active"><img src="https://cdn-icons-png.flaticon.com/512/1946/1946488.png"></a>
+    <a href="buscar.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/149/149852.png"></a>
+    <a href="perfil.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png"></a>
+</nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
     import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, arrayUnion, arrayRemove, addDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
-    const firebaseConfig = { apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", authDomain: "klyon-a97ba.firebaseapp.com", projectId: "klyon-a97ba" };
+    const firebaseConfig = { 
+        apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", 
+        authDomain: "klyon-a97ba.firebaseapp.com", 
+        projectId: "klyon-a97ba" 
+    };
+
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
@@ -71,22 +109,20 @@
         loadFeed();
     });
 
-    // Função para scroll até o elemento original
     window.goTo = (id) => {
         const el = document.getElementById(id);
         if(el) {
             el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            el.style.boxShadow = "0 0 30px var(--primary)";
-            setTimeout(() => el.style.boxShadow = "", 2000);
+            el.style.border = "1px solid var(--primary)";
+            el.style.boxShadow = "0 0 20px var(--primary)";
+            setTimeout(() => { el.style.boxShadow = ""; }, 2000);
         } else {
-            alert("O conteúdo original pode ter sido deletado ou está mais abaixo no feed.");
+            alert("Original não encontrado no feed atual.");
         }
     };
 
     function parseText(text) {
-        // Transforma @usuario em link de perfil
         text = text.replace(/@(\w+)/g, '<a href="perfil.html?u=$1" class="mention">@$1</a>');
-        // Transforma referências de post em links de scroll
         text = text.replace(/#ref_(\w+)/g, '<span class="repost-link" onclick="goTo(\'$1\')">↗ VER ORIGINAL</span>');
         return text;
     }
@@ -98,19 +134,24 @@
             snap.forEach(docSnap => {
                 const p = { id: docSnap.id, ...docSnap.data() };
                 const isLiked = p.likes?.includes(auth.currentUser.uid);
-                
+                const initial = (p.authorName || p.authorHandle || "U").charAt(0).toUpperCase();
+
                 const postDiv = document.createElement('div');
                 postDiv.className = 'post';
                 postDiv.id = p.id;
                 postDiv.innerHTML = `
-                    <div style="font-size:0.8rem; margin-bottom:10px;">
-                        <b onclick="window.location.href='perfil.html?u=${p.authorHandle}'" style="cursor:pointer">@${p.authorHandle}</b>
+                    <div class="post-head">
+                        <div class="neon-avatar">${initial}</div>
+                        <div>
+                            <b onclick="window.location.href='perfil.html?u=${p.authorHandle}'" style="cursor:pointer">${p.authorName}</b><br>
+                            <small style="color:var(--primary); font-size:0.6rem;">@${p.authorHandle}</small>
+                        </div>
                     </div>
                     <div class="post-content">${parseText(p.content)}</div>
                     <div class="post-actions">
-                        <button class="action-btn" onclick="window.likePost('${p.id}', ${isLiked})">🔥 ${p.likes?.length || 0}</button>
+                        <button class="action-btn ${isLiked?'active':''}" onclick="window.toggleLike('${p.id}', ${isLiked})">🔥 ${p.likes?.length || 0}</button>
                         <button class="action-btn" onclick="window.prepComment('${p.id}')">💬</button>
-                        <button class="action-btn" onclick="window.repost('${p.id}', 'post')">🔄</button>
+                        <button class="action-btn" onclick="window.repost('${p.id}', 'post')">🔄 Republicar</button>
                     </div>
                     <div class="comment-box" id="comments-${p.id}"></div>
                 `;
@@ -132,8 +173,8 @@
                     <div class="comment" id="${cid}">
                         <b>@${c.handle}</b>: ${parseText(c.text)}
                         <div class="comment-actions">
-                            <span class="action-btn" onclick="window.likeComment('${postId}', '${cid}', ${isCLiked})">🔥 ${c.likes?.length || 0}</span>
-                            <span class="action-btn" onclick="window.repost('${cid}', 'comment', '${postId}')">🔄 Republicar</span>
+                            <span class="action-btn ${isCLiked?'active':''}" style="font-size:0.65rem;" onclick="window.toggleCommentLike('${postId}', '${cid}', ${isCLiked})">🔥 ${c.likes?.length || 0}</span>
+                            <span class="action-btn" style="font-size:0.65rem;" onclick="window.repost('${cid}', 'comment', '${postId}')">🔄 Republicar</span>
                         </div>
                     </div>`;
             });
@@ -149,62 +190,47 @@
             const txt = document.getElementById('modalInput').value;
             if(!txt.trim()) return;
             await addDoc(collection(db, "posts"), {
-                uid: auth.currentUser.uid,
-                authorName: me.name,
-                authorHandle: me.handle,
-                content: txt,
-                likes: [],
-                createdAt: serverTimestamp()
+                uid: auth.currentUser.uid, authorName: me.name, authorHandle: me.handle,
+                content: txt, likes: [], createdAt: serverTimestamp()
             });
             modal.style.display = 'none';
         };
     };
 
     window.repost = async (id, type, postId = null) => {
-        let originalContent = "";
-        let originalHandle = "";
-        
+        let content = "", handle = "";
         if(type === 'post') {
-            const snap = await getDoc(doc(db, "posts", id));
-            originalContent = snap.data().content;
-            originalHandle = snap.data().authorHandle;
+            const s = await getDoc(doc(db, "posts", id));
+            content = s.data().content; handle = s.data().authorHandle;
         } else {
-            const snap = await getDoc(doc(db, `posts/${postId}/comments`, id));
-            originalContent = snap.data().text;
-            originalHandle = snap.data().handle;
+            const s = await getDoc(doc(db, `posts/${postId}/comments`, id));
+            content = s.data().text; handle = s.data().handle;
         }
-
         await addDoc(collection(db, "posts"), {
-            uid: auth.currentUser.uid,
-            authorName: me.name,
-            authorHandle: me.handle,
-            content: `🔄 Republicado de @${originalHandle}:\n"${originalContent}"\n#ref_${id}`,
-            likes: [],
-            createdAt: serverTimestamp()
+            uid: auth.currentUser.uid, authorName: me.name, authorHandle: me.handle,
+            content: `🔄 Republicado de @${handle}:\n"${content}"\n#ref_${id}`,
+            likes: [], createdAt: serverTimestamp()
         });
-        alert("Republicado com sucesso!");
+        alert("Transmitido na sua timeline!");
     };
 
     window.prepComment = (postId) => {
         const modal = document.getElementById('actionModal');
         modal.style.display = 'flex';
-        document.getElementById('modalTitle').innerText = "RESPONDER";
+        document.getElementById('modalTitle').innerText = "DECODIFICAR RESPOSTA";
         document.getElementById('modalInput').value = "";
         document.getElementById('modalSubmit').onclick = async () => {
             const txt = document.getElementById('modalInput').value;
+            if(!txt.trim()) return;
             await addDoc(collection(db, `posts/${postId}/comments`), {
-                uid: auth.currentUser.uid,
-                handle: me.handle,
-                text: txt,
-                likes: [],
-                createdAt: serverTimestamp()
+                uid: auth.currentUser.uid, handle: me.handle, text: txt, likes: [], createdAt: serverTimestamp()
             });
             modal.style.display = 'none';
         };
     };
 
-    window.likePost = (id, isLiked) => updateDoc(doc(db, "posts", id), { likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid) });
-    window.likeComment = (pId, cId, isLiked) => updateDoc(doc(db, `posts/${pId}/comments`, cId), { likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid) });
+    window.toggleLike = (id, isLiked) => updateDoc(doc(db, "posts", id), { likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid) });
+    window.toggleCommentLike = (pId, cId, isLiked) => updateDoc(doc(db, `posts/${pId}/comments`, cId), { likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid) });
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
 </script>
 </body>
