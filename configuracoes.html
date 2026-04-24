@@ -47,22 +47,28 @@
     <h2>Configurações</h2>
 
     <div class="section">
-        <div class="section-title">EDITAR PERFIL</div>
-        <div class="input-group">
-            <label>Nome</label>
-            <input type="text" id="confName">
-        </div>
-        <div class="input-group">
-            <label>@ Handle (Exclusivo)</label>
-            <input type="text" id="confHandle">
-        </div>
-        <div class="input-group">
-            <label>Bio</label>
-            <input id="confBio" rows="3"></input>
-        </div>
-        
-        <button class="btn btn-save" id="btnSave" onclick="updateAccount()">SALVAR ALTERAÇÕES</button>
+    <div class="section-title">EDITAR PERFIL</div>
+    
+    <div class="input-group">
+        <label>Foto de Perfil (Opcional)</label>
+        <input type="file" id="confFilePhoto" accept="image/*" style="font-size: 0.7rem;">
     </div>
+
+    <div class="input-group">
+        <label>Nome</label>
+        <input type="text" id="confName">
+    </div>
+    <div class="input-group">
+        <label>@ Handle (Exclusivo)</label>
+        <input type="text" id="confHandle">
+    </div>
+    <div class="input-group">
+        <label>Bio</label>
+        <textarea id="confBio" rows="3" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px; color: #fff; font-family: inherit; resize: none;"></textarea>
+    </div>
+    
+    <button class="btn btn-save" id="btnSave" onclick="updateAccount()">SALVAR ALTERAÇÕES</button>
+</div>
 
     <div class="section">
         <div class="section-title">CONTA</div>
@@ -119,7 +125,7 @@
         
         btn.disabled = true; btn.innerText = "ATUALIZANDO...";
 
-        let photoUrl = userData.photo;
+        
 
         // Se mudou o handle, checar se já existe
         if(newHandle !== userData.handle) {
