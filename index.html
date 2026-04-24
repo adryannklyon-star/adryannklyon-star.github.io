@@ -87,9 +87,15 @@
         if(snap.exists()) { me = snap.data(); loadFeed(); }
     });
 
+    window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+
     window.goTo = (id) => {
         const el = document.getElementById(id);
-        if(el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.style.boxShadow = "0 0 20px var(--primary)"; setTimeout(() => el.style.boxShadow = "", 2000); }
+        if(el) { 
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+            el.style.boxShadow = "0 0 20px var(--primary)"; 
+            setTimeout(() => el.style.boxShadow = "", 2000); 
+        }
     };
 
     function parseText(text) {
@@ -199,12 +205,11 @@
                 content: `🔄 Republicado de @${handle}:\n"${content}"\n#ref_${id}`,
                 likes: [], createdAt: serverTimestamp()
             });
-        } catch(e) { console.error(e); }
+        } catch(e) { console.error("Erro ao republicar:", e); }
     };
 
     window.toggleLike = (id, isLiked) => updateDoc(doc(db, "posts", id), { likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid) });
     window.toggleCommentLike = (pId, cId, isLiked) => updateDoc(doc(db, `posts/${pId}/comments`, cId), { likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid) });
-    window.closeModal = (id) => document.getElementById(id).style.display = 'none';
 </script>
 </body>
 </html>
