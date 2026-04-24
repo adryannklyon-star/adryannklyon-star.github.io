@@ -59,160 +59,83 @@
 <div id="editModal" class="modal">
     <div class="modal-card">
         <h2 style="font-family:'Orbitron'; font-size: 1rem; color: var(--primary); margin-bottom: 20px;">AJUSTAR IDENTIDADE</h2>
+        
         <div class="field">
             <label>NOME DE EXIBIÇÃO</label>
             <input type="text" id="editName" placeholder="Como quer ser chamado?">
         </div>
+
+        <div class="field">
+            <label>@ HANDLE (ÚNICO)</label>
+            <input type="text" id="editHandle" placeholder="seu_usuario" style="text-transform: lowercase;">
+        </div>
+
         <p style="font-size: 0.65rem; color: var(--text-dim); margin-bottom: 20px; line-height: 1.4;">
-            * A rede KLYON foca no anonimato. Sua imagem de perfil é gerada automaticamente com base na inicial do seu nome.
+            * O @handle deve ser único. Se você mudar para um que já existe, a alteração será negada.
         </p>
+
         <button id="saveBtn" onclick="saveProfile()" style="width:100%; background:var(--primary); padding:15px; border-radius:15px; border:none; font-weight:800; font-family:'Orbitron'; cursor:pointer; color:#000;">SALVAR ALTERAÇÕES</button>
         <button onclick="document.getElementById('editModal').style.display='none'" style="width:100%; background:transparent; color:#ff2d55; border:none; margin-top:15px; cursor:pointer; font-family:'Orbitron'; font-size:0.7rem;">CANCELAR</button>
     </div>
 </div>
 
-<div class="header-capa"></div>
-<div class="container">
-    <button class="btn-action" id="profileActionBtn" style="display:none;"></button>
-    
-    <div id="uPhotoNeon" class="neon-avatar-large"></div>
-
-    <h2 id="uName" style="margin: 15px 0 5px 0; font-family:'Orbitron'; letter-spacing: 1px; text-transform: uppercase;"></h2>
-    <p id="uHandle" style="color:var(--primary); margin: 0 0 10px 0; font-weight: 600; font-family:'Orbitron'; font-size: 0.8rem;"></p>
-    
-    <div id="uStats" style="display:flex; gap:20px; font-size:0.8rem; color:var(--text-dim); margin-bottom: 25px; font-family:'Orbitron';">
-        <span><b id="friendCount" style="color:#fff;">0</b> CONEXÕES</span>
-    </div>
-
-    <div style="border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; margin-bottom: 10px;">
-        <span style="font-family:'Orbitron'; font-size:0.7rem; color:var(--primary); letter-spacing: 2px;">TRANSMISSÕES RECENTES</span>
-    </div>
-    
-    <div id="uPosts"></div>
-</div>
-
-<nav class="bottom-nav">
-    <a href="index.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1946/1946488.png"></a>
-    <a href="buscar.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/149/149852.png"></a>
-    <a href="notificacoes.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/3602/3602145.png"></a>
-    <a href="perfil.html" class="nav-link active"><img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png"></a>
-</nav>
-
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-    import { getFirestore, doc, onSnapshot, collection, updateDoc, arrayUnion, arrayRemove, query, where, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+    // ... (Mantenha seus imports e configs do Firebase)
+    import { getFirestore, doc, onSnapshot, collection, updateDoc, arrayUnion, arrayRemove, query, where, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
-    const firebaseConfig = { 
-        apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", 
-        authDomain: "klyon-a97ba.firebaseapp.com", 
-        projectId: "klyon-a97ba", 
-        storageBucket: "klyon-a97ba.appspot.com" 
+    // ... (Mantenha o código de onAuthStateChanged e Listeners)
+    
+    // Atualize a parte que abre o modal para preencher o handle também:
+    // No seu if(targetUid === user.uid) { ... }
+    actionBtn.onclick = () => {
+        document.getElementById('editModal').style.display = 'flex';
+        document.getElementById('editName').value = u.name;
+        document.getElementById('editHandle').value = u.handle;
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    const urlParams = new URLSearchParams(window.location.search);
-    let targetUid = urlParams.get('uid');
-    let myUser = null;
-
-    onAuthStateChanged(auth, async user => {
-        if(!user) return window.location.href="login.html";
-        if(!targetUid) targetUid = user.uid;
-
-        // Listener para o meu usuário
-        onSnapshot(doc(db, "users", user.uid), snap => { myUser = snap.data(); });
-
-        // Listener para o perfil visualizado
-        onSnapshot(doc(db, "users", targetUid), snap => {
-            const u = snap.data();
-            if(!u) return;
-
-            document.getElementById('uName').innerText = u.name;
-            document.getElementById('uHandle').innerText = "@" + u.handle;
-            document.getElementById('friendCount').innerText = u.friends?.length || 0;
-
-            // Lógica da Inicial Neon
-            const initial = (u.name || "U").charAt(0).toUpperCase();
-            document.getElementById('uPhotoNeon').innerText = initial;
-
-            const actionBtn = document.getElementById('profileActionBtn');
-            actionBtn.style.display = "block";
-
-            if(targetUid === user.uid) {
-                actionBtn.innerText = "EDITAR IDENTIDADE";
-                actionBtn.onclick = () => {
-                    document.getElementById('editModal').style.display = 'flex';
-                    document.getElementById('editName').value = u.name;
-                };
-            } else {
-                const isFriend = u.friends?.includes(user.uid);
-                actionBtn.innerText = isFriend ? "DESCONECTAR" : "CONECTAR";
-                actionBtn.style.borderColor = isFriend ? "#ff2d55" : "var(--primary)";
-                actionBtn.style.color = isFriend ? "#ff2d55" : "var(--primary)";
-                actionBtn.onclick = () => toggleFriend(isFriend);
-            }
-        });
-
-        // Posts do usuário
-        const q = query(collection(db, "posts"), where("uid", "==", targetUid));
-        onSnapshot(q, s => {
-            const container = document.getElementById('uPosts'); 
-            container.innerHTML = "";
-            let posts = [];
-            s.forEach(d => posts.push(d.data()));
-            posts.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-            
-            posts.forEach(p => {
-                container.innerHTML += `
-                <div class="post">
-                    <b>${p.authorName} <small style="color:var(--text-dim); font-size:0.6rem; margin-left:5px;">@${p.authorHandle}</small></b>
-                    <p>${p.content}</p>
-                </div>`;
-            });
-        });
-    });
-
-    async function toggleFriend(isFriend) {
-        const myUid = auth.currentUser.uid;
-        const targetRef = doc(db, "users", targetUid);
-        const myRef = doc(db, "users", myUid);
-
-        if(isFriend) {
-            await updateDoc(targetRef, { friends: arrayRemove(myUid) });
-            await updateDoc(myRef, { friends: arrayRemove(targetUid) });
-        } else {
-            await updateDoc(targetRef, { friends: arrayUnion(myUid) });
-            await updateDoc(myRef, { friends: arrayUnion(targetUid) });
-            
-            await addDoc(collection(db, "notifications"), {
-                to: targetUid,
-                text: `@${myUser.handle} estabeleceu uma conexão com você.`,
-                createdAt: serverTimestamp(),
-                read: false
-            });
-        }
-    }
-
+    // NOVA FUNÇÃO SAVE PROFILE COM VERIFICAÇÃO DE HANDLE
     window.saveProfile = async () => {
         const btn = document.getElementById('saveBtn');
-        const newName = document.getElementById('editName').value;
+        const newName = document.getElementById('editName').value.trim();
+        const newHandle = document.getElementById('editHandle').value.trim().toLowerCase().replace(/\s+/g, '_');
 
-        if(!newName.trim()) return alert("O nome não pode estar vazio.");
-
-        btn.disabled = true; btn.innerText = "ATUALIZANDO...";
+        if(!newName || !newHandle) return alert("Preencha todos os campos.");
+        
+        btn.disabled = true; 
+        btn.innerText = "VERIFICANDO DISPONIBILIDADE...";
 
         try {
+            // Se o handle mudou, precisamos verificar se já existe
+            if (newHandle !== myUser.handle) {
+                const q = query(collection(db, "users"), where("handle", "==", newHandle));
+                const querySnapshot = await getDocs(q);
+                
+                if (!querySnapshot.empty) {
+                    alert("Este @handle já está sendo usado por outra elite.");
+                    btn.disabled = false;
+                    btn.innerText = "SALVAR ALTERAÇÕES";
+                    return;
+                }
+            }
+
+            // Atualiza o documento do usuário
             await updateDoc(doc(db, "users", auth.currentUser.uid), {
-                name: newName
+                name: newName,
+                handle: newHandle
             });
+
+            // Opcional: Você pode querer atualizar o nome/handle nos posts antigos também, 
+            // mas isso exige um loop. Por enquanto, os novos posts já sairão certos.
+
             document.getElementById('editModal').style.display = 'none';
+            alert("Identidade atualizada!");
+
         } catch (e) {
-            alert("Erro ao atualizar.");
+            console.error(e);
+            alert("Erro ao salvar. Verifique sua conexão.");
         } finally {
-            btn.disabled = false; btn.innerText = "SALVAR ALTERAÇÕES";
+            btn.disabled = false; 
+            btn.innerText = "SALVAR ALTERAÇÕES";
         }
     };
 </script>
