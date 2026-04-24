@@ -45,11 +45,10 @@
     </div>
 
     <div class="profile-info">
-        <h1 id="userName">...</h1>
-        <p id="userHandle">@...</p>
-        <p id="confBio"> </p>
-    </div>
-
+    <h1 id="userName">...</h1>
+    <p id="userHandle">@...</p>
+    <p id="userBio" style="color: var(--text-dim); margin-top: 10px; line-height: 1.5; font-size: 0.9rem;"></p>
+</div>
     <div class="stats-bar">
         <div class="stat"><b id="countFollowers">0</b> Conexões</div>
         <div class="stat"><b id="countFollowing">0</b> Seguindo</div>
@@ -85,43 +84,25 @@
     let viewedUserUid = null;
     let myUid = null;
 
-    onAuthStateChanged(auth, async (user) => {
-        if (!user) return window.location.href = "login.html";
-        myUid = user.uid;
+   // Localize este trecho dentro do seu setupProfile
+onSnapshot(doc(db, "users", uid), (docSnap) => {
+    const data = docSnap.data();
+    if (!data) return; // Segurança caso o dado suma
 
-        // Verifica se estamos vendo o perfil de outra pessoa via URL (?u=handle)
-        const params = new URLSearchParams(window.location.search);
-        const handleParam = params.get('u');
+    document.getElementById('userName').innerText = data.name;
+    document.getElementById('userHandle').innerText = `@${data.handle}`;
+    document.getElementById('userInitial').innerText = (data.name || "U").charAt(0).toUpperCase();
+    
+    // --- LINHA ADICIONADA AQUI ---
+    document.getElementById('userBio').innerText = data.bio || "Sem transmissão de bio disponível.";
+    // ----------------------------
 
-        if (handleParam) {
-            // Busca usuário pelo handle
-            const q = query(collection(db, "users"), where("handle", "==", handleParam));
-            const querySnap = await getDocs(q);
-            if (!querySnap.empty) {
-                viewedUserUid = querySnap.docs[0].id;
-                setupProfile(viewedUserUid);
-            } else {
-                alert("Usuário não encontrado.");
-                window.location.href = "index.html";
-            }
-        } else {
-            // Ver meu próprio perfil
-            viewedUserUid = myUid;
-            setupProfile(myUid);
-        }
-    });
+    document.getElementById('countFollowers').innerText = data.followers?.length || 0;
+    document.getElementById('countFollowing').innerText = data.following?.length || 0;
 
-    function setupProfile(uid) {
-        // Dados do perfil em tempo real
-        onSnapshot(doc(db, "users", uid), (docSnap) => {
-            const data = docSnap.data();
-            document.getElementById('userName').innerText = data.name;
-            document.getElementById('userHandle').innerText = `@${data.handle}`;
-            document.getElementById('userInitial').innerText = data.name.charAt(0).toUpperCase();
-            document.getElementById('countFollowers').innerText = data.followers?.length || 0;
-            document.getElementById('countFollowing').innerText = data.following?.length || 0;
-
-            const btn = document.getElementById('actionBtn');
+    const btn = document.getElementById('actionBtn');
+    // ... resto do seu código
+});
             if (uid === myUid) {
                 btn.innerText = "EDITAR";
                 btn.onclick = () => window.location.href = "configuracoes.html"; // Crie esta pagina ou abra seu modal
