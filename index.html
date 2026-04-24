@@ -245,32 +245,58 @@
         }
     };
 
-    window.toggleLike = async (postId, isLiked) => {
-        try {
-            await updateDoc(doc(db, "posts", postId), {
-                likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid)
-            });
-        } catch (e) { console.error("Erro no Like:", e); }
-    };
+  window.sendPost = async () => {
+    const textInput = document.getElementById('postContent');
+    const fileInput = document.getElementById('fileInput');
+    const text = textInput.value;
+    const file = fileInput.files ? fileInput.files[0] : null;
+    const btn = document.getElementById('sendBtn');
 
-    function listenNotifs(uid) {
-        const q = query(collection(db, "notifications"), where("to", "==", uid), where("read", "==", false));
-        onSnapshot(q, s => {
-            const badge = document.getElementById('notifBadge');
-            if(badge) badge.style.display = s.empty ? "none" : "block";
+    if (!text.trim() && !file) return;
+
+    btn.disabled = true;
+    btn.innerText = "ENVIANDO...";
+
+    try {
+        let imgUrl = null;
+
+        // Tenta o Storage apenas se houver arquivo e o storage estiver ok
+        if (file && typeof storage !== 'undefined') {
+            try {
+                const storageRef = ref(storage, `posts/${Date.now()}_${auth.currentUser.uid}`);
+                const snapshot = await uploadBytes(storageRef, file);
+                imgUrl = await getDownloadURL(snapshot.ref);
+            } catch (e) {
+                console.warn("Storage falhou, mas vou tentar postar o texto:", e);
+            }
+        }
+
+        // SALVANDO NO FIRESTORE
+        await addDoc(collection(db, "posts"), {
+            uid: auth.currentUser.uid,
+            authorName: currentEliteUser?.name || "Membro Elite",
+            authorPhoto: currentEliteUser?.photo || "",
+            authorHandle: currentEliteUser?.handle || "user",
+            content: text,
+            image: imgUrl,
+            createdAt: serverTimestamp(),
+            likes: [],
+            comments: []
         });
+
+        closeModal();
+        textInput.value = "";
+        if(fileInput) fileInput.value = "";
+        alert("Postado com sucesso!");
+
+    } catch (error) {
+        console.error("ERRO CRÍTICO AO POSTAR:", error);
+        alert("Erro no Banco de Dados. Verifique as 'Regras' no console do Firebase.");
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "POSTAR";
     }
-
-    window.openModal = () => {
-        document.getElementById('postModal').style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Trava o scroll da página atrás
-    };
-
-    window.closeModal = () => {
-        document.getElementById('postModal').style.display = 'none';
-        document.body.style.overflow = 'auto'; // Destrava o scroll
-    };
-
+};
 </script>
 </body>
 </html>
