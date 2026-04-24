@@ -23,7 +23,7 @@
         .mention { color: var(--primary); text-decoration: none; font-weight: 600; }
         .repost-link { color: var(--primary); font-size: 0.65rem; font-family: 'Orbitron'; display: block; margin-top: 10px; cursor: pointer; text-decoration: underline; }
 
-        .post-actions, .comment-actions { display: flex; gap: 20px; border-top: 1px solid var(--glass-border); padding-top: 12px; margin-top: 12px; }
+        .post-actions { display: flex; gap: 20px; border-top: 1px solid var(--glass-border); padding-top: 12px; margin-top: 12px; }
         .action-btn { background: none; border: none; color: var(--text-dim); font-size: 0.75rem; display: flex; align-items: center; gap: 6px; cursor: pointer; font-family: 'Orbitron'; transition: 0.2s; }
         .action-btn.active { color: var(--primary); text-shadow: 0 0 8px var(--primary); }
 
@@ -41,6 +41,14 @@
         .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 94%; max-width: 480px; height: 70px; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px); border-radius: 28px; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-around; z-index: 1000; }
         .nav-link img { width: 22px; filter: invert(1); opacity: 0.4; transition: 0.3s; }
         .nav-link.active img { opacity: 1; filter: drop-shadow(0 0 8px var(--primary)) invert(1); }
+        
+        /* Animação para notificações novas no menu */
+        @keyframes notify-pulse {
+            0% { filter: drop-shadow(0 0 2px var(--primary)) invert(1); opacity: 0.5; }
+            50% { filter: drop-shadow(0 0 15px var(--primary)) invert(1); opacity: 1; }
+            100% { filter: drop-shadow(0 0 2px var(--primary)) invert(1); opacity: 0.5; }
+        }
+        .has-new-notif img { animation: notify-pulse 1.5s infinite; opacity: 1 !important; }
     </style>
 </head>
 <body>
@@ -62,7 +70,7 @@
 <nav class="bottom-nav">
     <a href="index.html" class="nav-link active"><img src="https://cdn-icons-png.flaticon.com/512/1946/1946488.png" alt="Home"></a>
     <a href="buscar.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/149/149852.png" alt="Search"></a>
-    <a href="notificacoes.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/3602/3602145.png" alt="Notifications"></a>
+    <a href="notificacoes.html" id="nav-notif" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/3602/3602145.png" alt="Notifications"></a>
     <a href="perfil.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" alt="Profile"></a>
     <a href="configuracoes.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/2040/2040504.png" alt="Settings"></a>
 </nav>
@@ -70,7 +78,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, arrayUnion, arrayRemove, addDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, arrayUnion, arrayRemove, addDoc, serverTimestamp, query, orderBy, where } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
     const firebaseConfig = { apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", authDomain: "klyon-a97ba.firebaseapp.com", projectId: "klyon-a97ba" };
     const app = initializeApp(firebaseConfig);
@@ -79,35 +87,44 @@
 
     let me = null;
 
-    // TRAVA DE SEGURANÇA GLOBAL
     onAuthStateChanged(auth, async user => {
-        // Se não houver usuário, redireciona para login e para a execução
-        if (!user) {
-            window.location.href = "login.html";
-            return; 
-        }
+        if (!user) { window.location.href = "login.html"; return; }
 
         try {
             const snap = await getDoc(doc(db, "users", user.uid));
-            if(snap.exists()) { 
-                me = snap.data(); 
-            } else {
-                me = { name: "Usuário Novo", handle: "user_" + user.uid.slice(0,5) };
-                console.warn("Perfil não encontrado no Firestore.");
-            }
+            if(snap.exists()) { me = snap.data(); }
+            
+            // Monitor de notificações não lidas para o ícone do menu
+            const qNotif = query(collection(db, "notifications"), where("to", "==", user.uid), where("read", "==", false));
+            onSnapshot(qNotif, s => {
+                const navBtn = document.getElementById('nav-notif');
+                if(!s.empty) navBtn.classList.add('has-new-notif');
+                else navBtn.classList.remove('has-new-notif');
+            });
+
             loadFeed();
-        } catch (e) {
-            console.error("Erro ao carregar usuário:", e);
-            loadFeed(); 
-        }
+        } catch (e) { console.error(e); loadFeed(); }
     });
 
-    // Função auxiliar para verificar login antes de ações críticas
+    // FUNÇÃO QUE REALMENTE GRAVA A NOTIFICAÇÃO NO BANCO
+    async function enviarSinalNotificacao(paraId, texto, tipo, postId = null) {
+        if (!paraId || paraId === auth.currentUser.uid) return;
+        try {
+            await addDoc(collection(db, "notifications"), {
+                to: paraId,
+                fromId: auth.currentUser.uid,
+                fromHandle: me.handle,
+                text: texto,
+                type: tipo,
+                postId: postId,
+                read: false,
+                createdAt: serverTimestamp()
+            });
+        } catch (e) { console.error("Erro ao enviar sinal:", e); }
+    }
+
     function checkAuth() {
-        if (!auth.currentUser) {
-            window.location.href = "login.html";
-            return false;
-        }
+        if (!auth.currentUser) { window.location.href = "login.html"; return false; }
         return true;
     }
 
@@ -122,17 +139,10 @@
 
     window.goTo = (id) => {
         const el = document.getElementById(id);
-        if(el) { 
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
-            el.style.boxShadow = "0 0 20px var(--primary)"; 
-            setTimeout(() => el.style.boxShadow = "", 2000); 
-        }
+        if(el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
     };
 
     function loadFeed() {
-        // Proteção extra: Só carrega o feed se houver UID
-        if(!auth.currentUser) return;
-
         onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc")), snap => {
             const feed = document.getElementById('feed');
             if(!feed) return;
@@ -140,28 +150,25 @@
             snap.forEach(docSnap => {
                 const p = docSnap.data();
                 const pid = docSnap.id;
-                
                 const likes = Array.isArray(p.likes) ? p.likes : [];
                 const isLiked = auth.currentUser ? likes.includes(auth.currentUser.uid) : false;
-                const authorName = p.authorName || "Anônimo";
-                const authorHandle = p.authorHandle || "unknown";
 
                 const postDiv = document.createElement('div');
                 postDiv.className = 'post';
                 postDiv.id = pid;
                 postDiv.innerHTML = `
                     <div class="post-head">
-                        <div class="neon-avatar">${authorName.charAt(0).toUpperCase()}</div>
+                        <div class="neon-avatar">${(p.authorName||"U").charAt(0).toUpperCase()}</div>
                         <div>
-                            <b onclick="window.location.href='perfil.html?u=${authorHandle}'" style="cursor:pointer">${authorName}</b><br>
-                            <small style="color:var(--primary); font-size:0.6rem;">@${authorHandle}</small>
+                            <b onclick="window.location.href='perfil.html?u=${p.authorHandle}'" style="cursor:pointer">${p.authorName}</b><br>
+                            <small style="color:var(--primary); font-size:0.6rem;">@${p.authorHandle}</small>
                         </div>
                     </div>
                     <div class="post-content">${window.parseText(p.content)}</div>
                     <div class="post-actions">
                         <button class="action-btn ${isLiked?'active':''}" onclick="window.toggleLike('${pid}', ${isLiked})">🔥 ${likes.length}</button>
                         <button class="action-btn" onclick="window.prepComment('${pid}')">💬</button>
-                        <button class="action-btn" onclick="window.repost('${pid}', 'post')">🔄 Republicar</button>
+                        <button class="action-btn" onclick="window.repost('${pid}')">🔄 Republicar</button>
                     </div>
                     <div class="comment-box" id="comments-${pid}"></div>
                 `;
@@ -178,91 +185,77 @@
             box.innerHTML = "";
             snap.forEach(cDoc => {
                 const c = cDoc.data();
-                const clikes = Array.isArray(c.likes) ? c.likes : [];
-                const isCLiked = auth.currentUser ? clikes.includes(auth.currentUser.uid) : false;
-                box.innerHTML += `
-                    <div class="comment">
-                        <b>@${c.handle || 'anon'}</b>: ${window.parseText(c.text)}
-                        <div class="comment-actions">
-                            <span class="action-btn ${isCLiked?'active':''}" style="font-size:0.6rem;" onclick="window.toggleCommentLike('${postId}', '${cDoc.id}', ${isCLiked})">🔥 ${clikes.length}</span>
-                        </div>
-                    </div>`;
+                box.innerHTML += `<div class="comment"><b>@${c.handle}</b>: ${window.parseText(c.text)}</div>`;
             });
         });
     }
 
     window.openPostModal = () => {
-        if(!checkAuth()) return; // Bloqueia se não logado
-        const modal = document.getElementById('actionModal');
-        modal.style.display = 'flex';
+        if(!checkAuth()) return;
+        document.getElementById('actionModal').style.display = 'flex';
         document.getElementById('modalTitle').innerText = "NOVA TRANSMISSÃO";
         document.getElementById('modalInput').value = "";
         document.getElementById('modalSubmit').onclick = async () => {
             const txt = document.getElementById('modalInput').value;
             if(!txt.trim() || !me) return;
             await addDoc(collection(db, "posts"), {
-                uid: auth.currentUser.uid, 
-                authorName: me.name || "Usuário", 
-                authorHandle: me.handle || "anon",
-                content: txt, 
-                likes: [], 
-                createdAt: serverTimestamp()
+                uid: auth.currentUser.uid, authorName: me.name, authorHandle: me.handle,
+                content: txt, likes: [], createdAt: serverTimestamp()
             });
             window.closeModal('actionModal');
         };
     };
 
     window.prepComment = (postId) => {
-        if(!checkAuth()) return; // Bloqueia se não logado
-        const modal = document.getElementById('actionModal');
-        modal.style.display = 'flex';
+        if(!checkAuth()) return;
+        document.getElementById('actionModal').style.display = 'flex';
         document.getElementById('modalTitle').innerText = "DECODIFICAR RESPOSTA";
         document.getElementById('modalInput').value = "";
         document.getElementById('modalSubmit').onclick = async () => {
             const txt = document.getElementById('modalInput').value;
             if(!txt.trim() || !me) return;
+            
+            const postSnap = await getDoc(doc(db, "posts", postId));
+            const postData = postSnap.data();
+
             await addDoc(collection(db, `posts/${postId}/comments`), {
-                uid: auth.currentUser.uid, 
-                handle: me.handle || "anon", 
-                text: txt, 
-                likes: [], 
-                createdAt: serverTimestamp()
+                uid: auth.currentUser.uid, handle: me.handle, text: txt, createdAt: serverTimestamp()
             });
+
+            // GATILHO NOTIFICAÇÃO
+            enviarSinalNotificacao(postData.uid, "respondeu à sua transmissão", "comment", postId);
             window.closeModal('actionModal');
         };
     };
 
-    window.repost = async (id, type, postId = null) => {
-        if(!checkAuth()) return; // Bloqueia se não logado
+    window.toggleLike = async (id, isLiked) => {
+        if(!checkAuth()) return;
+        const postRef = doc(db, "posts", id);
+        const postSnap = await getDoc(postRef);
+        const postData = postSnap.data();
+
+        await updateDoc(postRef, { likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid) });
+
+        // GATILHO NOTIFICAÇÃO (só quando dá o like)
+        if(!isLiked) {
+            enviarSinalNotificacao(postData.uid, "curtiu sua transmissão", "like", id);
+        }
+    };
+
+    window.repost = async (id) => {
+        if(!checkAuth()) return;
         try {
-            let content = "", handle = "";
-            if(type === 'post') {
-                const s = await getDoc(doc(db, "posts", id));
-                content = s.data().content; handle = s.data().authorHandle;
-            } else {
-                const s = await getDoc(doc(db, `posts/${postId}/comments`, id));
-                content = s.data().text; handle = s.data().handle;
-            }
+            const s = await getDoc(doc(db, "posts", id));
+            const p = s.data();
             await addDoc(collection(db, "posts"), {
-                uid: auth.currentUser.uid, 
-                authorName: me.name, 
-                authorHandle: me.handle,
-                content: `🔄 Republicado de @${handle}:\n"${content}"\n#ref_${id}`,
-                likes: [], 
-                createdAt: serverTimestamp()
+                uid: auth.currentUser.uid, authorName: me.name, authorHandle: me.handle,
+                content: `🔄 Republicado de @${p.authorHandle}:\n"${p.content}"\n#ref_${id}`,
+                likes: [], createdAt: serverTimestamp()
             });
+            // GATILHO NOTIFICAÇÃO
+            enviarSinalNotificacao(p.uid, "republicou sua transmissão", "repost", id);
             alert("Sinal Reemitido!");
-        } catch(e) { console.error("Erro ao republicar:", e); }
-    };
-
-    window.toggleLike = (id, isLiked) => {
-        if(!checkAuth()) return;
-        updateDoc(doc(db, "posts", id), { likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid) });
-    };
-
-    window.toggleCommentLike = (pId, cId, isLiked) => {
-        if(!checkAuth()) return;
-        updateDoc(doc(db, `posts/${pId}/comments`, cId), { likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid) });
+        } catch(e) { console.error(e); }
     };
 
 </script>
