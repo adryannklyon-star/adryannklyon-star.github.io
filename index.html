@@ -3,10 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KLYON | Elite Network</title>
+    <title>KLYON | Anonymous Network</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #00f2ff; --bg: #030307; --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1); --text-dim: #94a3b8; }
+        :root { 
+            --primary: #00f2ff; 
+            --bg: #030307; 
+            --glass: rgba(255, 255, 255, 0.05); 
+            --glass-border: rgba(255, 255, 255, 0.1); 
+            --text-dim: #94a3b8; 
+        }
+
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(circle at 50% 0%, #0f172a 0%, #030307 100%); min-height: 100vh; padding-bottom: 100px; }
         
@@ -15,28 +22,42 @@
         
         .container { max-width: 500px; margin: auto; padding-top: 75px; }
 
-        .post { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 24px; padding: 18px; margin: 15px; animation: fadeIn 0.4s ease; }
-        .post-head { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
-        .post-head img { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--primary); object-fit: cover; }
-        .post-content { font-size: 1rem; line-height: 1.5; color: #e2e8f0; white-space: pre-wrap; }
+        /* Estilo do Avatar Neon (Substitui a Foto) */
+        .neon-avatar {
+            width: 44px; height: 44px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Orbitron';
+            color: var(--primary);
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px var(--primary);
+            box-shadow: inset 0 0 10px var(--primary), 0 0 5px var(--primary);
+            flex-shrink: 0;
+        }
 
-        .post-actions { display: flex; gap: 20px; border-top: 1px solid var(--glass-border); padding-top: 12px; margin-top: 10px; }
-        .action-btn { background: none; border: none; color: var(--text-dim); font-size: 0.85rem; display: flex; align-items: center; gap: 6px; cursor: pointer; font-family: 'Orbitron'; }
+        .post { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 24px; padding: 18px; margin: 0 15px 15px 15px; animation: fadeIn 0.4s ease; }
+        .post-head { display: flex; gap: 14px; align-items: center; margin-bottom: 12px; }
+        .post-content { font-size: 1.05rem; line-height: 1.6; color: #e2e8f0; white-space: pre-wrap; word-break: break-word; }
+
+        .post-actions { display: flex; gap: 20px; border-top: 1px solid var(--glass-border); padding-top: 12px; margin-top: 12px; }
+        .action-btn { background: none; border: none; color: var(--text-dim); font-size: 0.8rem; display: flex; align-items: center; gap: 6px; cursor: pointer; font-family: 'Orbitron'; }
         .action-btn.active { color: var(--primary); text-shadow: 0 0 8px var(--primary); }
 
         /* Modais */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 4000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .modal-card { background: #0f172a; width: 90%; max-width: 450px; padding: 25px; border-radius: 24px; border: 1px solid var(--primary); }
-        textarea { width: 100%; height: 120px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 15px; color: #fff; font-size: 1.1rem; padding: 15px; resize: none; margin: 15px 0; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 4000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-card { background: #0f172a; width: 90%; max-width: 450px; padding: 25px; border-radius: 24px; border: 1px solid var(--primary); box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); }
+        textarea { width: 100%; height: 150px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 15px; color: #fff; font-size: 1.1rem; padding: 15px; resize: none; margin: 15px 0; font-family: 'Plus Jakarta Sans'; }
 
-        .btn-main { width: 100%; background: var(--primary); border: none; padding: 15px; border-radius: 15px; font-weight: 800; font-family: 'Orbitron'; cursor: pointer; color: #000; }
+        .btn-main { width: 100%; background: var(--primary); border: none; padding: 15px; border-radius: 15px; font-weight: 800; font-family: 'Orbitron'; cursor: pointer; color: #000; transition: 0.3s; }
+        .btn-main:active { transform: scale(0.98); }
         
-        #fab { position: fixed; bottom: 105px; right: 25px; width: 55px; height: 55px; background: var(--primary); border-radius: 18px; border: none; font-size: 28px; cursor: pointer; z-index: 999; }
+        #fab { position: fixed; bottom: 105px; right: 25px; width: 60px; height: 60px; background: var(--primary); border-radius: 20px; border: none; font-size: 32px; cursor: pointer; z-index: 999; box-shadow: 0 0 15px var(--primary); }
 
         .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 94%; max-width: 480px; height: 70px; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px); border-radius: 28px; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-around; z-index: 1000; }
         .nav-link img { width: 24px; filter: invert(1); opacity: 0.4; }
         .nav-link.active img { opacity: 1; filter: drop-shadow(0 0 8px var(--primary)) invert(1); }
-        .notif-badge { position: absolute; top: 10px; right: 10px; width: 8px; height: 8px; background: #ff2d55; border-radius: 50%; display: none; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -47,19 +68,19 @@
 
 <div id="postModal" class="modal">
     <div class="modal-card">
-        <h2 style="font-family:'Orbitron'; font-size: 1rem; color: var(--primary); margin: 0;">NOVA TRANSMISSÃO</h2>
-        <textarea id="postContent" placeholder="O que deseja espalhar na rede?"></textarea>
+        <h2 style="font-family:'Orbitron'; font-size: 0.9rem; color: var(--primary); margin: 0; letter-spacing: 2px;">NOVA TRANSMISSÃO</h2>
+        <textarea id="postContent" placeholder="O que a elite precisa saber?"></textarea>
         <button id="sendBtn" onclick="sendPost()" class="btn-main">TRANSMITIR</button>
-        <button onclick="closeModal('postModal')" style="width:100%; background:transparent; color:#ff2d55; border:none; margin-top:10px; cursor:pointer;">Cancelar</button>
+        <button onclick="closeModal('postModal')" style="width:100%; background:transparent; color:#ff2d55; border:none; margin-top:15px; cursor:pointer; font-family:'Orbitron'; font-size: 0.7rem;">ABORTAR</button>
     </div>
 </div>
 
 <div id="commentModal" class="modal">
     <div class="modal-card">
-        <h2 style="font-family:'Orbitron'; font-size: 1rem; color: var(--primary); margin: 0;">RESPONDER</h2>
-        <textarea id="commentContent" placeholder="Sua resposta..."></textarea>
-        <button id="commentBtn" onclick="confirmComment()" class="btn-main">ENVIAR RESPOSTA</button>
-        <button onclick="closeModal('commentModal')" style="width:100%; background:transparent; color:#ff2d55; border:none; margin-top:10px; cursor:pointer;">Cancelar</button>
+        <h2 style="font-family:'Orbitron'; font-size: 0.9rem; color: var(--primary); margin: 0;">DECODIFICAR RESPOSTA</h2>
+        <textarea id="commentContent" placeholder="Digite sua resposta anonima..."></textarea>
+        <button id="commentBtn" onclick="confirmComment()" class="btn-main">RESPONDER</button>
+        <button onclick="closeModal('commentModal')" style="width:100%; background:transparent; color:#ff2d55; border:none; margin-top:15px; cursor:pointer;">ABORTAR</button>
     </div>
 </div>
 
@@ -69,18 +90,14 @@
 <nav class="bottom-nav">
     <a href="index.html" class="nav-link active"><img src="https://cdn-icons-png.flaticon.com/512/1946/1946488.png"></a>
     <a href="buscar.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/149/149852.png"></a>
-    <a href="notificacoes.html" class="nav-link">
-        <img src="https://cdn-icons-png.flaticon.com/512/3602/3602145.png">
-        <div id="notifBadge" class="notif-badge"></div>
-    </a>
+    <a href="notificacoes.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/3602/3602145.png"></a>
     <a href="perfil.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png"></a>
-    <a href="configuracoes.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/2040/2040504.png"></a>
 </nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-    import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, arrayUnion, arrayRemove, addDoc, serverTimestamp, query, orderBy, limit, where } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, arrayUnion, arrayRemove, addDoc, serverTimestamp, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
     const firebaseConfig = { 
         apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", 
@@ -102,7 +119,6 @@
         if(snap.exists()) {
             currentEliteUser = snap.data();
             loadFeed();
-            listenNotifs(user.uid);
         }
     });
 
@@ -114,11 +130,17 @@
             snapshot.forEach(docSnap => {
                 const p = {id: docSnap.id, ...docSnap.data()};
                 const isLiked = p.likes?.includes(auth.currentUser.uid);
+                // Pega a primeira letra do nome para o Avatar Neon
+                const initial = (p.authorName || "U").charAt(0).toUpperCase();
+
                 feed.innerHTML += `
                     <div class="post">
-                        <div class="post-head" onclick="location.href='perfil.html?uid=${p.uid}'">
-                            <img src="${p.authorPhoto || ''}">
-                            <div><b>${p.authorName}</b><br><small style="color:var(--primary)">@${p.authorHandle}</small></div>
+                        <div class="post-head">
+                            <div class="neon-avatar">${initial}</div>
+                            <div>
+                                <b>${p.authorName}</b><br>
+                                <small style="color:var(--primary); font-family:'Orbitron'; font-size:0.6rem;">@${p.authorHandle}</small>
+                            </div>
                         </div>
                         <div class="post-content">${p.content}</div>
                         <div class="post-actions">
@@ -134,13 +156,11 @@
     window.sendPost = async () => {
         const txt = document.getElementById('postContent').value;
         if (!txt.trim()) return;
-        
         try {
             await addDoc(collection(db, "posts"), {
                 uid: auth.currentUser.uid,
                 authorName: currentEliteUser.name,
                 authorHandle: currentEliteUser.handle,
-                authorPhoto: currentEliteUser.photo,
                 content: txt,
                 likes: [],
                 comments: [],
@@ -148,7 +168,7 @@
             });
             closeModal('postModal');
             document.getElementById('postContent').value = "";
-        } catch (e) { alert("Erro ao postar."); }
+        } catch (e) { console.error(e); }
     };
 
     window.openCommentModal = (id) => {
@@ -169,7 +189,7 @@
             });
             closeModal('commentModal');
             document.getElementById('commentContent').value = "";
-        } catch (e) { alert("Erro ao comentar."); }
+        } catch (e) { console.error(e); }
     };
 
     window.repost = async (id) => {
@@ -180,26 +200,19 @@
                 uid: auth.currentUser.uid,
                 authorName: currentEliteUser.name,
                 authorHandle: currentEliteUser.handle,
-                authorPhoto: currentEliteUser.photo,
-                content: `🔄 Repostado de @${data.authorHandle}:\n${data.content}`,
+                content: `🔄 [REPOST] @${data.authorHandle}: ${data.content}`,
                 likes: [],
                 comments: [],
                 createdAt: serverTimestamp()
             });
-            alert("Repostado!");
-        } catch (e) { alert("Erro ao repostar."); }
+            alert("Transmitido na sua timeline.");
+        } catch (e) { alert("Falha no repost."); }
     };
 
     window.toggleLike = async (id, isLiked) => {
         const pRef = doc(db, "posts", id);
         await updateDoc(pRef, { likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid) });
     };
-
-    function listenNotifs(uid) {
-        onSnapshot(query(collection(db, "notifications"), where("to", "==", uid), where("read", "==", false)), s => {
-            document.getElementById('notifBadge').style.display = s.empty ? "none" : "block";
-        });
-    }
 
     window.openModal = (id) => document.getElementById(id).style.display = 'flex';
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
