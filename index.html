@@ -212,17 +212,33 @@
         if(!isLiked) enviarSinalNotificacao(postSnap.data().uid, "curtiu sua transmissão", "like", id);
     };
 
-    window.repost = async (id) => {
-        const s = await getDoc(doc(db, "posts", id));
-        const p = s.data();
-        await addDoc(collection(db, "posts"), {
-            uid: auth.currentUser.uid, authorName: me.name, authorHandle: me.handle,
-            content: `🔄 Republicado de @${p.authorHandle}:\n"${p.content}"\n#ref_${id}`,
-            likes: [], commentsCount: 0, repostsCount: 0, createdAt: serverTimestamp()
-        });
-        await updateDoc(doc(db, "posts", id), { repostsCount: (p.repostsCount || 0) + 1 });
-        enviarSinalNotificacao(p.uid, "republicou sua transmissão", "repost", id);
-    };
+   window.repost = async (id) => {
+    const s = await getDoc(doc(db, "posts", id));
+    if (!s.exists()) return;
+    
+    const p = s.data();
+    
+    // 1. Cria o novo post (a republicação)
+    await addDoc(collection(db, "posts"), {
+        uid: auth.currentUser.uid, 
+        authorName: me.name, 
+        authorHandle: me.handle,
+        content: `🔄 Republicado de @${p.authorHandle}:\n"${p.content}"\n#ref_${id}`,
+        likes: [], 
+        commentsCount: 0, 
+        repostsCount: 0, 
+        createdAt: serverTimestamp()
+    });
+
+    // 2. Atualiza o contador no post ORIGINAL (Correção aqui)
+    const atual = p.repostsCount || 0; // Se for undefined, vira 0
+    await updateDoc(doc(db, "posts", id), { 
+        repostsCount: atual + 1 
+    });
+
+    // 3. Envia a notificação
+    enviarSinalNotificacao(p.uid, "republicou sua transmissão", "repost", id);
+};
 </script>
 </body>
 </html>
