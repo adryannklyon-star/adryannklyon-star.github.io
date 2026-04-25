@@ -48,7 +48,36 @@
             50% { filter: drop-shadow(0 0 15px var(--primary)) invert(1); opacity: 1; }
             100% { filter: drop-shadow(0 0 2px var(--primary)) invert(1); opacity: 0.5; }
         }
-        .has-new-notif img { animation: notify-pulse 1.5s infinite; opacity: 1 !important; }
+        .has-new-notif img { animation: notify-pulse 1.5s infinite; opacity: 1 !important; } 
+        .action-info { 
+    color: var(--text-dim); 
+    font-size: 0.75rem; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    font-family: 'Orbitron'; 
+    cursor: pointer; 
+    transition: 0.3s;
+}
+
+/* O segredo do brilho neon no ícone */
+.action-info svg {
+    width: 20px;
+    height: 20px;
+    stroke: var(--text-dim);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: 0.3s;
+}
+
+.action-info:hover { color: var(--primary); text-shadow: 0 0 8px var(--primary); }
+
+.action-info:hover svg { 
+    stroke: var(--primary); 
+    filter: drop-shadow(0 0 5px var(--primary)); 
+}
     </style>
     <link rel="manifest" href="manifest.json">
 
@@ -175,9 +204,23 @@
                     </div>
                     <div class="post-content">${window.parseText(p.content)}</div>
                     <div class="post-actions">
-                        <button class="action-btn ${isLiked?'active':''}" onclick="window.toggleLike('${pid}', ${isLiked})">🔥 ${likes.length}</button>
-                        <button class="action-btn" onclick="window.prepComment('${pid}')">💬</button>
-                        <button class="action-btn" onclick="window.repost('${pid}')">🔄 Republicar</button>
+                        <div class="action-info">
+                            <img src="https://cdn-icons-png.flaticon.com/512/5948/5948565.png" alt="Comments"> 
+                            <span>${comments}</span>
+                        </div>
+                      <div class="action-info">
+        <svg viewBox="0 0 24 24">
+            <polyline points="17 1 21 5 17 9"></polyline>
+            <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+            <polyline points="7 23 3 19 7 15"></polyline>
+            <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+        </svg>
+        <span>${p.repostsCount || 0}</span>
+    </div>
+                        <div class="action-info">
+                            <img src="https://cdn-icons-png.flaticon.com/512/1077/1077035.png" alt="Likes"> 
+                            <span>${likes}</span>
+                        </div>
                     </div>
                     <div class="comment-box" id="comments-${pid}"></div>
                 `;
