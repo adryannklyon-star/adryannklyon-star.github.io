@@ -25,7 +25,6 @@
         .stat { font-size: 0.8rem; color: var(--text-dim); }
         .stat b { color: #fff; font-family: 'Orbitron'; }
 
-        /* POSTS E AÇÕES */
         .post { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; padding: 18px; margin-top: 15px; position: relative; }
         .post b { color: var(--primary); font-family: 'Orbitron'; font-size: 0.8rem; cursor: pointer; }
         .post-actions { display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; margin-top: 15px; }
@@ -37,7 +36,6 @@
         .action-info.active { color: var(--primary); }
         .action-info.active svg { stroke: var(--primary); fill: rgba(0, 242, 255, 0.1); }
 
-        /* COMENTÁRIOS */
         .comment-box { margin-top: 15px; padding-left: 15px; border-left: 2px solid var(--glass-border); font-size: 0.85rem; }
         .comment { background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 12px; margin-bottom: 6px; }
         .comment b { color: var(--primary); font-size: 0.7rem; }
@@ -92,10 +90,22 @@
     let myUid = null;
     let myData = null;
 
+    // Utilitários de Texto
+    window.parseText = (text) => {
+        if(!text) return "";
+        return text.replace(/@(\w+)/g, '<a href="perfil.html?u=$1" style="color:var(--primary); text-decoration:none; font-weight:600;">@$1</a>')
+                   .replace(/#ref_(\w+)/g, '<span style="color:var(--primary); font-size:0.65rem; font-family:\'Orbitron\'; display:block; margin-top:10px; cursor:pointer; text-decoration:underline;" onclick="window.goTo(\'$1\')">↗ VER ORIGINAL</span>');
+    };
+
+    window.goTo = (id) => {
+        const el = document.getElementById(id);
+        if(el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        else window.location.href = `index.html#${id}`;
+    };
+
     onAuthStateChanged(auth, async (user) => {
         if (!user) return window.location.href = "login.html";
         myUid = user.uid;
-        
         const mySnap = await getDoc(doc(db, "users", myUid));
         if(mySnap.exists()) myData = mySnap.data();
 
@@ -108,12 +118,10 @@
             const querySnap = await getDocs(q);
             if (!querySnap.empty) uidToLoad = querySnap.docs[0].id;
         }
-
         setupProfile(uidToLoad);
     });
 
     function setupProfile(uid) {
-        // Dados do Usuário
         onSnapshot(doc(db, "users", uid), (snap) => {
             const d = snap.data();
             if (!d) return;
@@ -139,7 +147,6 @@
             }
         });
 
-        // Posts do Usuário
         const q = query(collection(db, "posts"), where("uid", "==", uid), orderBy("createdAt", "desc"));
         onSnapshot(q, (snap) => {
             const container = document.getElementById('postsContainer');
@@ -152,21 +159,19 @@
 
                 const postDiv = document.createElement('div');
                 postDiv.className = 'post';
+                postDiv.id = pid;
                 postDiv.innerHTML = `
                     <b onclick="window.location.href='perfil.html?u=${p.authorHandle}'">${p.authorName}</b>
-                    <div style="margin-top:8px; line-height: 1.5; color: #e2e8f0;">${p.content}</div>
-                    
+                    <div style="margin-top:8px; line-height: 1.5; color: #e2e8f0;">${window.parseText(p.content)}</div>
                     <div class="post-actions">
                         <div class="action-info" onclick="window.location.href='index.html?reply=${pid}'">
                             <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-11.7 8.38 8.38 0 0 1 3.8.9L21 3z"></path></svg>
                             <span>${p.commentsCount || 0}</span>
                         </div>
-                        
                         <div class="action-info" onclick="window.repost('${pid}')">
                             <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
                             <span>${p.repostsCount || 0}</span>
                         </div>
-
                         <div class="action-info ${isLiked ? 'active' : ''}" onclick="window.toggleLike('${pid}', ${isLiked})">
                             <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
                             <span>${likes.length}</span>
@@ -180,12 +185,10 @@
         });
     }
 
-    // Carregar comentários dentro do perfil
     function loadComments(postId) {
         onSnapshot(query(collection(db, `posts/${postId}/comments`), orderBy("createdAt", "asc")), snap => {
             const box = document.getElementById(`comments-${postId}`);
-            if(!box) return;
-            box.innerHTML = "";
+            if(!box) return; box.innerHTML = "";
             snap.forEach(cDoc => {
                 const c = cDoc.data();
                 box.innerHTML += `<div class="comment"><b>@${c.handle}</b> ${c.text}</div>`;
@@ -201,10 +204,11 @@
 
     window.repost = async (id) => {
         const s = await getDoc(doc(db, "posts", id));
+        if(!s.exists()) return;
         const p = s.data();
         await addDoc(collection(db, "posts"), {
             uid: auth.currentUser.uid, authorName: myData.name, authorHandle: myData.handle,
-            content: `🔄 Republicado de @${p.authorHandle}:\n"${p.content}"`,
+            content: `🔄 Republicado de @${p.authorHandle}:\n"${p.content}"\n#ref_${id}`,
             likes: [], commentsCount: 0, repostsCount: 0, createdAt: serverTimestamp()
         });
         await updateDoc(doc(db, "posts", id), { repostsCount: (p.repostsCount || 0) + 1 });
