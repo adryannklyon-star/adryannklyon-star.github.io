@@ -11,13 +11,11 @@
         .header-capa { height: 140px; background: linear-gradient(180deg, rgba(0,242,255,0.05) 0%, transparent 100%); border-bottom: 1px solid var(--glass-border); }
         .container { max-width: 550px; margin: auto; padding: 0 15px; position: relative; }
         
-        /* Avatar Neon Dinâmico */
         .neon-avatar-large { width: 90px; height: 90px; background: #000; border: 3px solid var(--primary); border-radius: 22px; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; color: var(--primary); font-size: 2.5rem; text-shadow: 0 0 15px var(--primary); box-shadow: 0 0 20px rgba(0, 242, 255, 0.3); margin-top: -45px; position: relative; z-index: 2; }
         
         .btn-action { background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 10px 20px; border-radius: 20px; float: right; margin-top: 15px; font-family: 'Orbitron'; font-size: 0.75rem; cursor: pointer; transition: 0.3s; }
         .btn-action.following { background: var(--primary); color: #000; }
 
-        /* Botão Direct Neon */
         .btn-direct { background: rgba(0, 242, 255, 0.05); border: 1px solid var(--primary); color: var(--primary); padding: 10px 24px; border-radius: 12px; font-family: 'Orbitron', sans-serif; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 2px; margin: 15px 0; box-shadow: 0 0 10px rgba(0, 242, 255, 0.1); width: 100%; }
         .btn-direct:hover { background: var(--primary); color: #000; box-shadow: 0 0 20px var(--primary); transform: translateY(-2px); }
 
@@ -28,7 +26,11 @@
         .post { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; padding: 18px; margin-top: 15px; }
         .post b { color: var(--primary); font-family: 'Orbitron'; font-size: 0.8rem; }
         
-        /* Modal */
+        /* Nova Barra de Interação */
+        .post-actions { display: flex; justify-content: space-between; margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .action-item { display: flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 0.75rem; font-family: 'Orbitron'; cursor: pointer; }
+        .action-item img { width: 18px; filter: invert(1); opacity: 0.5; }
+
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; align-items: center; justify-content: center; }
         .modal-content { width: 90%; max-width: 400px; background: #0f172a; border: 1px solid var(--glass-border); border-radius: 28px; padding: 20px; max-height: 70vh; overflow-y: auto; }
         
@@ -132,20 +134,31 @@
                 btn.innerText = isFollowing ? "CONECTADO" : "CONECTAR";
                 btn.className = isFollowing ? "btn-action following" : "btn-action";
                 btn.onclick = () => toggleFollow(uid, isFollowing);
-                
-                // Botão Direct Dinâmico
                 directContainer.innerHTML = `<button class="btn-direct" onclick="window.location.href='chat.html?id=${uid}'">ENVIAR DIRECT</button>`;
             }
         });
 
-        // Histórico de Posts
+        // Histórico de Posts com Estatísticas
         const qPosts = query(collection(db, "posts"), where("uid", "==", uid), orderBy("createdAt", "desc"));
         onSnapshot(qPosts, (snap) => {
             const container = document.getElementById('postsContainer');
             container.innerHTML = "";
             snap.forEach(pDoc => {
                 const p = pDoc.data();
-                container.innerHTML += `<div class="post"><b>${p.authorName}</b><div style="margin-top:8px;">${p.content}</div></div>`;
+                
+                // Formatação simples para K (ex: 1200 -> 1.2k)
+                const f = (n) => n >= 1000 ? (n/1000).toFixed(1) + 'k' : (n || 0);
+
+                container.innerHTML += `
+                    <div class="post">
+                        <b>${p.authorName}</b>
+                        <div style="margin-top:8px;">${p.content}</div>
+                        <div class="post-actions">
+                            <div class="action-item"><img src="https://cdn-icons-png.flaticon.com/512/5948/5948565.png"> <span>${f(p.commentsCount)}</span></div>
+                            <div class="action-item"><img src="https://cdn-icons-png.flaticon.com/512/2561/2561022.png"> <span>${f(p.repostsCount)}</span></div>
+                            <div class="action-item"><img src="https://cdn-icons-png.flaticon.com/512/1077/1077035.png"> <span>${f(p.likesCount)}</span></div>
+                        </div>
+                    </div>`;
             });
         });
     }
