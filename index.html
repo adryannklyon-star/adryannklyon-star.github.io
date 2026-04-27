@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>KLYON | VOID</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #000000;
             --card-bg: #0a0a0a;
             --border: #1a1a1a;
-            --accent: #00f2ff;
+            --accent: #00f2ff; /* Ciano Neon */
             --text-main: #ffffff;
             --text-dim: #888888;
-            --danger: #ff4444;
+            --danger: rgb(68, 233, 255);
             --success: #50fa7b;
         }
 
@@ -24,22 +24,42 @@
             padding-bottom: 110px; overflow-x: hidden;
         }
 
-        /* Header Fiel à Foto */
+        /* HEADER AJUSTADO PARA O LOGO NOVO */
         header { 
-            height: 70px; display: flex; justify-content: space-between; align-items: center; 
-            position: sticky; top: 0; background: rgba(0,0,0,0.9); 
+            height: 90px; /* Aumentado ligeiramente para acomodar o logo duplo */
+            display: flex; justify-content: space-between; align-items: center; 
+            position: sticky; top: 0; background: rgba(0,0,0,0.95); 
             backdrop-filter: blur(15px); z-index: 1000;
             border-bottom: 1px solid var(--border); padding: 0 20px;
         }
 
-        .header-left { width: 24px; cursor: pointer; }
+        .header-left { width: 24px; cursor: pointer; display: flex; align-items: center; }
+        
+        /* CONTAINER DO LOGO - IDÊNTICO À IMAGEM */
         .logo-container { text-align: center; }
-        .logo-main { font-size: 16px; letter-spacing: 8px; font-weight: 400; color: #fff; display: block; }
-        .logo-sub { font-size: 8px; letter-spacing: 4px; color: var(--accent); margin-top: -2px; text-transform: uppercase; }
+        .logo-main { 
+            font-size: 22px; /* Tamanho do KLYON */
+            letter-spacing: 12px; /* Espaçamento entre as letras do KLYON */
+            font-weight: 400; 
+            color: #fff; 
+            display: block; 
+            text-transform: uppercase;
+        }
+        .logo-sub { 
+            font-size: 10px; /* Tamanho do VOID */
+            letter-spacing: 16px; /* Espaçamento muito amplo do VOID */
+            color: var(--accent); /* Cor Ciano */
+            margin-top: -2px; /* Puxa o Void um pouco para cima, encostando no Klyon */
+            text-transform: uppercase;
+            font-family: 'Share Tech Mono', monospace; /* Fonte mono para os caracteres retos */
+            font-weight: 400;
+            opacity: 0.8; /* Leve transparência para dar o efeito de brilho suave */
+        }
 
+        .chat-link { display: flex; align-items: center; justify-content: center; text-decoration: none; width: 24px; }
         .chat-link svg { width: 24px; height: 24px; stroke: #fff; fill: none; stroke-width: 1.5; }
 
-        /* Feed com Estilo de Cards */
+        /* Feed com Estilo de Cards e Todas as Funções Mantidas */
         #feed { max-width: 500px; margin: 0 auto; padding: 15px; }
         
         .post-card { 
@@ -55,39 +75,42 @@
         .avatar { 
             width: 45px; height: 45px; border-radius: 50%; background: #111;
             border: 1px solid #222; display: flex; align-items: center; justify-content: center;
-            font-size: 18px; color: #fff; text-transform: uppercase;
+            font-size: 18px; color: #fff; text-transform: uppercase; font-weight: 300;
         }
         
         .post-meta { display: flex; flex-direction: column; }
-        .post-meta b { font-size: 14px; }
+        .post-meta b { font-size: 14px; font-weight: 600; color: #fff; }
         .post-meta span { font-size: 11px; color: var(--text-dim); }
 
-        .btn-excluir { color: var(--danger); font-size: 10px; cursor: pointer; opacity: 0.4; }
+        .btn-excluir { color: var(--danger); font-size: 10px; cursor: pointer; opacity: 0.4; letter-spacing: 1px; font-weight: 500; }
 
-        .post-content { font-size: 16px; font-weight: 300; color: #efefef; line-height: 1.5; margin-bottom: 20px; white-space: pre-wrap; }
+        .post-content { font-size: 16px; font-weight: 300; color: #efefef; line-height: 1.5; margin-bottom: 20px; white-space: pre-wrap; word-wrap: break-word; }
 
         /* Ações */
         .post-actions { display: flex; justify-content: space-between; padding: 0 5px; border-top: 1px solid #151515; padding-top: 15px; }
-        .action { display: flex; align-items: center; gap: 8px; color: var(--text-dim); font-size: 13px; cursor: pointer; }
+        .action { display: flex; align-items: center; gap: 8px; color: var(--text-dim); font-size: 13px; cursor: pointer; transition: 0.2s ease; }
         .action svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.5; }
         .action.active-vote { color: #fff; }
+        .action.active-vote svg { fill: rgba(255, 255, 255, 0.15); stroke: #fff; }
         .action.active-repost { color: var(--success); }
 
         /* FAB e Nav */
-        .fab { position: fixed; bottom: 100px; right: 25px; width: 56px; height: 56px; background: #000; border: 1.5px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 999; box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }
-        .fab svg { width: 28px; stroke: #fff; stroke-width: 2.5; }
+        .fab { position: fixed; bottom: 100px; right: 25px; width: 56px; height: 56px; background: #000; border: 1.5px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 999; box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); cursor: pointer; transition: 0.3s; }
+        .fab:hover { transform: scale(1.05); border-width: 2px; }
+        .fab svg { width: 28px; stroke: #fff; stroke-width: 2.5; fill: none; }
 
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 85px; background: #000; border-top: 1px solid #111; display: flex; justify-content: space-around; align-items: center; padding-bottom: 15px; }
-        .nav-link { display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: var(--text-dim); }
-        .nav-link svg { width: 22px; height: 22px; stroke: currentColor; fill: none; }
-        .nav-link span { font-size: 10px; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 85px; background: #000; border-top: 1px solid #111; display: flex; justify-content: space-around; align-items: center; padding-bottom: 15px; z-index: 1000; }
+        .nav-link { display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: var(--text-dim); transition: 0.2s; }
+        .nav-link svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+        .nav-link span { font-size: 10px; font-weight: 400; }
         .nav-link.active { color: #fff; }
 
-        /* Modal */
+        /* Modais */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 5000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .modal-card { background: #080808; width: 90%; max-width: 400px; padding: 25px; border-radius: 25px; border: 1px solid #222; }
-        textarea { width: 100%; height: 120px; background: transparent; border: none; color: #fff; font-size: 16px; outline: none; resize: none; }
-        .btn-send { width: 100%; background: #fff; color: #000; border: none; padding: 14px; border-radius: 50px; font-weight: 600; margin-top: 15px; }
+        .modal-card { background: #080808; width: 90%; max-width: 400px; padding: 25px; border-radius: 25px; border: 1px solid #222; border-bottom: 2px solid var(--accent); box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+        textarea { width: 100%; height: 120px; background: transparent; border: none; color: #fff; font-size: 16px; outline: none; resize: none; font-family: inherit; }
+        .btn-send { width: 100%; background: #fff; color: #000; border: none; padding: 14px; border-radius: 50px; font-weight: 600; margin-top: 15px; cursor: pointer; transition: 0.2s; }
+        .btn-send:hover { background: #eee; }
     </style>
 </head>
 <body>
@@ -96,7 +119,7 @@
     <div class="header-left"><svg viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></div>
     <div class="logo-container">
         <span class="logo-main">K L Y O N</span>
-        <span class="logo-sub">VOID</span>
+        <span class="logo-sub">V O I D</span>
     </div>
     <a href="chat.html" class="chat-link">
         <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
@@ -109,17 +132,19 @@
 
 <div id="postModal" class="modal">
     <div class="modal-card">
+        <div style="display:flex; justify-content:space-between; color:var(--text-dim); font-size:10px; letter-spacing:2px; font-family:'Share Tech Mono', monospace;">TRANSMISSÃO</div>
         <textarea id="postText" placeholder="O que o vazio precisa ouvir?"></textarea>
-        <button class="btn-send" id="submitPost">TRANSMITIR</button>
-        <p onclick="closeModal('postModal')" style="text-align:center; color:var(--text-dim); margin-top:15px; font-size:12px; cursor:pointer;">FECHAR</p>
+        <button class="btn-send" id="submitPost">POSTAR NO VOID</button>
+        <p onclick="closeModal('postModal')" style="text-align:center; color:var(--text-dim); margin-top:15px; font-size:11px; cursor:pointer;">[ CANCELAR ]</p>
     </div>
 </div>
 
 <div id="commentModal" class="modal">
     <div class="modal-card">
+        <div style="display:flex; justify-content:space-between; color:var(--text-dim); font-size:10px; letter-spacing:2px; font-family:'Share Tech Mono', monospace;">RESPOSTA</div>
         <textarea id="commentText" placeholder="Responder sinal..."></textarea>
-        <button class="btn-send" id="submitReply">ENVIAR</button>
-        <p onclick="closeModal('commentModal')" style="text-align:center; color:var(--text-dim); margin-top:15px; font-size:12px; cursor:pointer;">FECHAR</p>
+        <button class="btn-send" id="submitReply">RESPONDER</button>
+        <p onclick="closeModal('commentModal')" style="text-align:center; color:var(--text-dim); margin-top:15px; font-size:11px; cursor:pointer;">[ CANCELAR ]</p>
     </div>
 </div>
 
@@ -131,6 +156,7 @@
 </nav>
 
 <script type="module">
+    // Mantenha exatamente sua lógica Firebase aqui como eu mandei antes.
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, getDoc, updateDoc, increment, arrayUnion, arrayRemove, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
@@ -174,21 +200,21 @@
                                 <span>@${p.authorHandle}</span>
                             </div>
                         </div>
-                        ${isMine ? `<div class="btn-excluir" onclick="deletePost('${id}')">excluir</div>` : '<div style="color:#333">•••</div>'}
+                        ${isMine ? `<div class="btn-excluir" onclick="deletePost('${id}')">excluir</div>` : '<div style="color:#333; font-size:16px;">•••</div>'}
                     </div>
                     <div class="post-content">${p.content}</div>
                     <div class="post-actions">
                         <div class="action ${isVoted ? 'active-vote' : ''}" onclick="toggleVote('${id}', '${p.uid}', ${isVoted})">
                             <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                            ${p.votesCount || 0}
+                            <span>${p.votesCount || 0}</span>
                         </div>
                         <div class="action" onclick="openComment('${id}')">
                             <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                            ${p.commentsCount || 0}
+                            <span>${p.commentsCount || 0}</span>
                         </div>
                         <div class="action ${isShared ? 'active-repost' : ''}" onclick="repost('${id}', ${JSON.stringify(p).replace(/"/g, '&quot;')}, ${isShared})">
                             <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
-                            ${p.repostsCount || 0}
+                            <span>${p.repostsCount || 0}</span>
                         </div>
                         <div class="action"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg></div>
                     </div>
@@ -198,43 +224,76 @@
         });
     }
 
+    // LÓGICA DE VOTOS (Sincroniza com Perfil)
     window.toggleVote = async (id, authorUid, voted) => {
-        await updateDoc(doc(db, "posts", id), { votesCount: increment(voted ? -1 : 1), votesBy: voted ? arrayRemove(me.id) : arrayUnion(me.id) });
-        await updateDoc(doc(db, "users", authorUid), { votos: increment(voted ? -1 : 1) });
+        const pRef = doc(db, "posts", id);
+        const uRef = doc(db, "users", authorUid);
+        // Atualiza post
+        await updateDoc(pRef, { 
+            votesCount: increment(voted ? -1 : 1), 
+            votesBy: voted ? arrayRemove(me.id) : arrayUnion(me.id) 
+        });
+        // Atualiza votos acumulados do autor
+        await updateDoc(uRef, { votos: increment(voted ? -1 : 1) });
     };
 
-    window.repost = async (id, postData, shared) => {
+    // LÓGICA DE REPOST REAL (Cria novo post no feed)
+    window.repost = async (id, originalPost, shared) => {
         if(shared) return;
-        await updateDoc(doc(db, "posts", id), { repostsCount: increment(1), sharedBy: arrayUnion(me.id) });
+        // Aumenta contador do post original
+        await updateDoc(doc(db, "posts", id), { 
+            repostsCount: increment(1), 
+            sharedBy: arrayUnion(me.id) 
+        });
+        // Cria cópia do post com etiqueta
         await addDoc(collection(db, "posts"), {
-            ...postData, isRepost: true, repostedBy: me.name, reposterId: me.id,
-            createdAt: serverTimestamp(), votesCount: 0, votesBy: [], commentsCount: 0, repostsCount: 0, sharedBy: []
+            ...originalPost,
+            isRepost: true,
+            repostedBy: me.name,
+            reposterId: me.id,
+            createdAt: serverTimestamp(),
+            votesCount: 0, votesBy: [], commentsCount: 0, repostsCount: 0, sharedBy: []
         });
     };
 
-    window.deletePost = async (id) => { if(confirm("Apagar?")) await deleteDoc(doc(db, "posts", id)); };
+    // EXCLUIR POST REAL
+    window.deletePost = async (id) => { 
+        if(confirm("Deseja deletar este sinal permanentemente?")) {
+            await deleteDoc(doc(db, "posts", id));
+        }
+    };
+
+    // COMENTÁRIOS E MODAIS
     window.openModal = (m) => document.getElementById(m).style.display = 'flex';
-    window.closeModal = (m) => document.getElementById(m).style.display = 'none';
+    window.closeModal = (m) => {
+        document.getElementById(m).style.display = 'none';
+        // Limpar os campos ao fechar
+        if(m === 'postModal') document.getElementById('postText').value = "";
+        if(m === 'commentModal') document.getElementById('commentText').value = "";
+    };
+    
     window.openComment = (id) => { postAtivo = id; openModal('commentModal'); };
 
     document.getElementById('submitPost').onclick = async () => {
         const txt = document.getElementById('postText').value;
         if(!txt.trim()) return;
         await addDoc(collection(db, "posts"), {
-            uid: me.id, authorName: me.name, authorHandle: me.handle,
-            content: txt, createdAt: serverTimestamp(),
+            uid: me.id, 
+            authorName: me.name, 
+            authorHandle: me.handle,
+            content: txt, 
+            createdAt: serverTimestamp(),
             votesCount: 0, votesBy: [], commentsCount: 0, repostsCount: 0, sharedBy: [], isRepost: false
         });
         closeModal('postModal');
-        document.getElementById('postText').value = "";
     };
 
     document.getElementById('submitReply').onclick = async () => {
         const txt = document.getElementById('commentText').value;
         if(!txt.trim()) return;
+        // Apenas aumenta contador, funcionalidade real de subcoleção pode ser adicionada depois
         await updateDoc(doc(db, "posts", postAtivo), { commentsCount: increment(1) });
         closeModal('commentModal');
-        document.getElementById('commentText').value = "";
     };
 </script>
 </body>
