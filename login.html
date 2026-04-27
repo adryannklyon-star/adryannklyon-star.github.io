@@ -1,138 +1,101 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;800&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <title>Klyon - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #00f2ff; --bg: #030307; --accent: #7000ff; }
-        * { box-sizing: border-box; }
+        :root { --bg: #000000; --text: #ffffff; --dim: #888888; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
-            margin: 0; background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif;
-            display: flex; align-items: center; justify-content: center; height: 100vh;
-            background: radial-gradient(circle at center, #0f172a 0%, #030307 100%); overflow: hidden;
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: 'Inter', sans-serif;
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh;
+            overflow: hidden;
         }
 
-        /* Efeito de Luz de Fundo */
-        .glow {
-            position: absolute; width: 300px; height: 300px; background: var(--primary);
-            filter: blur(150px); border-radius: 50%; opacity: 0.15; z-index: 0;
-            animation: pulse 8s infinite alternate;
+        /* Efeito Eclipse do Logo */
+        .logo-container {
+            position: relative;
+            margin-bottom: 80px;
+            text-align: center;
         }
-
-        .login-card {
-            position: relative; text-align: center; padding: 50px 30px; width: 92%; max-width: 420px;
-            background: rgba(255, 255, 255, 0.02); 
-            border: 1px solid rgba(0, 242, 255, 0.2);
-            border-radius: 45px; backdrop-filter: blur(30px); 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1;
+        .eclipse {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: transparent;
+            box-shadow: -15px -5px 40px -10px rgba(255,255,255,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
         }
+        .logo-k { font-size: 80px; font-weight: 300; letter-spacing: -5px; }
+        .brand-name { font-size: 24px; letter-spacing: 12px; font-weight: 400; margin-top: 10px; }
+        .brand-sub { font-size: 12px; letter-spacing: 8px; color: var(--dim); margin-top: 5px; }
 
-        .logo-k {
-            font-family: 'Orbitron'; font-size: 6rem; font-weight: 900;
-            background: linear-gradient(180deg, #fff 30%, var(--primary) 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 5px; filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.4));
-        }
+        .welcome-section { text-align: center; margin-bottom: 60px; }
+        .welcome-section h2 { font-weight: 400; font-size: 20px; margin-bottom: 10px; }
+        .welcome-section p { color: var(--dim); font-size: 14px; }
 
-        h1 { font-family: 'Orbitron'; font-size: 1rem; letter-spacing: 6px; margin-bottom: 40px; color: var(--primary); opacity: 0.8; }
-        
         .btn-google {
-            width: 100%; padding: 18px; border-radius: 22px; border: none;
-            background: #fff; color: #000; font-weight: 800; font-family: 'Orbitron';
-            display: flex; align-items: center; justify-content: center; gap: 15px; 
-            cursor: pointer; transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            width: 85%;
+            max-width: 320px;
+            padding: 16px;
+            border-radius: 30px;
+            border: 1px solid #333;
+            background: transparent;
+            color: #fff;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: 0.3s;
         }
+        .btn-google:hover { border-color: #666; background: rgba(255,255,255,0.05); }
 
-        .btn-google:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0, 242, 255, 0.2); background: #f0f0f0; }
-        .btn-google:active { transform: translateY(0); }
-
-        .footer-text { margin-top: 30px; font-size: 0.75rem; color: rgba(255,255,255,0.3); letter-spacing: 1px; text-transform: uppercase; }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { from { transform: scale(1); opacity: 0.15; } to { transform: scale(1.5); opacity: 0.1; } }
+        .footer-terms {
+            position: absolute;
+            bottom: 40px;
+            font-size: 11px;
+            color: var(--dim);
+            text-align: center;
+            line-height: 1.6;
+        }
+        .footer-terms span { color: #00f2ff; } /* Cor sutil de destaque */
     </style>
 </head>
 <body>
-    <div class="glow"></div>
-    <div class="login-card">
-        <div class="logo-k">K</div>
-        <h1>KLYON</h1>
-        <button class="btn-google" id="loginBtn">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/pwa_google_color_128dp.png" width="22">
-            O FUTURO É ANÔNIMO
-        </button>
-        <div class="footer-text">Versão 2.0 | Conectando o Futuro</div>
+
+    <div class="logo-container">
+        <div class="eclipse"><span class="logo-k">K</span></div>
+        <div class="brand-name">K L Y O N</div>
+        <div class="brand-sub">— VOID —</div>
     </div>
 
-    <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+    <div class="welcome-section">
+        <h2>Bem-vindo ao vazio.</h2>
+        <p>Aqui, ninguém sabe quem você é.</p>
+    </div>
 
-    const firebaseConfig = { 
-        apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", 
-        authDomain: "klyon-a97ba.firebaseapp.com", 
-        projectId: "klyon-a97ba", 
-        storageBucket: "klyon-a97ba.appspot.com" 
-    };
+    <button class="btn-google" id="loginBtn">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/pwa_google_color_128dp.png" width="18">
+        Continuar com Google
+    </button>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    <div class="footer-terms">
+        Ao continuar, você concorda com nossos<br>
+        <span>Termos de Uso</span> e <span>Política de Privacidade</span>.
+    </div>
 
-    // Monitora se já está logado para redirecionar
-    onAuthStateChanged(auth, async (user) => { 
-        if(user) {
-            // Verifica se o perfil existe antes de mandar para a index
-            const snap = await getDoc(doc(db, "users", user.uid));
-            if(snap.exists()) {
-                window.location.href = "index.html";
-            }
-        }
-    });
-
-    document.getElementById('loginBtn').onclick = async () => {
-        const btn = document.getElementById('loginBtn');
-        btn.innerText = "AUTENTICANDO...";
-        btn.disabled = true;
-
-        try {
-            const result = await signInWithPopup(auth, new GoogleAuthProvider());
-            const user = result.user;
-            const userRef = doc(db, "users", user.uid);
-            const userSnap = await getDoc(userRef);
-
-            if (!userSnap.exists()) {
-                // FOCO EM ANONIMATO: Não salvamos a foto do Google.
-                // O sistema usará a primeira letra do nome no CSS Neon.
-                await setDoc(userRef, {
-                    name: user.displayName || "Membro Elite",
-                    photo: "system_generated", // Marcador para o sistema usar a letra
-                    cover: "", 
-                    handle: user.email.split('@')[0].toLowerCase().replace(/[^a-z0-x]/g, '') + Math.floor(Math.random() * 99),
-                    uid: user.uid,
-                    friends: [], // Lista de amigos (conexão mútua)
-                    following: [], // Mantido para compatibilidade de feed
-                    followers: [], // Mantido para compatibilidade de feed
-                    joinedAt: serverTimestamp(),
-                    bio: "Conexão estabelecida na KLYON."
-                });
-            }
-            
-            window.location.href = "index.html";
-
-        } catch (error) {
-            console.error("Erro no login:", error);
-            alert("Sinal interrompido. Verifique sua conexão.");
-            btn.innerText = "ENTRAR NA ELITE";
-            btn.disabled = false;
-        }
-    };
-</script>
-</body>
+    </body>
 </html>
