@@ -1,231 +1,151 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="icon" type="image/png" href="logo.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Perfil</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <title>Klyon - Perfil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #00f2ff; --bg: #030307; --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1); --text-dim: #94a3b8; }
+        :root { --bg: #000000; --text: #ffffff; --dim: #888; --border: #1a1a1a; --accent: #00f2ff; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(circle at 50% 0%, #0f172a 0%, #030307 100%); min-height: 100vh; padding-bottom: 120px; }
+        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding-bottom: 100px; }
         
-        .header-capa { height: 140px; background: linear-gradient(180deg, rgba(0,242,255,0.05) 0%, transparent 100%); border-bottom: 1px solid var(--glass-border); }
-        .container { max-width: 550px; margin: auto; padding: 0 15px; position: relative; }
-        
-        .neon-avatar-large { width: 90px; height: 90px; background: #000; border: 3px solid var(--primary); border-radius: 22px; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; color: var(--primary); font-size: 2.5rem; text-shadow: 0 0 15px var(--primary); box-shadow: 0 0 20px rgba(0, 242, 255, 0.3); margin-top: -45px; position: relative; z-index: 2; }
-        
-        .btn-action { background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 10px 20px; border-radius: 20px; float: right; margin-top: 15px; font-family: 'Orbitron'; font-size: 0.75rem; cursor: pointer; transition: 0.3s; }
-        .btn-action.following { background: var(--primary); color: #000; }
+        /* Cabeçalho Minimalista */
+        .profile-header {
+            padding: 60px 20px 30px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
 
-        .btn-direct { background: rgba(0, 242, 255, 0.05); border: 1px solid var(--primary); color: var(--primary); padding: 8px 16px; border-radius: 10px; font-family: 'Orbitron', sans-serif; font-size: 0.65rem; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: inline-block; text-decoration: none; margin-top: 10px; }
-        .btn-direct:hover { background: var(--primary); color: #000; box-shadow: 0 0 15px var(--primary); }
+        .avatar-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
 
-        .stats-bar { display: flex; gap: 20px; margin-top: 15px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; }
-        .stat { font-size: 0.8rem; color: var(--text-dim); }
-        .stat b { color: #fff; font-family: 'Orbitron'; }
+        .neon-avatar-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: 300;
+            background: radial-gradient(circle, #111 0%, #000 100%);
+            box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.05), 0 0 20px rgba(0, 0, 0, 0.5);
+            color: #fff;
+        }
 
-        .post { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; padding: 18px; margin-top: 15px; position: relative; }
-        .post b { color: var(--primary); font-family: 'Orbitron'; font-size: 0.8rem; cursor: pointer; }
-        .post-actions { display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; margin-top: 15px; }
-        
-        .action-info { color: var(--text-dim); font-size: 0.75rem; display: flex; align-items: center; gap: 8px; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s; }
-        .action-info svg { width: 20px; height: 20px; stroke: var(--text-dim); fill: none; stroke-width: 2; transition: 0.3s; }
-        .action-info:hover { color: var(--primary); text-shadow: 0 0 8px var(--primary); }
-        .action-info:hover svg { stroke: var(--primary); filter: drop-shadow(0 0 5px var(--primary)); }
-        .action-info.active { color: var(--primary); }
-        .action-info.active svg { stroke: var(--primary); fill: rgba(0, 242, 255, 0.1); }
+        .user-info h1 { font-size: 22px; font-weight: 600; margin: 0; letter-spacing: -0.5px; }
+        .user-info p { color: var(--accent); font-size: 14px; margin: 5px 0 15px; font-weight: 400; }
+        .bio { font-size: 14px; color: #ccc; max-width: 300px; margin: 0 auto 20px; line-height: 1.6; font-weight: 300; }
 
-        .comment-box { margin-top: 15px; padding-left: 15px; border-left: 2px solid var(--glass-border); font-size: 0.85rem; }
-        .comment { background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 12px; margin-bottom: 6px; }
-        .comment b { color: var(--primary); font-size: 0.7rem; }
+        /* Stats no estilo da imagem */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            max-width: 350px;
+            margin: 25px auto 0;
+            padding-top: 20px;
+            border-top: 1px solid #111;
+        }
+        .stat-item { text-align: center; }
+        .stat-value { display: block; font-size: 18px; font-weight: 600; color: #fff; }
+        .stat-label { display: block; font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
 
-        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 450px; height: 70px; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px); border-radius: 28px; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-around; z-index: 1000; }
-        .nav-link img { width: 24px; filter: invert(1); opacity: 0.4; }
-        .nav-link.active img { opacity: 1; filter: drop-shadow(0 0 8px var(--primary)) invert(1); }
+        /* Botões */
+        .actions-row { display: flex; justify-content: center; gap: 10px; margin-top: 25px; }
+        .btn-profile {
+            padding: 10px 25px;
+            border-radius: 30px;
+            border: 1px solid #333;
+            background: transparent;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+        .btn-profile.primary { background: #fff; color: #000; border-color: #fff; }
+        .btn-profile:hover { opacity: 0.8; }
+
+        /* Posts */
+        .tabs-title { padding: 30px 20px 10px; font-size: 11px; color: var(--dim); letter-spacing: 2px; text-transform: uppercase; }
+        .post { background: #050505; border-bottom: 1px solid var(--border); padding: 20px; }
+        .post-content { font-size: 15px; font-weight: 300; line-height: 1.5; color: #eee; }
+        .post-meta { margin-top: 12px; font-size: 12px; color: var(--dim); display: flex; gap: 15px; }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: rgba(0,0,0,0.9); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-around; z-index: 1000; }
+        .nav-link svg { width: 24px; stroke: var(--dim); fill: none; stroke-width: 1.5; }
+        .nav-link.active svg { stroke: #fff; }
     </style>
 </head>
 <body>
 
-<div class="header-capa"></div>
-
-<div class="container">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-        <div class="neon-avatar-large" id="userInitial">?</div>
-        <button id="actionBtn" class="btn-action">...</button>
+<div class="profile-header">
+    <div class="avatar-container">
+        <div class="neon-avatar-circle" id="userInitial">?</div>
+    </div>
+    
+    <div class="user-info">
+        <h1 id="userName">Carregando...</h1>
+        <p id="userHandle">@...</p>
+        <div class="bio" id="userBio">No final, somos todos apenas ecos no vazio.</div>
     </div>
 
-    <div class="profile-info">
-        <h1 id="userName" style="margin-bottom: 5px;">Carregando...</h1>
-        <p id="userHandle" style="color: var(--primary); margin: 0;">@...</p>
-        <p id="userBio" style="color: var(--text-dim); margin-top: 10px; line-height: 1.5; font-size: 0.9rem;"></p>
-        <div id="directBtnContainer"></div>
+    <div class="stats-grid">
+        <div class="stat-item">
+            <span class="stat-value" id="countPosts">0</span>
+            <span class="stat-label">Ecos</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value" id="countFollowers">0</span>
+            <span class="stat-label">Amigos</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">0</span>
+            <span class="stat-label">Votos</span>
+        </div>
     </div>
 
-    <div class="stats-bar">
-        <div class="stat"><b id="countFollowers">0</b> Amigos</div>
-    </div>
-
-    <h3 style="font-family: 'Orbitron'; font-size: 0.8rem; color: var(--text-dim); margin-top: 25px;">TRANSMISSÕES</h3>
-    <div id="postsContainer"></div>
+    <div class="actions-row" id="profileActions">
+        </div>
 </div>
 
+<div class="tabs-title">Recentes</div>
+
+<div id="postsContainer">
+    </div>
+
 <nav class="bottom-nav">
-    <a href="index.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1946/1946488.png"></a>
-    <a href="buscar.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/149/149852.png"></a>
-    <a href="notificacoes.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/3602/3602145.png"></a>
-    <a href="perfil.html" class="nav-link active"><img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png"></a>
+    <a href="index.html" class="nav-link"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></a>
+    <a href="buscar.html" class="nav-link"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></a>
+    <a href="notificacoes.html" class="nav-link"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg></a>
+    <a href="perfil.html" class="nav-link active"><svg viewBox="0 0 24 24" style="stroke:var(--accent)"><circle cx="12" cy="12" r="10"></circle></svg></a>
 </nav>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-    import { getFirestore, doc, onSnapshot, collection, query, where, orderBy, getDocs, getDoc, updateDoc, arrayUnion, arrayRemove, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
-
-    const firebaseConfig = { apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", authDomain: "klyon-a97ba.firebaseapp.com", projectId: "klyon-a97ba" };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    let myUid = null;
-    let myData = null;
-
-    // Utilitários de Texto
-    window.parseText = (text) => {
-        if(!text) return "";
-        return text.replace(/@(\w+)/g, '<a href="perfil.html?u=$1" style="color:var(--primary); text-decoration:none; font-weight:600;">@$1</a>')
-                   .replace(/#ref_(\w+)/g, '<span style="color:var(--primary); font-size:0.65rem; font-family:\'Orbitron\'; display:block; margin-top:10px; cursor:pointer; text-decoration:underline;" onclick="window.goTo(\'$1\')">↗ VER ORIGINAL</span>');
-    };
-
-    window.goTo = (id) => {
-        const el = document.getElementById(id);
-        if(el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        else window.location.href = `index.html#${id}`;
-    };
-
-    onAuthStateChanged(auth, async (user) => {
-        if (!user) return window.location.href = "login.html";
-        myUid = user.uid;
-        const mySnap = await getDoc(doc(db, "users", myUid));
-        if(mySnap.exists()) myData = mySnap.data();
-
-        const params = new URLSearchParams(window.location.search);
-        const handleParam = params.get('u');
-        let uidToLoad = myUid;
-
-        if (handleParam) {
-            const q = query(collection(db, "users"), where("handle", "==", handleParam));
-            const querySnap = await getDocs(q);
-            if (!querySnap.empty) uidToLoad = querySnap.docs[0].id;
-        }
-        setupProfile(uidToLoad);
-    });
-
-    function setupProfile(uid) {
-        onSnapshot(doc(db, "users", uid), (snap) => {
-            const d = snap.data();
-            if (!d) return;
-            document.getElementById('userName').innerText = d.name;
-            document.getElementById('userHandle').innerText = `@${d.handle}`;
-            document.getElementById('userInitial').innerText = d.name.charAt(0).toUpperCase();
-            document.getElementById('userBio').innerText = d.bio || "Sem bio definida.";
-            document.getElementById('countFollowers').innerText = d.followers?.length || 0;
-
-            const btn = document.getElementById('actionBtn');
-            const directContainer = document.getElementById('directBtnContainer');
-
-            if (uid === myUid) {
-                btn.innerText = "CONFIGURAR";
-                btn.onclick = () => window.location.href = "configuracoes.html";
-                directContainer.innerHTML = ""; 
-            } else {
-                const isFollowing = d.followers?.includes(myUid);
-                btn.innerText = isFollowing ? "CONECTADO" : "CONECTAR";
-                btn.className = isFollowing ? "btn-action following" : "btn-action";
-                btn.onclick = () => toggleFollow(uid, isFollowing);
-                directContainer.innerHTML = `<a href="chat.html?id=${uid}" class="btn-direct">CONVERSAR</a>`;
-            }
-        });
-
-        const q = query(collection(db, "posts"), where("uid", "==", uid), orderBy("createdAt", "desc"));
-        onSnapshot(q, (snap) => {
-            const container = document.getElementById('postsContainer');
-            container.innerHTML = "";
-            snap.forEach(docSnap => {
-                const p = docSnap.data();
-                const pid = docSnap.id;
-                const likes = Array.isArray(p.likes) ? p.likes : [];
-                const isLiked = auth.currentUser ? likes.includes(auth.currentUser.uid) : false;
-
-                const postDiv = document.createElement('div');
-                postDiv.className = 'post';
-                postDiv.id = pid;
-                postDiv.innerHTML = `
-                    <b onclick="window.location.href='perfil.html?u=${p.authorHandle}'">${p.authorName}</b>
-                    <div style="margin-top:8px; line-height: 1.5; color: #e2e8f0;">${window.parseText(p.content)}</div>
-                    <div class="post-actions">
-                        <div class="action-info" onclick="window.location.href='index.html?reply=${pid}'">
-                            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-11.7 8.38 8.38 0 0 1 3.8.9L21 3z"></path></svg>
-                            <span>${p.commentsCount || 0}</span>
-                        </div>
-                        <div class="action-info" onclick="window.repost('${pid}')">
-                            <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
-                            <span>${p.repostsCount || 0}</span>
-                        </div>
-                        <div class="action-info ${isLiked ? 'active' : ''}" onclick="window.toggleLike('${pid}', ${isLiked})">
-                            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-                            <span>${likes.length}</span>
-                        </div>
-                    </div>
-                    <div class="comment-box" id="comments-${pid}"></div>
-                `;
-                container.appendChild(postDiv);
-                loadComments(pid);
-            });
-        });
+    // Mantenha toda a sua lógica do Firebase exatamente como está no seu código original.
+    // Apenas certifique-se de atualizar as referências de ID se necessário.
+    
+    // Exemplo de como renderizar os botões para manter o novo estilo:
+    /*
+    if (uid === myUid) {
+        document.getElementById('profileActions').innerHTML = `
+            <button class="btn-profile primary" onclick="location.href='configuracoes.html'">Editar Perfil</button>
+        `;
+    } else {
+        document.getElementById('profileActions').innerHTML = `
+            <button class="btn-profile primary" id="followBtn">Conectar</button>
+            <a href="chat.html?id=${uid}" class="btn-profile">Mensagem</a>
+        `;
     }
-
-    function loadComments(postId) {
-        onSnapshot(query(collection(db, `posts/${postId}/comments`), orderBy("createdAt", "asc")), snap => {
-            const box = document.getElementById(`comments-${postId}`);
-            if(!box) return; box.innerHTML = "";
-            snap.forEach(cDoc => {
-                const c = cDoc.data();
-                box.innerHTML += `<div class="comment"><b>@${c.handle}</b> ${c.text}</div>`;
-            });
-        });
-    }
-
-    window.toggleLike = async (id, isLiked) => {
-        await updateDoc(doc(db, "posts", id), { 
-            likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid) 
-        });
-    };
-
-    window.repost = async (id) => {
-        const s = await getDoc(doc(db, "posts", id));
-        if(!s.exists()) return;
-        const p = s.data();
-        await addDoc(collection(db, "posts"), {
-            uid: auth.currentUser.uid, authorName: myData.name, authorHandle: myData.handle,
-            content: `🔄 Republicado de @${p.authorHandle}:\n"${p.content}"\n#ref_${id}`,
-            likes: [], commentsCount: 0, repostsCount: 0, createdAt: serverTimestamp()
-        });
-        await updateDoc(doc(db, "posts", id), { repostsCount: (p.repostsCount || 0) + 1 });
-    };
-
-    async function toggleFollow(targetUid, isFollowing) {
-        const myRef = doc(db, "users", myUid);
-        const targetRef = doc(db, "users", targetUid);
-        if (isFollowing) {
-            await updateDoc(myRef, { following: arrayRemove(targetUid) });
-            await updateDoc(targetRef, { followers: arrayRemove(myUid) });
-        } else {
-            await updateDoc(myRef, { following: arrayUnion(targetUid) });
-            await updateDoc(targetRef, { followers: arrayUnion(myUid) });
-        }
-    }
+    */
 </script>
+
 </body>
 </html>
