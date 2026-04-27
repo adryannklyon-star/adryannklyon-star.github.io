@@ -1,37 +1,108 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="icon" type="image/png" href="logo.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Notificações</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <title>Klyon - Notificações</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #00f2ff; --bg: #030307; --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1); }
-        body { margin: 0; background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(circle at 50% 0%, #0f172a 0%, #030307 100%); min-height: 100vh; }
-        .container { max-width: 550px; margin: auto; padding: 40px 15px 120px; }
-        .header-back { display: flex; align-items: center; gap: 10px; margin-bottom: 30px; cursor: pointer; color: var(--primary); font-family: 'Orbitron'; font-size: 0.8rem; }
+        :root { 
+            --bg: #000; 
+            --card: #0a0a0a; 
+            --border: #1a1a1a; 
+            --accent: #00f2ff; 
+            --text-dim: #666;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        .notif-card { background: var(--glass); border: 1px solid var(--glass-border); padding: 18px; border-radius: 20px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; border-left: 4px solid var(--primary); animation: slideIn 0.3s ease; position: relative; }
-        .notif-card.read { border-left-color: transparent; opacity: 0.6; }
+        body { 
+            margin: 0; background: var(--bg); color: #fff; 
+            font-family: 'Inter', sans-serif; padding-bottom: 90px; 
+        }
+
+        /* HEADER IGUAL AO FEED */
+        header { 
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; 
+            position: sticky; top: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px); z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+        .logo-area { display: flex; flex-direction: column; align-items: center; position: absolute; left: 50%; transform: translateX(-50%); }
+        .logo-k { font-family: 'Orbitron'; font-size: 16px; letter-spacing: 4px; color: #fff; }
+        .logo-void { font-size: 7px; letter-spacing: 6px; color: var(--accent); margin-top: -2px; }
+
+        .container { max-width: 500px; margin: auto; padding: 20px 15px; }
         
-        .notif-content { display: flex; align-items: center; gap: 12px; font-size: 0.9rem; }
-        .notif-user { color: var(--primary); font-weight: 800; cursor: pointer; text-decoration: none; }
+        .section-title { 
+            font-size: 10px; color: var(--text-dim); letter-spacing: 3px; 
+            text-transform: uppercase; margin-bottom: 20px; text-align: center;
+        }
+
+        /* CARD DE NOTIFICAÇÃO ESTILO FEED */
+        .notif-card { 
+            background: var(--card); border: 1px solid var(--border); 
+            padding: 18px; border-radius: 20px; margin-bottom: 12px; 
+            display: flex; align-items: center; gap: 15px;
+            animation: fadeIn 0.3s ease; 
+        }
+        .notif-card.read { opacity: 0.6; border-color: transparent; }
         
-        .notif-actions { display: flex; gap: 10px; margin-top: 5px; }
-        .btn-notif { background: var(--primary); color: #000; border: none; padding: 8px 15px; border-radius: 12px; font-family: 'Orbitron'; font-size: 0.65rem; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-notif.secondary { background: var(--glass); color: #fff; border: 1px solid var(--glass-border); }
+        /* AVATAR COM INICIAL */
+        .notif-avatar { 
+            width: 40px; height: 40px; border-radius: 50%; 
+            background: #000; border: 1px solid #333;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 500; font-size: 14px; flex-shrink: 0;
+        }
+
+        .notif-info { flex-grow: 1; font-size: 14px; line-height: 1.4; }
+        .notif-user { color: #fff; font-weight: 600; cursor: pointer; }
+        .notif-text { color: #ccc; font-weight: 300; }
+
+        /* BOTÕES DE AÇÃO */
+        .btn-notif { 
+            background: #fff; color: #000; border: none; 
+            padding: 8px 14px; border-radius: 20px; 
+            font-size: 11px; font-weight: 700; cursor: pointer; 
+            transition: 0.2s; 
+        }
+        .btn-notif.secondary { background: transparent; border: 1px solid #333; color: #fff; }
         .btn-notif:disabled { opacity: 0.5; cursor: default; }
 
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* NAV INFERIOR */
+        .bottom-nav { 
+            position: fixed; bottom: 0; width: 100%; height: 75px; 
+            background: #000; border-top: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-around;
+        }
+        .nav-link svg { width: 24px; stroke: var(--text-dim); fill: none; stroke-width: 1.5; }
+        .nav-link.active svg { stroke: var(--accent); }
     </style>
 </head>
 <body>
+
+<header>
+    <div onclick="history.back()" style="cursor:pointer;"><svg width="24" height="24" viewBox="0 0 24 24" stroke="#fff" stroke-width="2" fill="none"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
+    <div class="logo-area">
+        <div class="logo-k">K L Y O N</div>
+        <div class="logo-void">V O I D</div>
+    </div>
+    <div style="width:24px"></div>
+</header>
+
 <div class="container">
-    <div class="header-back" onclick="location.href='index.html'">⬅ VOLTAR AO FEED</div>
-    <h2 style="font-family:'Orbitron'; font-size: 1.2rem; margin-bottom: 20px;">NOTIFICAÇÕES</h2>
-    <div id="notifList">Sincronizando satélites...</div>
+    <div class="section-title">Atividade Recente</div>
+    <div id="notifList"></div>
 </div>
+
+<nav class="bottom-nav">
+    <a href="index.html" class="nav-link"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></a>
+    <a href="buscar.html" class="nav-link"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></a>
+    <a href="notificacoes.html" class="nav-link active"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg></a>
+    <a href="perfil.html" class="nav-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle></svg></a>
+</nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
@@ -39,65 +110,49 @@
     import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc, getDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
     const firebaseConfig = { apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", authDomain: "klyon-a97ba.firebaseapp.com", projectId: "klyon-a97ba" };
-    const db = getFirestore(initializeApp(firebaseConfig));
-    const auth = getAuth();
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
 
     let myData = null;
 
     onAuthStateChanged(auth, async user => {
-        if (!user) {
-            window.location.href = "login.html";
-            return;
-        }
+        if (!user) return window.location.href = "login.html";
 
-        // Carrega dados do usuário logado para verificar amizades/conexões existentes
         const mySnap = await getDoc(doc(db, "users", user.uid));
         myData = mySnap.data();
 
-        // Escuta notificações enviadas para VOCÊ
         const q = query(collection(db, "notifications"), where("to", "==", user.uid));
         
         onSnapshot(q, s => {
             const list = document.getElementById('notifList');
             if(s.empty) { 
-                list.innerHTML = "<div style='opacity:0.5; text-align:center; margin-top:50px;'>Nenhuma atividade detectada no seu radar.</div>"; 
+                list.innerHTML = "<div style='opacity:0.3; text-align:center; margin-top:50px; font-size:13px;'>O silêncio reina por aqui.</div>"; 
                 return; 
             }
             
             let all = [];
             s.forEach(d => all.push({id: d.id, ...d.data()}));
-            
-            // Ordena manualmente por data decrescente (mais recentes primeiro)
             all.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
 
             list.innerHTML = "";
             all.forEach(async n => {
-                const isFollowNotif = n.type === "follow";
-                const isLikeNotif = n.type === "like";
-                
-                // Verifica se já existe a conexão para o botão mudar de estado
-                const alreadyFollowing = myData.following?.includes(n.fromId);
+                const alreadyFriends = myData.friends?.includes(n.fromId);
+                const initial = n.fromHandle ? n.fromHandle[0].toUpperCase() : "?";
 
                 const card = document.createElement('div');
                 card.className = `notif-card ${n.read ? 'read' : ''}`;
                 
                 let actionButton = "";
-                if (isFollowNotif) {
-                    actionButton = `
-                        <button class="btn-notif" onclick="connectBack('${n.fromId}', this)" ${alreadyFollowing ? 'disabled' : ''}>
-                            ${alreadyFollowing ? 'CONECTADO' : 'CONECTAR TAMBÉM'}
-                        </button>`;
-                } else if (isLikeNotif && n.postId) {
-                    // Botão para ver o post que recebeu o like
-                    actionButton = `<button class="btn-notif secondary" onclick="location.href='index.html#${n.postId}'">VER POST</button>`;
+                if (n.type === "follow") {
+                    actionButton = `<button class="btn-notif" onclick="connectBack('${n.fromId}', this)" ${alreadyFriends ? 'disabled' : ''}>${alreadyFriends ? 'AMIGOS' : 'AMIGAR'}</button>`;
                 }
 
                 card.innerHTML = `
-                    <div class="notif-content">
-                        <div>
-                            <span class="notif-user" onclick="location.href='perfil.html?u=${n.fromHandle}'">@${n.fromHandle}</span> 
-                            ${n.text}
-                        </div>
+                    <div class="notif-avatar">${initial}</div>
+                    <div class="notif-info">
+                        <span class="notif-user" onclick="location.href='perfil.html?u=${n.fromHandle}'">@${n.fromHandle}</span> 
+                        <span class="notif-text">${n.text}</span>
                     </div>
                     <div class="notif-actions">
                         ${actionButton}
@@ -105,34 +160,22 @@
                 `;
 
                 list.appendChild(card);
-                
-                // Marca como lida assim que aparece na tela
-                if(!n.read) {
-                    await updateDoc(doc(db, "notifications", n.id), { read: true });
-                }
+                if(!n.read) await updateDoc(doc(db, "notifications", n.id), { read: true });
             });
         });
     });
 
-    // Função global para conexão rápida
     window.connectBack = async (targetUid, btn) => {
-        const originalText = btn.innerText;
-        btn.innerText = "PROCESSANDO...";
+        btn.innerText = "...";
         btn.disabled = true;
-        
         try {
             const myUid = auth.currentUser.uid;
-            // Atualiza os dois documentos para criar a conexão mútua
-            await updateDoc(doc(db, "users", myUid), { following: arrayUnion(targetUid) });
-            await updateDoc(doc(db, "users", targetUid), { followers: arrayUnion(myUid) });
-            
-            btn.innerText = "CONECTADO";
-            // Dispara notificação de volta (opcional, mas recomendado)
-            // sendNotification(targetUid, "conectou-se de volta com você", "follow");
+            // Usando 'friends' conforme seu modelo de amizade solicitado
+            await updateDoc(doc(db, "users", myUid), { friends: arrayUnion(targetUid) });
+            await updateDoc(doc(db, "users", targetUid), { friends: arrayUnion(myUid) });
+            btn.innerText = "AMIGOS";
         } catch (e) {
             console.error(e);
-            alert("Falha na sincronização.");
-            btn.innerText = originalText;
             btn.disabled = false;
         }
     };
