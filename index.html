@@ -13,58 +13,54 @@
             --accent: #00f2ff;
             --text-main: #ffffff;
             --text-dim: #666666;
+            --voted: #00f2ff;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        
-        body { 
-            margin: 0; background: var(--bg); color: var(--text-main); 
-            font-family: 'Inter', sans-serif; padding-bottom: 90px;
-        }
+        body { margin: 0; background: var(--bg); color: var(--text-main); font-family: 'Inter', sans-serif; padding-bottom: 90px; overflow-x: hidden; }
 
-        /* HEADER IGUAL À FOTO */
         header { 
             padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; 
             position: sticky; top: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); z-index: 1000;
+            border-bottom: 1px solid var(--border);
         }
         .logo-area { display: flex; flex-direction: column; align-items: center; }
         .logo-k { font-family: 'Orbitron'; font-size: 18px; letter-spacing: 5px; color: #fff; }
         .logo-void { font-size: 8px; letter-spacing: 8px; color: var(--accent); margin-top: -2px; }
-        
-        .menu-icon, .notif-icon { width: 24px; cursor: pointer; }
 
-        /* FEED EM CARDS (IGUAL À FOTO 1) */
         #feed { max-width: 500px; margin: 10px auto; padding: 0 15px; }
         
         .post-card { 
             background: var(--card-bg); border: 1px solid var(--border); 
             border-radius: 20px; padding: 20px; margin-bottom: 15px;
-            transition: transform 0.2s;
         }
         
         .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .user-info { display: flex; align-items: center; gap: 12px; }
+        .user-info { display: flex; align-items: center; gap: 12px; cursor: pointer; }
         .avatar { 
             width: 40px; height: 40px; border-radius: 50%; 
             background: #111; border: 1px solid #333;
             display: flex; align-items: center; justify-content: center;
-            font-weight: 600; font-size: 14px;
+            font-weight: 600; font-size: 14px; color: var(--accent);
         }
+        .post-name { font-weight: 600; font-size: 14px; }
         .time { font-size: 11px; color: var(--text-dim); }
 
-        .post-content { 
-            font-size: 16px; line-height: 1.5; font-weight: 400; 
-            color: #ddd; margin-bottom: 20px;
-        }
+        .post-content { font-size: 15px; line-height: 1.5; color: #eee; margin-bottom: 20px; word-wrap: break-word; }
 
         .post-actions { 
             display: flex; justify-content: space-between; 
             padding-top: 15px; border-top: 1px solid #151515;
         }
-        .action-item { display: flex; align-items: center; gap: 8px; color: var(--text-dim); font-size: 13px; cursor: pointer; }
-        .action-item svg { width: 18px; stroke: var(--text-dim); fill: none; }
+        .action-item { display: flex; align-items: center; gap: 6px; color: var(--text-dim); font-size: 12px; cursor: pointer; transition: 0.2s; }
+        .action-item svg { width: 18px; stroke: var(--text-dim); fill: none; stroke-width: 2; }
+        
+        /* Estados Ativos */
+        .action-item.voted { color: var(--accent); }
+        .action-item.voted svg { stroke: var(--accent); fill: rgba(0, 242, 255, 0.1); }
+        .action-item.shared { color: #50fa7b; }
+        .action-item.shared svg { stroke: #50fa7b; }
 
-        /* FAB (BOTÃO DE PUBLICAR IGUAL À FOTO) */
         .fab { 
             position: fixed; bottom: 100px; right: 20px; 
             width: 55px; height: 55px; background: #000;
@@ -72,9 +68,7 @@
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 0 15px rgba(0, 242, 255, 0.3); z-index: 999;
         }
-        .fab svg { width: 24px; stroke: #fff; }
 
-        /* NAV INFERIOR */
         .bottom-nav { 
             position: fixed; bottom: 0; width: 100%; height: 75px; 
             background: #000; border-top: 1px solid var(--border);
@@ -83,62 +77,51 @@
         .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; }
         .nav-item svg { width: 22px; stroke: var(--text-dim); fill: none; }
         .nav-item.active svg { stroke: var(--accent); }
-        .nav-label { font-size: 10px; color: var(--text-dim); }
-        .nav-item.active .nav-label { color: var(--text-main); }
 
-        /* MODAL DE POSTAGEM */
         #postModal { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
             z-index: 2000; display: none; align-items: center; justify-content: center;
         }
         .modal-content { background: #0a0a0a; width: 90%; max-width: 400px; padding: 25px; border-radius: 25px; border: 1px solid #222; }
-        textarea { 
-            width: 100%; height: 150px; background: transparent; border: none; 
-            color: #fff; font-size: 16px; resize: none; margin-top: 15px;
-        }
-        .btn-publish { 
-            width: 100%; background: #fff; color: #000; border: none; 
-            padding: 12px; border-radius: 30px; font-weight: 600; cursor: pointer;
-        }
+        textarea { width: 100%; height: 120px; background: transparent; border: none; color: #fff; font-size: 16px; resize: none; margin-top: 15px; }
+        .btn-publish { width: 100%; background: #fff; color: #000; border: none; padding: 12px; border-radius: 30px; font-weight: 600; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="menu-icon"><svg viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><line x1="3" y1="12" x2="15" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="10" y2="18"></line></svg></div>
     <div class="logo-area">
         <div class="logo-k">K L Y O N</div>
         <div class="logo-void">V O I D</div>
     </div>
-    <div class="notif-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></div>
 </header>
 
 <main id="feed"></main>
 
-<div class="fab" id="openModal"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div>
+<div class="fab" id="openModal"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div>
 
 <div id="postModal">
     <div class="modal-content">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:12px; letter-spacing:2px; color:#555;">NOVA TRANSMISSÃO</span>
-            <span onclick="closeModal()" style="cursor:pointer; color:var(--accent);">X</span>
+            <span style="font-size:10px; letter-spacing:2px; color:var(--text-dim); font-family:'Orbitron';">NOVA TRANSMISSÃO</span>
+            <span onclick="closeModal()" style="cursor:pointer; color:var(--accent);">FECHAR</span>
         </div>
         <textarea id="postText" placeholder="O que o vazio precisa ouvir?"></textarea>
-        <button class="btn-publish" id="sendPost">POSTAR</button>
+        <button class="btn-publish" id="sendPost">TRANSMITIR</button>
     </div>
 </div>
 
 <nav class="bottom-nav">
-    <a href="index.html" class="nav-item active"><svg viewBox="0 0 24 24" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span class="nav-label">Início</span></a>
-    <a href="buscar.html" class="nav-item"><svg viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span class="nav-label">Explorar</span></a>
-    <a href="notificacoes.html" class="nav-item"><svg viewBox="0 0 24 24" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg><span class="nav-label">Notificações</span></a>
-    <a href="perfil.html" class="nav-item"><svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"></circle></svg><span class="nav-label">Void</span></a>
+    <a href="index.html" class="nav-item active"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></a>
+    <a href="buscar.html" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></a>
+    <a href="notificacoes.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg></a>
+    <a href="perfil.html" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle></svg></a>
 </nav>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, getDoc, updateDoc, increment, arrayUnion, arrayRemove, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
     const firebaseConfig = { apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", authDomain: "klyon-a97ba.firebaseapp.com", projectId: "klyon-a97ba" };
     const app = initializeApp(firebaseConfig);
@@ -146,10 +129,12 @@
     const db = getFirestore(app);
 
     let me = null;
+    let myId = null;
 
     onAuthStateChanged(auth, async (user) => {
-        if (!user) window.location.href = "login.html";
-        const snap = await getDoc(doc(db, "users", user.uid));
+        if (!user) return window.location.href = "login.html";
+        myId = user.uid;
+        const snap = await getDoc(doc(db, "users", myId));
         me = snap.data();
         loadPosts();
     });
@@ -161,41 +146,85 @@
             feed.innerHTML = "";
             snap.forEach(d => {
                 const p = d.data();
-                feed.innerHTML += `
-                    <div class="post-card">
-                        <div class="post-header">
-                            <div class="user-info">
-                                <div class="avatar">${p.authorName[0]}</div>
-                                <div>
-                                    <div class="post-name">${p.authorName}</div>
-                                    <div class="time">há alguns instantes</div>
-                                </div>
+                const postId = d.id;
+                const isVoted = p.votesBy?.includes(myId);
+                const isShared = p.sharedBy?.includes(myId);
+
+                const card = document.createElement('div');
+                card.className = 'post-card';
+                card.innerHTML = `
+                    <div class="post-header">
+                        <div class="user-info" onclick="window.location.href='perfil.html?u=${p.authorHandle}'">
+                            <div class="avatar">${p.authorName[0]}</div>
+                            <div>
+                                <div class="post-name">${p.authorName}</div>
+                                <div class="time">@${p.authorHandle}</div>
                             </div>
-                            <div style="color:#333;">•••</div>
                         </div>
-                        <div class="post-content">${p.content}</div>
-                        <div class="post-actions">
-                            <div class="action-item"><svg viewBox="0 0 24 24" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> 12</div>
-                            <div class="action-item"><svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg> 3</div>
-                            <div class="action-item"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg> 1</div>
-                            <div class="action-item"><svg viewBox="0 0 24 24" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg></div>
+                    </div>
+                    <div class="post-content">${p.content}</div>
+                    <div class="post-actions">
+                        <div class="action-item ${isVoted ? 'voted' : ''}" onclick="toggleVote('${postId}', '${p.uid}', ${isVoted})">
+                            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+                            <span>${p.votesCount || 0}</span>
                         </div>
-                    </div>`;
+                        <div class="action-item" onclick="openComments('${postId}')">
+                            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                            <span>${p.commentsCount || 0}</span>
+                        </div>
+                        <div class="action-item ${isShared ? 'shared' : ''}" onclick="repost('${postId}', ${isShared})">
+                            <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+                            <span>${p.repostsCount || 0}</span>
+                        </div>
+                    </div>
+                `;
+                feed.appendChild(card);
             });
         });
     }
 
-    // Modal Controls
-    const modal = document.getElementById('postModal');
-    document.getElementById('openModal').onclick = () => modal.style.display = 'flex';
-    window.closeModal = () => modal.style.display = 'none';
+    // FUNÇÃO DE VOTAR (CURTIR) - ATUALIZA VOTOS DO PERFIL
+    window.toggleVote = async (postId, authorId, alreadyVoted) => {
+        const postRef = doc(db, "posts", postId);
+        const userRef = doc(db, "users", authorId);
+
+        if (alreadyVoted) {
+            await updateDoc(postRef, { votesCount: increment(-1), votesBy: arrayRemove(myId) });
+            await updateDoc(userRef, { votos: increment(-1) }); // Remove do contador do perfil
+        } else {
+            await updateDoc(postRef, { votesCount: increment(1), votesBy: arrayUnion(myId) });
+            await updateDoc(userRef, { votos: increment(1) }); // Adiciona ao contador do perfil
+        }
+    };
+
+    // REPOSTAR
+    window.repost = async (postId, alreadyShared) => {
+        if(alreadyShared) return;
+        const postRef = doc(db, "posts", postId);
+        await updateDoc(postRef, { repostsCount: increment(1), sharedBy: arrayUnion(myId) });
+        alert("Sinal recompartilhado no vazio!");
+    };
+
+    // COMENTAR (SIMPLIFICADO)
+    window.openComments = (postId) => {
+        const msg = prompt("Sua resposta ao vazio:");
+        if(msg) {
+            updateDoc(doc(db, "posts", postId), { commentsCount: increment(1) });
+            alert("Resposta enviada.");
+        }
+    };
+
+    // MODAL
+    document.getElementById('openModal').onclick = () => document.getElementById('postModal').style.display = 'flex';
+    window.closeModal = () => document.getElementById('postModal').style.display = 'none';
 
     document.getElementById('sendPost').onclick = async () => {
         const txt = document.getElementById('postText').value;
-        if(!txt.trim() || !me) return;
+        if(!txt.trim()) return;
         await addDoc(collection(db, "posts"), {
-            uid: auth.currentUser.uid, authorName: me.name, authorHandle: me.handle,
-            content: txt, createdAt: serverTimestamp()
+            uid: myId, authorName: me.name, authorHandle: me.handle,
+            content: txt, createdAt: serverTimestamp(),
+            votesCount: 0, votesBy: [], commentsCount: 0, repostsCount: 0, sharedBy: []
         });
         closeModal();
         document.getElementById('postText').value = "";
