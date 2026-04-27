@@ -18,7 +18,6 @@
             --glass: rgba(0, 0, 0, 0.85);
         }
 
-        /* Reset & Base */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body { 
             background: var(--bg); color: var(--text-main); 
@@ -26,114 +25,75 @@
             padding-bottom: 100px; overflow-x: hidden;
         }
 
-        /* Header com Opção de Chat */
+        /* Header Ajustado */
         header { 
-            height: 65px; display: flex; justify-content: space-between; align-items: center; 
+            height: 70px; display: flex; justify-content: space-between; align-items: center; 
             position: sticky; top: 0; background: var(--glass); 
             backdrop-filter: blur(20px); z-index: 1000;
             border-bottom: 1px solid var(--border); padding: 0 20px;
         }
-        
-        /* Spacer para centralizar o logo perfeitamente */
-        header::before { content: ''; width: 24px; } 
 
-        .logo-k { 
-            font-weight: 300; font-size: 18px; letter-spacing: 6px; 
-            color: #fff; text-transform: uppercase; opacity: 0.9;
-        }
+        .logo-container { text-align: center; flex-grow: 1; margin-right: -24px; /* Compensar o ícone do chat para centralizar */ }
+        .logo-main { font-size: 16px; letter-spacing: 8px; font-weight: 400; color: #fff; display: block; }
+        .logo-sub { font-size: 8px; letter-spacing: 4px; color: var(--accent); margin-top: -2px; text-transform: uppercase; }
 
         .chat-link { 
             display: flex; align-items: center; justify-content: center;
             text-decoration: none; color: var(--text-main); transition: 0.3s;
+            width: 24px;
         }
         .chat-link svg { width: 24px; height: 24px; stroke: #fff; fill: none; stroke-width: 1.5; }
-        .chat-link:active { transform: scale(0.9); opacity: 0.7; }
 
-        /* Feed Layout */
+        /* Feed */
         #feed { max-width: 550px; margin: 0 auto; width: 100%; }
-        
         .post { padding: 24px 20px; border-bottom: 1px solid var(--border); position: relative; }
-        
-        .repost-label { 
-            font-size: 11px; color: var(--success); margin-bottom: 14px; 
-            display: flex; align-items: center; gap: 6px; font-weight: 400; opacity: 0.8;
-        }
-
         .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
         .neon-avatar-circle {
             width: 44px; height: 44px; border-radius: 50%; 
             border: 1px solid rgba(255, 255, 255, 0.08); 
             display: flex; align-items: center; justify-content: center; 
-            font-size: 16px; font-weight: 400; color: #fff;
-            background: radial-gradient(circle at top left, #1a1a1a, #000);
+            font-size: 16px; color: #fff; background: radial-gradient(circle at top left, #1a1a1a, #000);
             text-transform: uppercase;
         }
 
-        .post-info b { font-size: 14px; font-weight: 600; color: #fff; }
-        .post-info span { font-size: 12px; color: var(--text-dim); font-weight: 400; }
+        .post-info b { font-size: 14px; color: #fff; }
+        .post-info span { font-size: 12px; color: var(--text-dim); }
+        .post-content { font-size: 15px; font-weight: 300; color: #ddd; margin-left: 56px; white-space: pre-wrap; }
 
-        .post-content { 
-            font-size: 15px; font-weight: 300; color: #ddd; 
-            white-space: pre-wrap; word-wrap: break-word; margin-left: 56px;
-        }
-
-        .post-actions { display: flex; gap: 35px; margin-top: 20px; padding-top: 15px; margin-left: 56px; }
+        .post-actions { display: flex; gap: 35px; margin-top: 20px; margin-left: 56px; }
         .action-item { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--text-dim); cursor: pointer; }
         .action-item svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.6; }
-        
         .action-item.voted { color: #fff; }
-        .action-item.shared { color: var(--success); }
-
-        .btn-excluir {
-            position: absolute; top: 24px; right: 20px;
-            color: var(--danger); font-size: 10px; cursor: pointer;
-            opacity: 0.3; text-transform: uppercase; letter-spacing: 1px;
-        }
 
         /* Modais */
-        .modal { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.8); 
-            z-index: 5000; display: none; align-items: center; justify-content: center; 
-            backdrop-filter: blur(12px); padding: 20px;
-        }
-        .modal-card { 
-            background: #080808; width: 100%; max-width: 450px; 
-            padding: 30px; border-radius: 24px; border: 1px solid #1a1a1a;
-        }
-        .modal-card textarea { 
-            width: 100%; height: 160px; background: transparent; 
-            border: none; color: #fff; padding: 10px 0; resize: none; 
-            font-family: inherit; font-size: 16px; margin-top: 15px;
-        }
-        .btn-publish { 
-            width: 100%; background: #fff; color: #000; border: none; 
-            padding: 15px; border-radius: 14px; font-weight: 600; cursor: pointer; margin-top: 20px;
-        }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 5000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(12px); padding: 20px; }
+        .modal-card { background: #080808; width: 100%; max-width: 450px; padding: 30px; border-radius: 24px; border: 1px solid #1a1a1a; }
+        .modal-card textarea { width: 100%; height: 160px; background: transparent; border: none; color: #fff; padding: 10px 0; resize: none; font-family: inherit; font-size: 16px; }
+        .btn-publish { width: 100%; background: #fff; color: #000; border: none; padding: 15px; border-radius: 14px; font-weight: 600; cursor: pointer; margin-top: 20px; }
 
         /* FAB */
-        .fab { 
-            position: fixed; bottom: 95px; right: 25px; 
-            width: 60px; height: 60px; background: #fff; 
-            border-radius: 20px; display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; z-index: 999;
-        }
+        .fab { position: fixed; bottom: 95px; right: 25px; width: 60px; height: 60px; background: #fff; border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 999; }
         .fab svg { width: 26px; stroke: #000; stroke-width: 2.2; fill: none; }
 
-        /* Bottom Nav */
+        /* Bottom Nav Completo */
         .bottom-nav { 
             position: fixed; bottom: 0; width: 100%; height: 80px; 
             background: var(--glass); backdrop-filter: blur(20px);
             border-top: 1px solid var(--border); display: flex; 
             align-items: center; justify-content: space-around; padding-bottom: 10px;
         }
-        .nav-link svg { width: 24px; stroke: var(--text-dim); fill: none; stroke-width: 1.8; }
-        .nav-link.active svg { stroke: #fff; }
+        .nav-link { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--text-dim); }
+        .nav-link svg { width: 24px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+        .nav-link.active { color: #fff; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo-k">KLYON</div>
+    <div style="width: 24px;"></div> <div class="logo-container">
+        <span class="logo-main">K L Y O N</span>
+        <span class="logo-sub">VOID</span>
+    </div>
     <a href="chat.html" class="chat-link">
         <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
     </a>
@@ -145,28 +105,23 @@
 
 <div id="postModal" class="modal">
     <div class="modal-card">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:10px; letter-spacing:2px; color:var(--text-dim); font-weight:600;">NEW SIGNAL</span>
-            <span onclick="closeModal('postModal')" style="cursor:pointer; font-size:12px; color:var(--text-dim)">FECHAR</span>
-        </div>
         <textarea id="postText" placeholder="O que o vazio precisa ouvir?"></textarea>
         <button class="btn-publish" id="submitPost">TRANSMITIR</button>
+        <p onclick="closeModal('postModal')" style="text-align:center; color:var(--text-dim); margin-top:15px; font-size:12px; cursor:pointer;">FECHAR</p>
     </div>
 </div>
 
 <div id="commentModal" class="modal">
     <div class="modal-card">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:10px; letter-spacing:2px; color:var(--text-dim); font-weight:600;">REPLY</span>
-            <span onclick="closeModal('commentModal')" style="cursor:pointer; font-size:12px; color:var(--text-dim)">FECHAR</span>
-        </div>
         <textarea id="commentText" placeholder="Sua resposta para o sinal..."></textarea>
-        <button class="btn-publish" id="submitReply">ENVIAR</button>
+        <button class="btn-publish" id="submitReply">ENVIAR RESPOSTA</button>
+        <p onclick="closeModal('commentModal')" style="text-align:center; color:var(--text-dim); margin-top:15px; font-size:12px; cursor:pointer;">FECHAR</p>
     </div>
 </div>
 
 <nav class="bottom-nav">
     <a href="index.html" class="nav-link active"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></a>
+    <a href="explorar.html" class="nav-link"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></a>
     <a href="notificacoes.html" class="nav-link"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg></a>
     <a href="perfil.html" class="nav-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle></svg></a>
 </nav>
@@ -200,15 +155,10 @@
                 const p = d.data();
                 const id = d.id;
                 const isVoted = p.votesBy?.includes(me.id);
-                const isShared = p.sharedBy?.includes(me.id);
-                const isMine = p.uid === me.id || (p.isRepost && p.reposterId === me.id);
                 
                 const postEl = document.createElement('div');
                 postEl.className = 'post';
                 postEl.innerHTML = `
-                    ${p.isRepost ? `<div class="repost-label">↺ republicado por ${p.repostedBy}</div>` : ''}
-                    ${isMine ? `<div class="btn-excluir" onclick="deletePost('${id}')">excluir</div>` : ''}
-                    
                     <div class="post-header" onclick="location.href='perfil.html?u=${p.authorHandle}'">
                         <div class="neon-avatar-circle">${p.authorName ? p.authorName[0] : '?'}</div>
                         <div class="post-info">
@@ -226,10 +176,6 @@
                             <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                             <span>${p.commentsCount || 0}</span>
                         </div>
-                        <div class="action-item ${isShared ? 'shared' : ''}" onclick="repost('${id}', ${JSON.stringify(p).replace(/"/g, '&quot;')}, ${isShared})">
-                            <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
-                            <span>${p.repostsCount || 0}</span>
-                        </div>
                     </div>
                 `;
                 feed.appendChild(postEl);
@@ -237,24 +183,9 @@
         });
     }
 
-    window.deletePost = async (id) => {
-        if(confirm("Remover sinal?")) await deleteDoc(doc(db, "posts", id));
-    };
-
     window.toggleVote = async (id, authorUid, voted) => {
-        const pRef = doc(db, "posts", id);
-        const uRef = doc(db, "users", authorUid);
-        await updateDoc(pRef, { votesCount: increment(voted ? -1 : 1), votesBy: voted ? arrayRemove(me.id) : arrayUnion(me.id) });
-        await updateDoc(uRef, { votos: increment(voted ? -1 : 1) });
-    };
-
-    window.repost = async (id, postData, shared) => {
-        if(shared) return;
-        await updateDoc(doc(db, "posts", id), { repostsCount: increment(1), sharedBy: arrayUnion(me.id) });
-        await addDoc(collection(db, "posts"), {
-            ...postData, isRepost: true, repostedBy: me.name, reposterId: me.id,
-            createdAt: serverTimestamp(), votesCount: 0, votesBy: [], commentsCount: 0, repostsCount: 0, sharedBy: []
-        });
+        await updateDoc(doc(db, "posts", id), { votesCount: increment(voted ? -1 : 1), votesBy: voted ? arrayRemove(me.id) : arrayUnion(me.id) });
+        await updateDoc(doc(db, "users", authorUid), { votos: increment(voted ? -1 : 1) });
     };
 
     window.openModal = (m) => document.getElementById(m).style.display = 'flex';
@@ -269,7 +200,7 @@
         await addDoc(collection(db, "posts"), {
             uid: me.id, authorName: me.name, authorHandle: me.handle,
             content: txt, createdAt: serverTimestamp(),
-            votesCount: 0, votesBy: [], commentsCount: 0, repostsCount: 0, sharedBy: [], isRepost: false
+            votesCount: 0, votesBy: [], commentsCount: 0
         });
         closeModal('postModal');
         document.getElementById('postText').value = "";
