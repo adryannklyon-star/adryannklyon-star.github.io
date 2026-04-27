@@ -3,38 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Klyon - Login</title>
+    <title>KLYON - Entrar no Vazio</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #000; --accent: #00f2ff; --border: #1a1a1a; }
+        :root { --bg: #000; --accent: #00f2ff; --text-dim: #888; }
+        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
         body { 
             margin: 0; background: var(--bg); color: #fff; 
             font-family: 'Inter', sans-serif; height: 100vh; 
-            display: flex; align-items: center; justify-content: center;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            overflow: hidden;
         }
-        .login-card { text-align: center; width: 90%; max-width: 350px; }
+
+        /* EFEITO DE ECLIPSE ATRÁS DO K (IGUAL À FOTO 2) */
+        .logo-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .eclipse {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: transparent;
+            box-shadow: inset -10px 10px 20px rgba(255, 255, 255, 0.8),
+                        0 0 40px rgba(255, 255, 255, 0.2);
+            filter: blur(1px);
+        }
         .logo-k { 
-            font-family: 'Orbitron'; font-size: 60px; color: var(--accent); 
-            text-shadow: 0 0 20px rgba(0, 242, 255, 0.5); margin-bottom: 10px; 
+            font-family: 'Orbitron'; font-size: 80px; color: #fff; 
+            position: relative; z-index: 2;
         }
-        h1 { font-size: 18px; font-weight: 300; letter-spacing: 4px; margin-bottom: 40px; color: #888; }
+
+        .brand-area { text-align: center; margin-bottom: 50px; }
+        .brand-name { font-family: 'Orbitron'; font-size: 24px; letter-spacing: 12px; margin-bottom: 5px; }
+        .brand-sub { font-size: 10px; letter-spacing: 10px; color: #fff; opacity: 0.8; border-top: 1px solid #333; padding-top: 5px; }
+
+        .welcome-text { text-align: center; margin-bottom: 40px; }
+        .welcome-text h2 { font-size: 18px; font-weight: 400; margin-bottom: 8px; }
+        .welcome-text p { font-size: 13px; color: var(--text-dim); }
+
+        /* BOTÃO GOOGLE MINIMALISTA (IGUAL À FOTO) */
         .btn-google {
-            width: 100%; padding: 15px; border-radius: 30px; border: 1px solid #333;
-            background: #fff; color: #000; font-weight: 600; font-size: 14px;
-            cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 90%; max-width: 320px; padding: 16px; border-radius: 40px; 
+            border: 1px solid #333; background: transparent; color: #fff; 
+            font-weight: 500; font-size: 14px; cursor: pointer; 
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            transition: 0.3s;
         }
-        .btn-google:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,255,255,0.1); }
+        .btn-google:active { background: rgba(255,255,255,0.05); transform: scale(0.98); }
+        .btn-google img { width: 20px; }
+
+        .footer-terms { 
+            position: absolute; bottom: 40px; width: 80%; text-align: center;
+            font-size: 10px; color: #444; line-height: 1.6;
+        }
+        .footer-terms span { color: var(--accent); }
     </style>
 </head>
 <body>
 
-<div class="login-card">
+<div class="logo-container">
+    <div class="eclipse"></div>
     <div class="logo-k">K</div>
-    <h1>KLYON</h1>
-    <button class="btn-google" id="loginBtn">
-        <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="18">
-        Continuar com Google
-    </button>
+</div>
+
+<div class="brand-area">
+    <div class="brand-name">KLYON</div>
+    <div class="brand-sub">VOID</div>
+</div>
+
+<div class="welcome-text">
+    <h2>Bem-vindo ao vazio.</h2>
+    <p>Aqui, ninguém sabe quem você é.</p>
+</div>
+
+<button class="btn-google" id="loginBtn">
+    <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png">
+    Continuar com Google
+</button>
+
+<div class="footer-terms">
+    Ao continuar, você concorda com nossos<br>
+    <span>Termos de Uso</span> e <span>Política de Privacidade</span>.
 </div>
 
 <script type="module">
@@ -52,11 +108,14 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    onAuthStateChanged(auth, async (user) => { 
+    onAuthStateChanged(auth, (user) => { 
         if(user) window.location.href = "index.html"; 
     });
 
     document.getElementById('loginBtn').onclick = async () => {
+        const btn = document.getElementById('loginBtn');
+        btn.innerHTML = "Iniciando conexão...";
+        
         const provider = new GoogleAuthProvider();
         try {
             const result = await signInWithPopup(auth, provider);
@@ -65,17 +124,21 @@
             const snap = await getDoc(userRef);
 
             if (!snap.exists()) {
+                // SALVANDO DADOS: O sistema entende que não deve usar a URL da foto do Google
                 await setDoc(userRef, {
-                    name: user.displayName,
+                    name: user.displayName || "Anônimo",
                     handle: user.email.split('@')[0].toLowerCase() + Math.floor(Math.random() * 99),
                     uid: user.uid,
-                    friends: [],
-                    bio: "Conectado ao vazio.",
+                    friends: [], // Modelo de amigos conforme solicitado
+                    bio: "Conexão estabelecida na KLYON.",
                     joinedAt: serverTimestamp()
                 });
             }
             window.location.href = "index.html";
-        } catch (e) { console.error(e); }
+        } catch (e) { 
+            console.error(e);
+            btn.innerHTML = '<img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png"> Continuar com Google';
+        }
     };
 </script>
 </body>
