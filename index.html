@@ -3,109 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Klyon - Void</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Klyon - Feed</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #000000; --card: #080808; --border: #1a1a1a; --text: #ffffff; --dim: #777; --accent: #00f2ff; }
+        :root { --bg: #000; --border: #1a1a1a; --accent: #00f2ff; --dim: #888; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding-bottom: 90px; }
+        body { margin: 0; background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; padding-bottom: 80px; }
         
-        /* HEADER */
+        /* Header com Menu de 3 risquinhos */
         header { 
-            position: fixed; top: 0; width: 100%; height: 60px; 
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); 
-            display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 20px; z-index: 1000; border-bottom: 1px solid var(--border);
+            padding: 15px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid var(--border); 
+            position: sticky; top: 0; 
+            background: rgba(0,0,0,0.8); 
+            backdrop-filter: blur(10px); 
+            z-index: 100; 
         }
-        .header-logo { letter-spacing: 8px; font-size: 14px; font-weight: 400; flex-grow: 1; text-align: center; margin-left: 40px; }
-        .header-logo span { display: block; font-size: 8px; letter-spacing: 4px; color: var(--dim); margin-top: -2px; }
-
-        /* POSTS */
-        .container { max-width: 500px; margin: auto; padding-top: 80px; }
-        .post { 
-            background: var(--card); border: 1px solid var(--border); 
-            border-radius: 20px; padding: 20px; margin: 0 15px 15px; 
-        }
-        .post-head { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; position: relative; }
-        .avatar { 
-            width: 40px; height: 40px; border-radius: 50%; border: 1px solid #333;
-            display: flex; align-items: center; justify-content: center; font-size: 14px;
-            background: radial-gradient(circle, #222 0%, #000 100%);
-        }
-        .post-time { font-size: 12px; color: var(--dim); position: absolute; left: 60px; top: 2px; }
+        .logo { font-family: 'Orbitron'; color: var(--accent); font-size: 20px; text-shadow: 0 0 10px var(--accent); position: absolute; left: 50%; transform: translateX(-50%); }
         
-        .post-content { font-size: 16px; line-height: 1.5; font-weight: 300; color: #eee; margin: 10px 0 20px; }
+        .menu-btn { background: transparent; border: none; cursor: pointer; padding: 5px; display: flex; flex-direction: column; gap: 4px; }
+        .menu-btn div { width: 20px; height: 2px; background: var(--dim); border-radius: 2px; transition: 0.3s; }
+        .menu-btn:hover div { background: #fff; }
 
-        .post-actions { display: flex; gap: 25px; color: var(--dim); border-top: 1px solid #111; padding-top: 15px; }
-        .action { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
-        .action svg { width: 18px; stroke: var(--dim); fill: none; stroke-width: 1.5; }
-        .action:hover { color: #fff; }
-        .action.active svg { stroke: var(--accent); }
+        /* Feed */
+        .post { padding: 20px; border-bottom: 1px solid var(--border); }
+        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .post-name { font-weight: 600; font-size: 14px; }
+        .post-handle { color: var(--dim); font-size: 13px; }
+        .post-content { font-size: 15px; line-height: 1.5; font-weight: 300; color: #eee; }
+        
+        /* FAB (+) */
+        .fab { position: fixed; bottom: 90px; right: 20px; width: 56px; height: 56px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(255,255,255,0.2); z-index: 999; }
+        .fab svg { width: 24px; stroke: #000; stroke-width: 2.5; fill: none; }
 
-        /* BOTÃO FLUTUANTE (FAB) */
-        #fab { 
-            position: fixed; bottom: 100px; right: 20px; 
-            width: 56px; height: 56px; background: transparent; 
-            border: 1px solid var(--accent); border-radius: 50%; 
-            color: white; font-size: 30px; display: flex; align-items: center; 
-            justify-content: center; cursor: pointer; box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
-        }
+        /* Modal */
+        #actionModal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 5000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-card { background: #080808; width: 90%; max-width: 400px; padding: 25px; border-radius: 24px; border: 1px solid #222; }
+        textarea { width: 100%; height: 120px; background: #111; border: 1px solid #333; border-radius: 12px; color: #fff; padding: 12px; resize: none; font-family: inherit; margin-top: 15px; outline: none; border: 1px solid #222; }
+        .btn-send { width: 100%; background: #fff; color: #000; border: none; padding: 12px; border-radius: 30px; font-weight: 600; margin-top: 15px; cursor: pointer; }
 
-        /* NAVBAR INFERIOR */
-        .bottom-nav { 
-            position: fixed; bottom: 0; width: 100%; height: 70px; 
-            background: rgba(0,0,0,0.9); border-top: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: space-around; 
-        }
+        /* Nav Inferior */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: #000; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-around; }
         .nav-link svg { width: 24px; stroke: var(--dim); fill: none; stroke-width: 1.5; }
-        .nav-link.active svg { stroke: var(--text); }
-        .nav-link.active::after { content: ''; position: absolute; bottom: -10px; width: 4px; height: 4px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 5px var(--accent); }
-        .nav-link { position: relative; display: flex; flex-direction: column; align-items: center; }
-
+        .nav-link.active svg { stroke: #fff; }
     </style>
 </head>
 <body>
 
 <header>
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-    <div class="header-logo">K L Y O N <span>V O I D</span></div>
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="filter: drop-shadow(0 0 3px #00f2ff);"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+    <div style="width: 30px;"></div> <div class="logo">K</div>
+    <button class="menu-btn" onclick="location.href='configuracoes.html'">
+        <div></div>
+        <div></div>
+        <div></div>
+    </button>
 </header>
 
-<main class="container" id="feed">
-    <div class="post">
-        <div class="post-head">
-            <div class="avatar">A</div>
-            <span class="post-time">2m</span>
-        </div>
-        <div class="post-content">Acordei sem vontade de existir hoje.</div>
-        <div class="post-actions">
-            <div class="action"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> 12</div>
-            <div class="action"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-11.7 8.38 8.38 0 0 1 3.8.9L21 3z"></path></svg> 3</div>
-            <div class="action"><svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg> 1</div>
-        </div>
-    </div>
-</main>
+<div id="feed"></div>
 
-<button id="fab">+</button>
+<div class="fab" id="fabBtn">
+    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+</div>
+
+<div id="actionModal">
+    <div class="modal-card">
+        <h2 style="font-size:12px; letter-spacing:2px; color:var(--dim); margin:0; text-transform: uppercase;">Transmitir</h2>
+        <textarea id="postInput" placeholder="O que você está pensando?"></textarea>
+        <button class="btn-send" id="sendBtn">POSTAR</button>
+        <button onclick="closeModal()" style="width:100%; background:transparent; color:#444; border:none; margin-top:10px; cursor:pointer; font-size:12px;">DESCARTAR</button>
+    </div>
+</div>
 
 <nav class="bottom-nav">
-    <a href="index.html" class="nav-link active">
-        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-    </a>
-    <a href="#" class="nav-link">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-    </a>
-    <a href="#" class="nav-link">
-        <svg viewBox="0 0 24 24" style="stroke: var(--accent);"><circle cx="12" cy="12" r="10"></circle></svg>
-    </a>
-    <a href="#" class="nav-link">
-        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg>
-    </a>
-    <a href="perfil.html" class="nav-link">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8"></path></svg>
-    </a>
+    <a href="index.html" class="nav-link active"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></a>
+    <a href="buscar.html" class="nav-link"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></a>
+    <a href="notificacoes.html" class="nav-link"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg></a>
+    <a href="perfil.html" class="nav-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle></svg></a>
 </nav>
 
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+    const firebaseConfig = { 
+        apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", 
+        authDomain: "klyon-a97ba.firebaseapp.com", 
+        projectId: "klyon-a97ba" 
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let userMe = null;
+
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) return window.location.href = "login.html";
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (snap.exists()) {
+            userMe = snap.data();
+            loadPosts();
+        }
+    });
+
+    function loadPosts() {
+        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+        onSnapshot(q, (snap) => {
+            const feed = document.getElementById('feed');
+            feed.innerHTML = "";
+            snap.forEach(d => {
+                const p = d.data();
+                feed.innerHTML += `
+                    <div class="post">
+                        <div class="post-header">
+                            <span class="post-name">${p.authorName}</span>
+                            <span class="post-handle">@${p.authorHandle}</span>
+                        </div>
+                        <div class="post-content">${p.content}</div>
+                    </div>`;
+            });
+        });
+    }
+
+    // Modal de Postagem
+    const modal = document.getElementById('actionModal');
+    const fab = document.getElementById('fabBtn');
+    
+    fab.onclick = () => {
+        modal.style.display = 'flex';
+        document.getElementById('postInput').focus();
+    };
+
+    window.closeModal = () => {
+        modal.style.display = 'none';
+        document.getElementById('postInput').value = "";
+    };
+
+    document.getElementById('sendBtn').onclick = async () => {
+        const txt = document.getElementById('postInput').value;
+        if(!txt.trim() || !userMe) return;
+
+        try {
+            await addDoc(collection(db, "posts"), {
+                uid: auth.currentUser.uid,
+                authorName: userMe.name,
+                authorHandle: userMe.handle,
+                content: txt,
+                createdAt: serverTimestamp(),
+                likes: [],
+                commentsCount: 0,
+                repostsCount: 0
+            });
+            closeModal();
+        } catch (e) {
+            console.error("Erro ao postar:", e);
+        }
+    };
+</script>
 </body>
 </html>
