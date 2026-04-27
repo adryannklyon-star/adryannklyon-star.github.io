@@ -6,82 +6,50 @@
     <title>Klyon - Perfil</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #000000; --text: #ffffff; --dim: #888; --border: #1a1a1a; --accent: #00f2ff; }
+        :root { --bg: #000000; --text: #ffffff; --dim: #666; --border: #1a1a1a; --accent: #00f2ff; --card: #0a0a0a; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding-bottom: 100px; }
         
-        /* Cabeçalho Minimalista */
-        .profile-header {
-            padding: 60px 20px 30px;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-        }
+        /* Header Minimalista */
+        .profile-header { padding: 40px 20px 30px; text-align: center; border-bottom: 1px solid var(--border); }
 
-        .avatar-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
+        .avatar-container { display: flex; justify-content: center; margin-bottom: 20px; }
 
+        /* Avatar com Inicial e Efeito Eclipse */
         .neon-avatar-circle {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            font-weight: 300;
-            background: radial-gradient(circle, #111 0%, #000 100%);
-            box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.05), 0 0 20px rgba(0, 0, 0, 0.5);
-            color: #fff;
+            width: 100px; height: 100px; border-radius: 50%; 
+            border: 1px solid #333; display: flex; align-items: center; justify-content: center;
+            font-size: 36px; font-weight: 300; background: #000;
+            box-shadow: inset -5px 5px 15px rgba(255, 255, 255, 0.1), 0 0 20px rgba(0, 0, 0, 0.8);
+            color: #fff; text-transform: uppercase;
         }
 
-        .user-info h1 { font-size: 22px; font-weight: 600; margin: 0; letter-spacing: -0.5px; }
-        .user-info p { color: var(--accent); font-size: 14px; margin: 5px 0 15px; font-weight: 400; }
-        .bio { font-size: 14px; color: #ccc; max-width: 300px; margin: 0 auto 20px; line-height: 1.6; font-weight: 300; }
+        .user-info h1 { font-size: 20px; font-weight: 600; margin: 0; }
+        .user-info p { color: var(--accent); font-size: 13px; margin: 5px 0 15px; font-weight: 400; opacity: 0.8; }
+        .bio { font-size: 14px; color: #888; max-width: 280px; margin: 0 auto 20px; line-height: 1.5; font-weight: 300; }
 
-        /* Stats no estilo da imagem */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            max-width: 350px;
-            margin: 25px auto 0;
-            padding-top: 20px;
-            border-top: 1px solid #111;
-        }
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; max-width: 350px; margin: 25px auto 0; padding-top: 20px; border-top: 1px solid #111; }
         .stat-item { text-align: center; }
         .stat-value { display: block; font-size: 18px; font-weight: 600; color: #fff; }
         .stat-label { display: block; font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
 
         /* Botões */
         .actions-row { display: flex; justify-content: center; gap: 10px; margin-top: 25px; }
-        .btn-profile {
-            padding: 10px 25px;
-            border-radius: 30px;
-            border: 1px solid #333;
-            background: transparent;
-            color: #fff;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: 0.3s;
-            text-decoration: none;
-        }
+        .btn-profile { padding: 10px 25px; border-radius: 30px; border: 1px solid #333; background: transparent; color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; text-decoration: none; }
         .btn-profile.primary { background: #fff; color: #000; border-color: #fff; }
-        .btn-profile:hover { opacity: 0.8; }
 
-        /* Posts */
-        .tabs-title { padding: 30px 20px 10px; font-size: 11px; color: var(--dim); letter-spacing: 2px; text-transform: uppercase; }
-        .post { background: #050505; border-bottom: 1px solid var(--border); padding: 20px; }
-        .post-content { font-size: 15px; font-weight: 300; line-height: 1.5; color: #eee; }
-        .post-meta { margin-top: 12px; font-size: 12px; color: var(--dim); display: flex; gap: 15px; }
+        /* Feed de Posts no Perfil (Cards igual ao index) */
+        .tabs-title { padding: 30px 20px 15px; font-size: 10px; color: var(--dim); letter-spacing: 3px; text-transform: uppercase; text-align: center; }
+        #postsContainer { max-width: 500px; margin: 0 auto; padding: 0 15px; }
+        .post-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 15px; }
+        .post-content { font-size: 15px; font-weight: 300; line-height: 1.6; color: #ccc; }
+        .post-time { margin-top: 12px; font-size: 11px; color: var(--dim); }
 
-        /* Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: rgba(0,0,0,0.9); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-around; z-index: 1000; }
+        /* Nav */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: #000; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-around; z-index: 1000; }
         .nav-link svg { width: 24px; stroke: var(--dim); fill: none; stroke-width: 1.5; }
-        .nav-link.active svg { stroke: #fff; }
+        .nav-link.active svg { stroke: var(--accent); }
     </style>
 </head>
 <body>
@@ -92,9 +60,9 @@
     </div>
     
     <div class="user-info">
-        <h1 id="userName">Carregando...</h1>
+        <h1 id="userName">...</h1>
         <p id="userHandle">@...</p>
-        <div class="bio" id="userBio">No final, somos todos apenas ecos no vazio.</div>
+        <div class="bio" id="userBio">Sincronizando com o vazio...</div>
     </div>
 
     <div class="stats-grid">
@@ -103,7 +71,7 @@
             <span class="stat-label">Ecos</span>
         </div>
         <div class="stat-item">
-            <span class="stat-value" id="countFollowers">0</span>
+            <span class="stat-value" id="countFriends">0</span>
             <span class="stat-label">Amigos</span>
         </div>
         <div class="stat-item">
@@ -116,7 +84,7 @@
         </div>
 </div>
 
-<div class="tabs-title">Recentes</div>
+<div class="tabs-title">Minhas Transmissões</div>
 
 <div id="postsContainer">
     </div>
@@ -125,27 +93,82 @@
     <a href="index.html" class="nav-link"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></a>
     <a href="buscar.html" class="nav-link"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></a>
     <a href="notificacoes.html" class="nav-link"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg></a>
-    <a href="perfil.html" class="nav-link active"><svg viewBox="0 0 24 24" style="stroke:var(--accent)"><circle cx="12" cy="12" r="10"></circle></svg></a>
+    <a href="perfil.html" class="nav-link active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle></svg></a>
 </nav>
 
 <script type="module">
-    // Mantenha toda a sua lógica do Firebase exatamente como está no seu código original.
-    // Apenas certifique-se de atualizar as referências de ID se necessário.
-    
-    // Exemplo de como renderizar os botões para manter o novo estilo:
-    /*
-    if (uid === myUid) {
-        document.getElementById('profileActions').innerHTML = `
-            <button class="btn-profile primary" onclick="location.href='configuracoes.html'">Editar Perfil</button>
-        `;
-    } else {
-        document.getElementById('profileActions').innerHTML = `
-            <button class="btn-profile primary" id="followBtn">Conectar</button>
-            <a href="chat.html?id=${uid}" class="btn-profile">Mensagem</a>
-        `;
-    }
-    */
-</script>
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
+    const firebaseConfig = { 
+        apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", 
+        authDomain: "klyon-a97ba.firebaseapp.com", 
+        projectId: "klyon-a97ba" 
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Pegar o ID do perfil da URL (ex: perfil.html?id=XYZ) ou usar o logado
+    const urlParams = new URLSearchParams(window.location.search);
+    const profileId = urlParams.get('id');
+
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) return window.location.href = "login.html";
+        
+        const targetUid = profileId || user.uid;
+        loadProfileData(targetUid, user.uid);
+        loadUserPosts(targetUid);
+    });
+
+    async function loadProfileData(uid, myUid) {
+        const snap = await getDoc(doc(db, "users", uid));
+        if (snap.exists()) {
+            const data = snap.data();
+            document.getElementById('userName').innerText = data.name;
+            document.getElementById('userHandle').innerText = `@${data.handle}`;
+            document.getElementById('userBio').innerText = data.bio || "No final, somos todos apenas ecos no vazio.";
+            document.getElementById('userInitial').innerText = data.name[0];
+            document.getElementById('countFriends').innerText = data.friends ? data.friends.length : 0;
+
+            // Renderiza botões dependendo se o perfil é meu ou de outro
+            const actions = document.getElementById('profileActions');
+            if (uid === myUid) {
+                actions.innerHTML = `<a href="configuracoes.html" class="btn-profile primary">Editar Perfil</a>`;
+            } else {
+                actions.innerHTML = `
+                    <button class="btn-profile primary" id="friendBtn">Amigar</button>
+                    <a href="chat.html?id=${uid}" class="btn-profile">Mensagem</a>
+                `;
+            }
+        }
+    }
+
+    function loadUserPosts(uid) {
+        const q = query(collection(db, "posts"), where("uid", "==", uid), orderBy("createdAt", "desc"));
+        
+        onSnapshot(q, (snap) => {
+            const container = document.getElementById('postsContainer');
+            document.getElementById('countPosts').innerText = snap.size;
+            container.innerHTML = "";
+            
+            if (snap.empty) {
+                container.innerHTML = `<p style="text-align:center; color:#444; font-size:13px; margin-top:20px;">Nenhum eco encontrado.</p>`;
+                return;
+            }
+
+            snap.forEach(d => {
+                const p = d.data();
+                container.innerHTML += `
+                    <div class="post-card">
+                        <div class="post-content">${p.content}</div>
+                        <div class="post-time">Transmitido via Klyon</div>
+                    </div>`;
+            });
+        });
+    }
+</script>
 </body>
 </html>
