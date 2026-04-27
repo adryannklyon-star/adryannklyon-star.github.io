@@ -1,75 +1,148 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="icon" type="image/png" href="logo.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Configurações</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <title>Klyon - Sistema</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #00f2ff; --bg: #030307; --glass: rgba(255, 255, 255, 0.05); --glass-border: rgba(255, 255, 255, 0.1); --danger: #ff2d55; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(circle at 50% 0%, #0f172a 0%, #030307 100%); min-height: 100vh; padding-bottom: 100px; }
-        header { height: 60px; display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; background: rgba(3,3,7,0.8); backdrop-filter: blur(10px); z-index: 100; }
-        .back-btn { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; margin-right: 15px; }
+        :root { 
+            --bg: #000; 
+            --card: #0a0a0a; 
+            --border: #1a1a1a; 
+            --accent: #00f2ff; 
+            --danger: #ff2d55;
+            --text-dim: #666;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        
+        body { 
+            margin: 0; background: var(--bg); color: #fff; 
+            font-family: 'Inter', sans-serif; padding-bottom: 100px; 
+            background-image: radial-gradient(circle at 50% -20%, #111 0%, #000 100%);
+        }
+
+        /* HEADER SISTEMA */
+        header { 
+            padding: 20px; display: flex; align-items: center; 
+            position: sticky; top: 0; background: rgba(0,0,0,0.8); 
+            backdrop-filter: blur(20px); z-index: 1000; border-bottom: 1px solid var(--border);
+        }
+        .header-title { flex-grow: 1; text-align: center; font-family: 'Orbitron'; font-size: 12px; letter-spacing: 4px; color: var(--accent); }
+
         .container { max-width: 500px; margin: auto; padding: 20px; }
-        h2 { font-family: 'Orbitron'; font-size: 1.2rem; color: var(--primary); margin-bottom: 25px; }
-        .section { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 24px; padding: 20px; margin-bottom: 20px; }
-        .section-title { font-size: 0.7rem; font-family: 'Orbitron'; color: var(--primary); margin-bottom: 15px; opacity: 0.7; letter-spacing: 1px; }
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 0.8rem; margin-bottom: 8px; color: #94a3b8; }
-        .input-group input, .input-group textarea { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px; color: #fff; font-family: inherit; }
-        .btn { width: 100%; padding: 15px; border-radius: 15px; border: none; font-family: 'Orbitron'; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        .btn-save { background: var(--primary); color: #000; }
-        .btn-logout { background: var(--glass); color: #fff; border: 1px solid var(--glass-border); }
-        .btn-delete { background: transparent; color: var(--danger); border: 1px solid var(--danger); font-size: 0.7rem; margin-top: 30px; }
-        .version-tag { text-align: center; font-size: 0.7rem; color: #475569; margin-top: 20px; font-family: 'Orbitron'; }
-        .bottom-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 450px; height: 70px; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px); border-radius: 28px; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: space-around; z-index: 1000; }
-        .nav-link img { width: 26px; filter: invert(1); opacity: 0.4; }
-        .nav-link.active img { opacity: 1; filter: drop-shadow(0 0 8px var(--primary)); }
+
+        /* SEÇÕES DE CONFIGURAÇÃO */
+        .config-group { margin-bottom: 30px; }
+        .group-label { 
+            font-size: 10px; font-family: 'Orbitron'; color: var(--text-dim); 
+            margin-bottom: 12px; margin-left: 10px; letter-spacing: 2px;
+        }
+
+        .glass-card { 
+            background: var(--card); border: 1px solid var(--border); 
+            border-radius: 24px; overflow: hidden;
+        }
+
+        .input-row { 
+            padding: 20px; border-bottom: 1px solid var(--border); 
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .input-row:last-child { border-bottom: none; }
+        
+        .input-row label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        
+        .input-row input, .input-row textarea { 
+            background: transparent; border: none; color: #fff; 
+            font-family: 'Inter', sans-serif; font-size: 15px; width: 100%;
+            padding: 5px 0;
+        }
+        .input-row input::placeholder { color: #333; }
+
+        /* BOTÕES */
+        .btn-action { 
+            width: 100%; padding: 18px; border-radius: 20px; border: none;
+            font-family: 'Orbitron'; font-size: 11px; font-weight: 700; 
+            cursor: pointer; transition: 0.3s; margin-top: 15px; letter-spacing: 2px;
+        }
+        .btn-save { background: #fff; color: #000; box-shadow: 0 0 20px rgba(255,255,255,0.1); }
+        .btn-save:active { transform: scale(0.98); background: var(--accent); }
+
+        .list-item { 
+            padding: 18px 20px; display: flex; align-items: center; 
+            justify-content: space-between; cursor: pointer; transition: 0.2s;
+        }
+        .list-item:active { background: #111; }
+        .list-item span { font-size: 14px; font-weight: 400; color: #eee; }
+        .list-item.danger span { color: var(--danger); }
+
+        .version-info { 
+            text-align: center; margin-top: 40px; font-size: 9px; 
+            font-family: 'Orbitron'; color: #222; letter-spacing: 5px;
+        }
+
+        /* NAV INFERIOR PADRÃO */
+        .bottom-nav { 
+            position: fixed; bottom: 0; width: 100%; height: 75px; 
+            background: #000; border-top: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-around; z-index: 1000;
+        }
+        .nav-link svg { width: 24px; stroke: var(--text-dim); fill: none; stroke-width: 1.5; }
+        .nav-link.active svg { stroke: var(--accent); }
     </style>
 </head>
 <body>
 
 <header>
-    <button class="back-btn" onclick="history.back()">←</button>
-    <div style="font-family:'Orbitron'; font-size: 0.9rem;">AJUSTES</div>
+    <div onclick="history.back()" style="cursor:pointer;"><svg width="24" height="24" viewBox="0 0 24 24" stroke="#fff" stroke-width="2" fill="none"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
+    <div class="header-title">AJUSTES DE NÚCLEO</div>
+    <div style="width:24px"></div>
 </header>
 
 <main class="container">
-    <h2>Configurações</h2>
-
-    <div class="section">
-        <div class="section-title">EDITAR PERFIL</div>
-        <div class="input-group">
-            <label>Nome</label>
-            <input type="text" id="confName">
+    
+    <div class="config-group">
+        <div class="group-label">IDENTIDADE</div>
+        <div class="glass-card">
+            <div class="input-row">
+                <label>Nome Visível</label>
+                <input type="text" id="confName" placeholder="Como você é chamado?">
+            </div>
+            <div class="input-row">
+                <label>Frequência (@handle)</label>
+                <input type="text" id="confHandle" placeholder="seu_nome">
+            </div>
+            <div class="input-row">
+                <label>Manifesto (Bio)</label>
+                <textarea id="confBio" rows="3" placeholder="O que ecoa de você?"></textarea>
+            </div>
         </div>
-        <div class="input-group">
-            <label>@ Handle (Exclusivo)</label>
-            <input type="text" id="confHandle">
-        </div>
-        <div class="input-group">
-            <label>Bio</label>
-            <textarea id="confBio" rows="3"></textarea>
-        </div>
-        <button class="btn btn-save" id="btnSave" onclick="updateAccount()">SALVAR ALTERAÇÕES</button>
+        <button class="btn-action btn-save" id="btnSave" onclick="updateAccount()">SINCRONIZAR PERFIL</button>
     </div>
 
-    <div class="section">
-        <div class="section-title">CONTA</div>
-        <button class="btn btn-logout" onclick="logout()">SAIR DA CONTA</button>
-        <button class="btn btn-delete" onclick="deleteAccount()">DELETAR MINHA CONTA PERMANENTEMENTE</button>
+    <div class="config-group">
+        <div class="group-label">SISTEMA</div>
+        <div class="glass-card">
+            <div class="list-item" onclick="logout()">
+                <span>Desconectar Transmissão</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" stroke="#444" fill="none" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+            </div>
+            <div class="list-item danger" onclick="deleteAccount()">
+                <span>Apagar Existência</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" stroke="var(--danger)" fill="none" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </div>
+        </div>
     </div>
 
-    <div class="version-tag">KLYON V2.0.4 - 2026</div>
+    <div class="version-info">KLYON VOID CORE v3.0.0</div>
 </main>
 
 <nav class="bottom-nav">
-    <a href="index.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/1946/1946488.png"></a>
-    <a href="buscar.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/149/149852.png"></a>
-    <a href="notificacoes.html" class="nav-link"><img src="https://cdn-icons-png.flaticon.com/512/3602/3602145.png"></a>
-    <a href="perfil.html" class="nav-link active"><img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png"></a>
+    <a href="index.html" class="nav-link"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></a>
+    <a href="buscar.html" class="nav-link"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></a>
+    <a href="notificacoes.html" class="nav-link"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg></a>
+    <a href="perfil.html" class="nav-link active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle></svg></a>
 </nav>
 
 <script type="module">
@@ -80,8 +153,7 @@
     const firebaseConfig = { 
         apiKey: "AIzaSyBeyQ56dshpph4e6gGKUY_XvX77iQ3z334", 
         authDomain: "klyon-a97ba.firebaseapp.com", 
-        projectId: "klyon-a97ba", 
-        storageBucket: "klyon-a97ba.appspot.com" 
+        projectId: "klyon-a97ba" 
     };
 
     const app = initializeApp(firebaseConfig);
@@ -103,47 +175,43 @@
 
     window.updateAccount = async () => {
         const btn = document.getElementById('btnSave');
-        const newName = document.getElementById('confName').value;
+        const newName = document.getElementById('confName').value.trim();
         const newHandle = document.getElementById('confHandle').value.toLowerCase().replace(/\s/g, '');
         const newBio = document.getElementById('confBio').value;
         
+        if(!newName || !newHandle) return alert("Identidade incompleta.");
+
         btn.disabled = true; 
-        btn.innerText = "ATUALIZANDO...";
+        btn.innerText = "SINCRONIZANDO...";
 
         try {
-            // Se mudou o handle, verifica se já existe outro igual
             if(newHandle !== userData.handle) {
                 const q = query(collection(db, "users"), where("handle", "==", newHandle));
                 const check = await getDocs(q);
                 if(!check.empty) {
-                    alert("Este @handle já está em uso.");
-                    btn.disabled = false; 
-                    btn.innerText = "SALVAR ALTERAÇÕES";
+                    alert("Esta frequência (@handle) já está ocupada.");
+                    btn.disabled = false; btn.innerText = "SINCRONIZAR PERFIL";
                     return;
                 }
             }
 
             await updateDoc(doc(db, "users", auth.currentUser.uid), {
-                name: newName,
-                handle: newHandle,
-                bio: newBio
+                name: newName, handle: newHandle, bio: newBio
             });
 
-            alert("Perfil atualizado!");
+            alert("Núcleo atualizado!");
             window.location.href = "perfil.html";
 
         } catch (e) {
-            console.error(e);
-            alert("Erro ao salvar. Tente novamente.");
-            btn.disabled = false;
-            btn.innerText = "SALVAR ALTERAÇÕES";
+            btn.disabled = false; btn.innerText = "SINCRONIZAR PERFIL";
+            alert("Falha na sincronização.");
         }
     };
 
     window.logout = () => signOut(auth).then(() => window.location.href = "login.html");
 
     window.deleteAccount = async () => {
-        const confirmar = confirm("Isso apagará tudo permanentemente. Tem certeza?");
+        const confirmar = confirm("Isso apagará sua existência no vazio permanentemente. Confirmar?");
         if(!confirmar) return;
 
         const uid = auth.currentUser.uid;
@@ -158,7 +226,7 @@
             await deleteUser(auth.currentUser);
             window.location.href = "login.html";
         } catch (e) {
-            alert("Faça login novamente para deletar a conta com segurança.");
+            alert("Ação sensível. Por favor, faça login novamente e tente deletar.");
         }
     };
 </script>
